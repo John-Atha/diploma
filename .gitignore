@@ -1,0 +1,5 @@
+*.json.*
+/.history
+/environ
+*__pycache__*
+*/data/*.json
