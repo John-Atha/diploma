@@ -25,3 +25,21 @@ Citation:
     * one with metadata about the category's products
 
 ---
+
+## Database
+
+* [Neo4j](https://neo4j.com/) 
+* Official docker image from: https://hub.docker.com/_/neo4j?tab=description
+* Run image with:
+    ```
+    docker run \
+        --publish=7474:7474 --publish=7687:7687 \
+        --volume=$HOME/neo4j/data:/data \
+        neo4j
+    ```
+
+* Some dummy tests:
+    * Run `db/tests/connection.py` to test the connection with the database
+    * Run `db/tests/fields.py` to see a review of the dataset's products' fields
+
+---
