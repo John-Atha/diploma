@@ -42,4 +42,14 @@ Citation:
     * Run `db/tests/connection.py` to test the connection with the database
     * Run `db/tests/fields.py` to see a review of the dataset's products' fields
 
+* To store the downloaded categories in the database:
+    * cd into the `scripts/insert_metadata` directory
+    * run `python3 main.py`
+
+* You can then run some queries on the neo4j GUI, and see a schema with:
+    * Nodes:
+        * `Product` (100 products from each category are saved by default)
+        * `Category`
+    * Edges:
+        * (product)-[BELONGS_TO]->(category)
 ---
