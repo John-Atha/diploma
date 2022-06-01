@@ -2,11 +2,12 @@ import os
 import re
 from unzipper import unzip
 
-data_dir = "../data"
+data_dir = "../../data"
 
 categories = [
     'AMAZON_FASHION',
     'All_Beauty',
+    'Appliances',
 ]
 
 base_urls = [

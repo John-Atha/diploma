@@ -14,7 +14,7 @@ Citation:
 
 ## Dataset download
 
-1. Cd into the `/db/scripts/` directory and in the `fetch_data.py` script:
+1. Cd into the `/db/scripts/download_dataset` directory and in the `fetch_data.py` script:
     * Specify the categories names via the `categories` list
     * You can see the available categories at: https://nijianmo.github.io/amazon/index.html
     * Specify the name `data_dir` of the directory where the data will be stored
@@ -52,4 +52,8 @@ Citation:
         * `Category`
     * Edges:
         * (product)-[BELONGS_TO]->(category)
+
+* To store the "bought_together" and "seen_together" relationships of the existing products:
+    * cd into the `scripts/insert_metadata` directory
+    * run ` python3 seen_bought_together.py`
 ---
