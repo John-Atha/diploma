@@ -1,8 +1,10 @@
 import os
 import re
 from unzipper import unzip
+import pathlib
 
-data_dir = "../../data"
+d = pathlib.Path(__file__).parent.parent.parent.absolute()
+data_dir = os.path.join(d, "data")
 
 categories = [
     'AMAZON_FASHION',

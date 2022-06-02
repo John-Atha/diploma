@@ -1,4 +1,5 @@
 import os
+import pathlib
 from os.path import join
 from py2neo import Graph
 from category import insert_category
@@ -14,7 +15,8 @@ graph = Graph(
 )
 
 def main():
-    data_path = "../../data"
+    d = pathlib.Path(__file__).parent.parent.parent.absolute()
+    data_path = join(d, "data")
     filenames = get_metadata_files(data_path)
     for file in filenames:
         insert_category(
