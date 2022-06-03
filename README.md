@@ -26,7 +26,7 @@ Citation:
 
 ---
 
-## Database
+## Database initialization-preprocessing
 
 * [Neo4j](https://neo4j.com/) 
 * Official docker image from: https://hub.docker.com/_/neo4j?tab=description
@@ -48,12 +48,17 @@ Citation:
 
 * You can then run some queries on the neo4j GUI, and see a schema with:
     * Nodes:
-        * `Product` (100 products from each category are saved by default)
+        * `Product` (1000 products from each category are saved by default)
         * `Category`
     * Edges:
         * (product)-[BELONGS_TO]->(category)
 
-* To store the "bought_together" and "seen_together" relationships of the existing products:
+* To store the `bought_together` and `seen_together` relationships of the existing products:
     * cd into the `scripts/insert_metadata` directory
     * run ` python3 seen_bought_together.py`
+
+* To summarize and replace the `bought_together` and `seen_together` relationships, with a new `similarity` weighted relationship:
+    * cd into the `scripts/insert_metadata` directory
+    * run `python3 similarities.py`
+
 ---

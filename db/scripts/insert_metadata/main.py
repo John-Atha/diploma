@@ -22,7 +22,7 @@ def main():
         insert_category(
             graph,
             filename=join(data_path, file),
-            products_limit=100
+            products_limit=1000
         )
 
 try:

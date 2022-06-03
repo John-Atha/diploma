@@ -6,16 +6,16 @@ graph = Graph(
 )
 
 def add_also_buy_view_edges(product: Node, attr: str, edge: str):
-    print(f"Adding {edge} for product {product.get('asin')}")
+    # print(f"Adding {edge} for product {product.get('asin')}")
     neighbours_asins = product.get(attr) or []
     EDGE = Relationship.type(edge)
     for asin in neighbours_asins:
         neighbour = graph.nodes.match("Product", asin=asin).first()
         if neighbour:
-            graph.merge(EDGE(product, neighbour))
-            graph.merge(EDGE(neighbour, product))
+            node1 = product if product.get('asin')<neighbour.get('asin') else neighbour
+            node2 = neighbour if node1==product else product
+            graph.merge(EDGE(node1, node2))
         
-
 def add_product_edges(product: Node):
     add_also_buy_view_edges(
         product,
@@ -30,6 +30,7 @@ def add_product_edges(product: Node):
 
 def main():
     products = graph.nodes.match("Product")
+    print("* Adding seen and bought together edges")
     for product in products:
         add_product_edges(product)
 
