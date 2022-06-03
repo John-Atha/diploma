@@ -28,10 +28,11 @@ def add_product_edges(product: Node):
         'SEEN_TOGETHER'
     )
 
-def main():
+def add_seen_bought_together():
     products = graph.nodes.match("Product")
     print("* Adding seen and bought together edges")
     for product in products:
         add_product_edges(product)
 
-main()
+if __name__ == '__main__':
+    add_seen_bought_together()

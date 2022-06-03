@@ -2,7 +2,7 @@ import os
 import pathlib
 from os.path import join
 from py2neo import Graph
-from category import insert_category
+from .category import insert_category
 from pathlib import Path
 import sys
 file_path = Path(os.path.realpath(__file__)).parent.parent.parent.absolute()
@@ -25,11 +25,12 @@ def main():
             products_limit=1000
         )
 
-try:
-    graph.run("Match () Return 1 Limit 1")
-    main()
-    print('ok')
-except Exception as e:
-    print(e)
-    print(e.with_traceback)
-    print('not ok')
+if __name__ == '__main__':
+    try:
+        graph.run("Match () Return 1 Limit 1")
+        main()
+        print('ok')
+    except Exception as e:
+        print(e)
+        print(e.with_traceback)
+        print('not ok')

@@ -28,7 +28,7 @@ def create_attach_category_node(graph: Graph, name: str):
     products = graph.nodes.match("Product", category=name)
     BELONGS_TO = Relationship.type("BELONGS_TO")
     for product in products:
-        graph.merge(BELONGS_TO(product, category))
+        graph.merge(BELONGS_TO(product, category, weight=1))
 
 
 def insert_category(graph: Graph, filename: str, products_limit=100):

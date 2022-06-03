@@ -6,7 +6,7 @@ graph = Graph(
 )
 
 SEEN_TOGETHER_SCORE = 1
-BOUGHT_TOGETHER_SCORE = 2
+BOUGHT_TOGETHER_SCORE = 3
 
 def delete_one_type_edges(edge_name):
     graph.run(f"""
@@ -29,13 +29,13 @@ def use_one_type_edges(edge_name, weight):
 def use_seen_together_edges():
     use_one_type_edges(
         edge_name="SEEN_TOGETHER",
-        weight=1,
+        weight=SEEN_TOGETHER_SCORE,
     )
 
 def use_bought_together_edges():
     use_one_type_edges(
         edge_name="BOUGHT_TOGETHER",
-        weight=2
+        weight=BOUGHT_TOGETHER_SCORE,
     )
 
 def use_seen_and_bought_together_edges():
@@ -46,11 +46,11 @@ def use_seen_and_bought_together_edges():
         with count(distinct l) as rels, p1 as p1, p2 as p2, l as l
         where p1<>p2
         and rels=2
-        create (p1)-[s: Similarity { weight: 3}]->(p2)
-    """
+        create (p1)-[s: Similarity { weight:
+    """ + str(SEEN_TOGETHER_SCORE+BOUGHT_TOGETHER_SCORE) + "}]->(p2)"
     graph.run(query)
 
-def main():
+def add_similarities():
     print("* Adding similarities for both seen and bought together")
     use_seen_and_bought_together_edges()
     print("* Adding similarities only for seen together")
@@ -62,4 +62,5 @@ def main():
     print("* Delete bought together edges ")
     delete_one_type_edges("SEEN_TOGETHER")
 
-main()
+if __name__ == '__main__':
+    add_similarities()
