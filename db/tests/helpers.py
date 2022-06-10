@@ -5,10 +5,20 @@ import json
 def is_metadata(path, filename):
     return isfile(join(path, filename)) and filename.startswith('meta_')
 
+def is_review(path, filename):
+    return isfile(join(path, filename)) and not filename.startswith('meta_')
+
 def get_metadata_files(data_path):
     data_files = [
         f for f in listdir(data_path)
         if is_metadata(data_path, f)
+    ]
+    return data_files
+
+def get_reviews_files(data_path):
+    data_files = [
+        f for f in listdir(data_path)
+        if is_review(data_path, f)
     ]
     return data_files
 
