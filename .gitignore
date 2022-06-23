@@ -1,4 +1,5 @@
 *.json.*
+*.csv
 /.history
 /environ
 *__pycache__*
