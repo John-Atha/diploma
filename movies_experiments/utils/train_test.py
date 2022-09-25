@@ -1,7 +1,7 @@
 import torch
 import torch.nn.functional as F
 
-def train_test(model, epochs, train_data, test_data, val_data):
+def train_test(model, epochs, train_data, test_data, val_data, logging_step):
 
     # Due to lazy initialization, we need to run one model step so the number
     # of parameters can be inferred:
@@ -39,13 +39,13 @@ def train_test(model, epochs, train_data, test_data, val_data):
         return float(rmse)
     
     losses = []
-    for epoch in range(1, epochs):
+    for epoch in range(1, epochs+1):
         loss = train()
         train_rmse = test(train_data)
         val_rmse = test(val_data)
         test_rmse = test(test_data)
         losses.append((loss, train_rmse, val_rmse, test_rmse))
-        # if not epochs%epoch:
-        print(f'Epoch: {epoch:03d}, Loss: {loss:.4f}, Train: {train_rmse:.4f}, '
+        if (logging_step and not epoch%logging_step) or (not logging_step):
+            print(f'Epoch: {epoch:03d}, Loss: {loss:.4f}, Train: {train_rmse:.4f}, '
                 f'Val: {val_rmse:.4f}, Test: {test_rmse:.4f}')
     return losses

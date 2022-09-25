@@ -3,7 +3,7 @@ from matplotlib import pyplot as plt
 def plot_loss_by_index(index, losses, ylim=1.5):
     for type, values in losses.items():
         plt.plot([val[index] for val in values], label=type)
-    plt.rcParams["figure.figsize"] = (30,10)
+    plt.rcParams["figure.figsize"] = (30,30)
     plt.ylim(0, ylim)
     plt.legend()
     plt.show()
