@@ -53,6 +53,7 @@ decoder_min_num_layers=5
 decoder_max_num_layers=7
 epochs=int(sys.argv[1])
 logging_step=10
+lrs=[0.01]
 
 losses = grid_search(
     layer_names=layer_names,
@@ -67,6 +68,7 @@ losses = grid_search(
     test_data=test_data,
     device=device,
     logging_step=logging_step,
+    lrs=lrs,
 )
 
 # #### Save output

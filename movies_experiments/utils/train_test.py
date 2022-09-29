@@ -1,14 +1,14 @@
 import torch
 import torch.nn.functional as F
 
-def train_test(model, epochs, train_data, test_data, val_data, logging_step):
+def train_test(model, epochs, train_data, test_data, val_data, logging_step, lr=0.01):
 
     # Due to lazy initialization, we need to run one model step so the number
     # of parameters can be inferred:
     with torch.no_grad():
         model.encoder(train_data.x_dict, train_data.edge_index_dict)
 
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
+    optimizer = torch.optim.Adam(model.parameters(), lr=lr)
 
     weight = torch.bincount(train_data['user', 'movie'].edge_label)
     weight = weight.max() / weight
