@@ -48,9 +48,9 @@ print("Epochs:", sys.argv[1])
 # Define the grid search space
 layer_names = ["SAGE"]
 encoder_min_num_layers=5
-encoder_max_num_layers=7
+encoder_max_num_layers=15
 decoder_min_num_layers=5
-decoder_max_num_layers=7
+decoder_max_num_layers=15
 epochs=int(sys.argv[1])
 logging_step=10
 
