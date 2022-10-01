@@ -14,12 +14,13 @@ def grid_search(
     val_data,
     test_data,
     device,
-    logging_step=0,  
+    logging_step=1,
+    encoder_skip_connections_=[True],
 ):
     losses = defaultdict(tuple)
     for layer_name in layer_names:
         for encoder_num_layers in range(encoder_min_num_layers, encoder_max_num_layers+1):
-            for encoder_skip_connections in [True, False]:
+            for encoder_skip_connections in encoder_skip_connections_:
                 for decoder_num_layers in range(decoder_min_num_layers, decoder_max_num_layers+1):
                     print("--->>", (layer_name, encoder_num_layers, encoder_skip_connections, decoder_num_layers))
                     model = Model(

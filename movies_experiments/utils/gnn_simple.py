@@ -24,13 +24,30 @@ class GNNEncoder(torch.nn.Module):
         self.dropout = dropout
         self.skip_connections = skip_connections
         self.layer = layers.get(layer_name) or SAGEConv
-        self.convs = torch.nn.ModuleList()
+        
+        first_layer_args = {
+            "in_channels": self.in_channels,
+            "out_channels": self.hidden_channels,
+        }
+        hidden_layer_args = {
+            "in_channels": self.hidden_channels,
+            "out_channels": self.hidden_channels,
+        }
+        last_layer_args = {
+            "in_channels": self.hidden_channels,
+            "out_channels": self.out_channels,
+        }
 
-        self.convs.append(self.layer(self.in_channels, self.hidden_channels))
+        if layer_name in ["GCN", "GAT"]:
+            first_layer_args["add_self_loops"] = False
+            hidden_layer_args["add_self_loops"] = False
+            last_layer_args["add_self_loops"] = False
+
+        self.convs = torch.nn.ModuleList()
+        self.convs.append(self.layer(**first_layer_args))
         for _ in range(self.num_layers-2):
-            self.convs.append(self.layer(
-                self.hidden_channels, self.hidden_channels))
-        self.convs.append(self.layer(self.hidden_channels, self.out_channels))
+            self.convs.append(self.layer(**hidden_layer_args))
+        self.convs.append(self.layer(**last_layer_args))
 
     def forward(self, x, edge_index):
         prev_x = None
