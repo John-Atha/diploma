@@ -15,8 +15,8 @@ def grid_search(
     test_data,
     device,
     lrs=[0.01],
-    logging_step=0,
-    skip_connections=[True, False]
+    logging_step=1,
+    skip_connections=[True]
 ):
     losses = defaultdict(tuple)
     for lr in lrs:

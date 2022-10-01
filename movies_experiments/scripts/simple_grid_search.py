@@ -46,14 +46,14 @@ train_data, val_data, test_data = T.RandomLinkSplit(
 print("Epochs:", sys.argv[1])
 
 # Define the grid search space
-layer_names = ["SAGE"]
+layer_names = ["SAGE", "GAT", "GraphConv"]
 encoder_min_num_layers=5
-encoder_max_num_layers=15
+encoder_max_num_layers=5
 decoder_min_num_layers=5
-decoder_max_num_layers=15
+decoder_max_num_layers=5
 epochs=int(sys.argv[1])
 logging_step=10
-lrs=[0.01]
+lrs=[0.012]
 
 losses = grid_search(
     layer_names=layer_names,
@@ -72,7 +72,7 @@ losses = grid_search(
 )
 
 # #### Save output
-specs = f"{layer_names}__encoder_{encoder_min_num_layers}_{encoder_max_num_layers}__decoder_{decoder_min_num_layers}_{decoder_max_num_layers}__{epochs}_epochs"
+specs = f"{layer_names}__encoder_{encoder_min_num_layers}_{encoder_max_num_layers}__decoder_{decoder_min_num_layers}_{decoder_max_num_layers}__{epochs}_epochs__{lrs}_lrs"
 output_path = os.path.join("..", "results", specs+".json")
 f = open(output_path, "w")
 f.write(json.dumps({str(key): val for key, val in losses.items()}, indent=2))
