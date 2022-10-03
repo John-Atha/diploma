@@ -70,9 +70,30 @@ class Neo4jMovieLens(InMemoryDataset):
         extract_zip(path, self.raw_dir)
         os.remove(path)
 
+    def pre_process_movies_df(self):
+        from sentence_transformers import SentenceTransformer
+        import numpy as np
+
+        genres = self.movies_df['genres'].str.get_dummies('|').values
+        print(genres)
+        genres = torch.from_numpy(genres).to(torch.float)
+
+        model = SentenceTransformer(self.model_name)
+        with torch.no_grad():
+            emb = model.encode(
+                self.movies_df['title'].values,
+                show_progress_bar=True,
+                convert_to_tensor=True
+            ).cpu()
+        
+        fastrp = self.movies_df['fastrp'].values
+        fastrp = np.vstack(fastrp).astype(np.float)
+        fastrp = torch.from_numpy(fastrp).to(torch.float)
+        
+        return torch.cat([emb, genres, fastrp], dim=-1)
+    
     def process(self):
         import pandas as pd
-        from sentence_transformers import SentenceTransformer
 
         data = HeteroData()
 
@@ -81,17 +102,8 @@ class Neo4jMovieLens(InMemoryDataset):
             self.movies_df = self.fetch_data(self.movies_query)
             self.movies_df.set_index("movieId", inplace=True)
         
-        movie_mapping = {idx: i for i, idx in enumerate(self.movies_df.index)}
-        genres = self.movies_df['genres'].str.get_dummies('|').values
-        genres = torch.from_numpy(genres).to(torch.float)
-        model = SentenceTransformer(self.model_name)
-        with torch.no_grad():
-            emb = model.encode(
-                self.movies_df['title'].values,
-                show_progress_bar=True,
-                convert_to_tensor=True
-            ).cpu()
-        data['movie'].x = torch.cat([emb, genres], dim=-1)
+        movie_mapping = {idx: i for i, idx in enumerate(self.movies_df.index)}      
+        data['movie'].x = self.pre_process_movies_df()
 
         # load the users and the ratings from the DB
         if not self.ratings_df:
@@ -99,10 +111,13 @@ class Neo4jMovieLens(InMemoryDataset):
 
         user_mapping = {idx: i for i, idx in enumerate(self.ratings_df['userId'].unique())}
         data['user'].num_nodes = len(user_mapping)
+        
         src = [user_mapping[idx] for idx in self.ratings_df['userId']]
         dst = [movie_mapping[idx] for idx in self.ratings_df['movieId']]
+
         edge_index = torch.tensor([src, dst])
         rating = torch.from_numpy(self.ratings_df['rating'].values).to(torch.long)
+        
         data['user', 'rates', 'movie'].edge_index = edge_index
         data['user', 'rates', 'movie'].edge_label = rating
 
