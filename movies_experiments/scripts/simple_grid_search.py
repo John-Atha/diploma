@@ -46,21 +46,32 @@ train_data, val_data, test_data = T.RandomLinkSplit(
 print("Epochs:", sys.argv[1])
 
 # Define the grid search space
-layer_names = ["SAGE", "GAT", "GraphConv"]
-encoder_min_num_layers=5
-encoder_max_num_layers=5
-decoder_min_num_layers=5
-decoder_max_num_layers=5
+
+# 2*2 combinations
+layer_names = ["SAGE", "GAT"]
+encoder_min_num_layers=6
+encoder_max_num_layers=10
+encoder_num_layers_step=4
+skip_connections=[True]
+
+# 2 combinations
+decoder_min_num_layers=10
+decoder_max_num_layers=14
+decoder_num_layers_step=4
+
+# 2 combinations
 epochs=int(sys.argv[1])
 logging_step=10
-lrs=[0.012]
+lrs=[0.012, 0.016]
 
 losses = grid_search(
     layer_names=layer_names,
     encoder_min_num_layers=encoder_min_num_layers,
     encoder_max_num_layers=encoder_max_num_layers,
+    encoder_num_layers_step=encoder_num_layers_step,
     decoder_min_num_layers=decoder_min_num_layers,
     decoder_max_num_layers=decoder_max_num_layers,
+    decoder_num_layers_step=decoder_num_layers_step,
     epochs=epochs,
     data=data,
     train_data=train_data,
@@ -69,10 +80,11 @@ losses = grid_search(
     device=device,
     logging_step=logging_step,
     lrs=lrs,
+    skip_connections=skip_connections,
 )
 
 # #### Save output
-specs = f"{layer_names}__encoder_{encoder_min_num_layers}_{encoder_max_num_layers}__decoder_{decoder_min_num_layers}_{decoder_max_num_layers}__{epochs}_epochs__{lrs}_lrs"
+specs = f"{layer_names}__encoder_{encoder_min_num_layers}_{encoder_max_num_layers}_{encoder_num_layers_step}__decoder_{decoder_min_num_layers}_{decoder_max_num_layers}_{decoder_num_layers_step}__{epochs}_epochs__{lrs}_lrs"
 output_path = os.path.join("..", "results", specs+".json")
 f = open(output_path, "w")
 f.write(json.dumps({str(key): val for key, val in losses.items()}, indent=2))
