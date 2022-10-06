@@ -15,6 +15,7 @@ from torch_geometric.data import (
 
 class Neo4jMovieLens(InMemoryDataset):
 
+    
     url = 'https://files.grouplens.org/datasets/movielens/ml-latest-small.zip'
 
     def __init__(
@@ -26,8 +27,17 @@ class Neo4jMovieLens(InMemoryDataset):
         transform: Optional[Callable] = None,
         pre_transform: Optional[Callable] = None,
         model_name: Optional[str] = "all-MiniLM-L6-v2",
+        force_pre_process: bool = False,
+        use_movies_fastRP: bool = False,
     ):
+        import shutil
+
         self.model_name = model_name
+
+        if force_pre_process:
+            # delete the directory with the downloaded data, to force download and process again
+            print(root)
+            shutil.rmtree(root)
         
         self.graph = Graph(
             database_url,
@@ -43,6 +53,7 @@ class Neo4jMovieLens(InMemoryDataset):
         """
         self.movies_df = None
         self.ratings_df = None
+        self.use_movies_fastRP = use_movies_fastRP
 
         super().__init__(root, transform, pre_transform)
         self.data, self.slices = torch.load(self.processed_paths[0])
@@ -65,14 +76,44 @@ class Neo4jMovieLens(InMemoryDataset):
     def processed_file_names(self) -> str:
         return f'data_{self.model_name}.pt'
 
+    def store_to_database(self):
+        # TODO
+        pass
+
     def download(self):
         path = download_url(self.url, self.raw_dir)
         extract_zip(path, self.raw_dir)
         os.remove(path)
+        self.store_to_database()
 
+    def pre_process_movies_df(self):
+        from sentence_transformers import SentenceTransformer
+        import numpy as np
+
+        genres = self.movies_df['genres'].str.get_dummies('|').values
+        print(genres)
+        genres = torch.from_numpy(genres).to(torch.float)
+
+        model = SentenceTransformer(self.model_name)
+        with torch.no_grad():
+            emb = model.encode(
+                self.movies_df['title'].values,
+                show_progress_bar=True,
+                convert_to_tensor=True
+            ).cpu()
+        
+        if self.use_movies_fastRP:
+            fastrp = self.movies_df['fastrp'].values
+            fastrp = np.vstack(fastrp).astype(np.float)
+            fastrp = torch.from_numpy(fastrp).to(torch.float)
+            
+            return torch.cat([emb, genres, fastrp], dim=-1)
+        
+        return torch.cat([emb, genres], dim=-1)
+
+    
     def process(self):
         import pandas as pd
-        from sentence_transformers import SentenceTransformer
 
         data = HeteroData()
 
@@ -81,17 +122,8 @@ class Neo4jMovieLens(InMemoryDataset):
             self.movies_df = self.fetch_data(self.movies_query)
             self.movies_df.set_index("movieId", inplace=True)
         
-        movie_mapping = {idx: i for i, idx in enumerate(self.movies_df.index)}
-        genres = self.movies_df['genres'].str.get_dummies('|').values
-        genres = torch.from_numpy(genres).to(torch.float)
-        model = SentenceTransformer(self.model_name)
-        with torch.no_grad():
-            emb = model.encode(
-                self.movies_df['title'].values,
-                show_progress_bar=True,
-                convert_to_tensor=True
-            ).cpu()
-        data['movie'].x = torch.cat([emb, genres], dim=-1)
+        movie_mapping = {idx: i for i, idx in enumerate(self.movies_df.index)}      
+        data['movie'].x = self.pre_process_movies_df()
 
         # load the users and the ratings from the DB
         if not self.ratings_df:
@@ -99,10 +131,13 @@ class Neo4jMovieLens(InMemoryDataset):
 
         user_mapping = {idx: i for i, idx in enumerate(self.ratings_df['userId'].unique())}
         data['user'].num_nodes = len(user_mapping)
+        
         src = [user_mapping[idx] for idx in self.ratings_df['userId']]
         dst = [movie_mapping[idx] for idx in self.ratings_df['movieId']]
+
         edge_index = torch.tensor([src, dst])
         rating = torch.from_numpy(self.ratings_df['rating'].values).to(torch.long)
+        
         data['user', 'rates', 'movie'].edge_index = edge_index
         data['user', 'rates', 'movie'].edge_label = rating
 
