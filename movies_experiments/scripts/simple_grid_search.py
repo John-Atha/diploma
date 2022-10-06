@@ -47,22 +47,22 @@ print("Epochs:", sys.argv[1])
 
 # Define the grid search space
 
-# 2*2 combinations
-layer_names = ["SAGE", "GAT"]
-encoder_min_num_layers=6
-encoder_max_num_layers=10
+# 3 combinations
+layer_names = ["SAGE"]
+encoder_min_num_layers=10
+encoder_max_num_layers=18
 encoder_num_layers_step=4
 skip_connections=[True]
 
-# 2 combinations
+# 3 combinations
 decoder_min_num_layers=10
-decoder_max_num_layers=14
+decoder_max_num_layers=18
 decoder_num_layers_step=4
 
 # 2 combinations
 epochs=int(sys.argv[1])
 logging_step=10
-lrs=[0.012, 0.016]
+lrs=[0.01, 0.012]
 
 losses = grid_search(
     layer_names=layer_names,
