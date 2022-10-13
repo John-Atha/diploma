@@ -271,7 +271,7 @@ def drop_fastRP_projection(graph, name):
     print("OK")
 
 def insert_rating(graph: Graph, userId: int, movieId: int, rating: float, timestamp: int):
-    movie = graph.nodes.match("Movie", id=movieId).first()
+    movie = graph.nodes.match("Movie", id=f"{movieId}").first()
     username = generate_username(1)[0]
     if movie:
         user = Node("User", id=userId, username=username)
@@ -280,3 +280,5 @@ def insert_rating(graph: Graph, userId: int, movieId: int, rating: float, timest
         # datetime_ = datetime.datetime.fromtimestamp(timestamp)
         RATES = Relationship.type("RATES")
         graph.merge(RATES(user, movie, rating=rating, datetime=timestamp))
+    else:
+        print("Skipping rating of movie:", movieId)
