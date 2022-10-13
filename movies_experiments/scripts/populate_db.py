@@ -1,4 +1,3 @@
-import json
 import pathlib
 import os
 import sys
@@ -11,28 +10,70 @@ from utils.general import read_csv, df_to_json
 from utils.movies_with_metadata import \
     insert_movies, insert_movies_genres, \
     insert_movies_production_countries, insert_movies_production_companies, \
-    insert_movies_spoken_languages, add_fastRP_embeddings
+    insert_movies_spoken_languages, add_fastRP_embeddings, \
+    insert_movies_keywords, insert_users_ratings
 
-graph = Graph(
-    "bolt://localhost:7687",
-    auth=("neo4j", "admin"),
-)
+def populate_db(
+    graph,
+    movies_limit=100,
+    skip_data_insert=False,
+    skip_embeddings_insert=False,
+    data_dir="movies_with_metadata",
+    use_small_dataset=True,
+):
+    print("Populating database...")
+    
+    if not graph:
+        graph = Graph(
+            "bolt://localhost:7687",
+            auth=("neo4j", "admin"),
+        )
 
-MOVIES_LIMIT = 100
-SKIP_DATA_INSERT = False
-SKIP_EMBEDDINGS_INSERT = False
+    if not skip_data_insert:
 
-if not SKIP_DATA_INSERT:
-    movies_df = read_csv(
-        filename="movies_metadata",
-        parent_dir_name="movies_with_metadata",
+        ratings_json = df_to_json(
+            read_csv(
+                filename="ratings_small" if use_small_dataset else "ratings",
+                parent_dir_name=data_dir,
+            )
+        )
+        movies_json = df_to_json(
+            read_csv(
+                filename="movies_metadata",
+                parent_dir_name=data_dir,
+            )
+        )
+        keywords_json = df_to_json(
+            read_csv(
+                filename="keywords",
+                parent_dir_name=data_dir,
+            )
+        )
+
+        movies_ids_to_keep = []
+        if use_small_dataset: 
+            movies_ids_to_keep = [rating["movieId"] for rating in ratings_json]
+        else:
+            movies_ids_to_keep = set([movie["id"] for movie in movies_json[:movies_limit]])
+
+        # save movies metadata and generate embeddings
+        insert_movies(graph, movies_json, movies_ids_to_keep)
+        insert_movies_genres(graph, movies_json, movies_ids_to_keep)
+        insert_movies_production_countries(graph, movies_json, movies_ids_to_keep)
+        insert_movies_production_companies(graph, movies_json, movies_ids_to_keep)
+        insert_movies_spoken_languages(graph, movies_json, movies_ids_to_keep)
+        insert_movies_keywords(graph, keywords_json, movies_ids_to_keep)        
+        if not skip_embeddings_insert:
+            add_fastRP_embeddings(graph)
+
+        # save the users and the ratings
+        insert_users_ratings(graph, ratings_json)
+    
+    print("Completed!")
+
+if __name__ == "__main__":
+    graph = Graph(
+        "bolt://localhost:7687",
+        auth=("neo4j", "admin"),
     )
-    movies_json = df_to_json(movies_df)
-
-    insert_movies(graph, movies_json, MOVIES_LIMIT)
-    insert_movies_genres(graph, movies_json)
-    insert_movies_production_countries(graph, movies_json)
-    insert_movies_production_companies(graph, movies_json)
-    insert_movies_spoken_languages(graph, movies_json)
-if not SKIP_EMBEDDINGS_INSERT:
-    add_fastRP_embeddings(graph)
+    populate_db(graph=graph)
