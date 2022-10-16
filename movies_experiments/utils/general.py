@@ -4,12 +4,15 @@ from os.path import join
 from py2neo import Node
 import pandas as pd
 
-def read_csv(filename: str, parent_dir_name="data_small"):
+def read_csv(filename: str, parent_dir_name="data_small", low_memory=True, sep=None):
     db_directory_path = pathlib.Path(os.getcwd()).parent.absolute()
     data_directory_path = join(db_directory_path, parent_dir_name)
     file_path = join(data_directory_path, f"{filename}.csv")
     print("Reading from:", file_path)
-    df = pd.read_csv(file_path, low_memory=False)
+    if sep:
+        df = pd.read_csv(file_path, low_memory=low_memory, sep=sep)
+    else:
+        df = pd.read_csv(file_path, low_memory=low_memory)
     return df
 
 def df_to_json(df):

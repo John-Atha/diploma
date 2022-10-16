@@ -1,31 +1,30 @@
+from shutil import ExecError
 from py2neo import Graph, Node, Relationship
 from py2neo.bulk import merge_nodes
 import ast
 from random_username.generate import generate_username
+from tqdm import tqdm
 
-def keep_movie(movie, ids):
+def keep_movie(movie, imdbIds):
     try:
-        id = int(movie["id"])
+        imdbId = int(movie["imdb_id"].replace("tt", ""))
     except Exception as e:
-        return False    
-    return id in ids
-
+        return False
+    return imdbId in imdbIds
+    
 # main methods for movies metadata
 def insert_movies(graph: Graph, movies, ids_to_keep: list):
-    print("Creating movies nodes...", end="  ")
-
-    data = [movie for movie in movies if keep_movie(movie, ids_to_keep)]
+    data = [movie for movie in tqdm(movies, desc="Creating movies nodes...") if keep_movie(movie, ids_to_keep)]
     merge_nodes(
         tx=graph.auto(),
         data=data,
         merge_key=("Movie", "title"),
         labels={"Movie"}
     )
-    print("OK")
 
-def insert_movies_genres(graph: Graph, movies_json, movies_ids_to_keep):
+def insert_movies_genres(graph: Graph, movies_json, movies_imdbIds_to_keep):
     create_helper_nodes(
-        movies_ids_to_keep,
+        movies_imdbIds_to_keep,
         graph,
         movies_json,
         feature_name="genres",
@@ -33,9 +32,8 @@ def insert_movies_genres(graph: Graph, movies_json, movies_ids_to_keep):
         merge_key=("Genre", "name"),
         labels={"Genre"},
     )
-    print("Attaching genres to movies...", end="  ")
     movies = graph.nodes.match("Movie")
-    for movie in movies:
+    for movie in tqdm(movies, desc="Attaching genres to movies..."):
         attach_helper_nodes(
             graph,
             movie,
@@ -43,11 +41,10 @@ def insert_movies_genres(graph: Graph, movies_json, movies_ids_to_keep):
             feature_name="genres",
             node_label="Genre",
         )
-    print("OK")
 
-def insert_movies_production_countries(graph: Graph, movies_json, movies_ids_to_keep):
+def insert_movies_production_countries(graph: Graph, movies_json, movies_imdbIds_to_keep):
     create_helper_nodes(
-        movies_ids_to_keep,
+        movies_imdbIds_to_keep,
         graph,
         movies_json,
         feature_name="production_countries",
@@ -55,9 +52,8 @@ def insert_movies_production_countries(graph: Graph, movies_json, movies_ids_to_
         merge_key=("ProductionCountry", "name"),
         labels={"ProductionCountry"},
     )
-    print("Attaching production countries to movies...", end="  ")
     movies = graph.nodes.match("Movie")
-    for movie in movies:
+    for movie in tqdm(movies, desc="Attaching production countries to movies..."):
         attach_helper_nodes(
             graph,
             movie,
@@ -65,11 +61,10 @@ def insert_movies_production_countries(graph: Graph, movies_json, movies_ids_to_
             feature_name="production_countries",
             node_label="ProductionCountry",
         )
-    print("OK")
 
-def insert_movies_production_companies(graph: Graph, movies_json, movies_ids_to_keep):
+def insert_movies_production_companies(graph: Graph, movies_json, movies_imdbIds_to_keep):
     create_helper_nodes(
-        movies_ids_to_keep,
+        movies_imdbIds_to_keep,
         graph,
         movies_json,
         feature_name="production_companies",
@@ -77,9 +72,8 @@ def insert_movies_production_companies(graph: Graph, movies_json, movies_ids_to_
         merge_key=("ProductionCompany", "name"),
         labels={"ProductionCompany"},
     )
-    print("Attaching production companies to movies...", end="  ")
     movies = graph.nodes.match("Movie")
-    for movie in movies:
+    for movie in tqdm(movies, desc="Attaching production companies to movies..."):
         attach_helper_nodes(
             graph,
             movie,
@@ -87,11 +81,10 @@ def insert_movies_production_companies(graph: Graph, movies_json, movies_ids_to_
             feature_name="production_companies",
             node_label="ProductionCompany",
         )
-    print("OK")
 
-def insert_movies_spoken_languages(graph: Graph, movies_json, movies_ids_to_keep):
+def insert_movies_spoken_languages(graph: Graph, movies_json, movies_imdbIds_to_keep):
     create_helper_nodes(
-        movies_ids_to_keep,
+        movies_imdbIds_to_keep,
         graph,
         movies_json,
         feature_name="spoken_languages",
@@ -99,9 +92,8 @@ def insert_movies_spoken_languages(graph: Graph, movies_json, movies_ids_to_keep
         merge_key=("Language", "name"),
         labels={"Language"},
     )
-    print("Attaching spoken languages to movies...", end="  ")
     movies = graph.nodes.match("Movie")
-    for movie in movies:
+    for movie in tqdm(movies, desc="Attaching spoken languages to movies..."):
         attach_helper_nodes(
             graph,
             movie,
@@ -109,20 +101,16 @@ def insert_movies_spoken_languages(graph: Graph, movies_json, movies_ids_to_keep
             feature_name="spoken_languages",
             node_label="Language",
         )
-    print("OK")
 
-def insert_movies_keywords(graph: Graph, keywords_json, movies_ids_to_keep):
-    print("Creating keywords nodes...", end="  ")
-    nodes = get_nodes_set(movies_ids_to_keep, keywords_json, feature_name="keywords", feature_key="name")
+def insert_movies_keywords(graph: Graph, keywords_json, movies_imdbIds_to_keep):
+    nodes = get_nodes_set(movies_imdbIds_to_keep, keywords_json, feature_name="keywords", feature_key="name")
     merge_nodes(
         tx=graph.auto(),
         data=nodes,
         merge_key=("Keyword", "name"),
         labels={"Keyword"},
     )
-    print("OK")
-    print("Attaching keywords to movies...", end="  ")
-    for item in keywords_json:
+    for item in tqdm(keywords_json, "Attaching keywords to movies..."):
         movie_id = item["id"]
         keywords = transform_json_feature(item, "keywords")
         movie_node = graph.nodes.match("Movie", id=f"{movie_id}").first()
@@ -132,9 +120,6 @@ def insert_movies_keywords(graph: Graph, keywords_json, movies_ids_to_keep):
                 keyword_node = graph.nodes.match("Keyword", name=keyword["name"]).first()
                 if keyword_node:
                     graph.merge(REL(movie_node, keyword_node))
-                else:
-                    print("Skipping keyword with name:", keyword["name"])
-    print("OK")
 
 def add_fastRP_embeddings(graph: Graph):
     embeddings = [
@@ -171,22 +156,58 @@ def add_fastRP_embeddings(graph: Graph):
         }
     ]
 
-    for embedding in embeddings:
+    for embedding in tqdm(embeddings):
         name = embedding["name"]
         query = embedding["query"]
         add_fastRP_embedding(graph, name, query)
 
-# main method for users and ratings
+# main methods for users and ratings
+
+def insert_movies_links(graph:Graph, links):
+    not_found_movies_counter = 0
+    found_movies_counter = 0
+    for link in tqdm(links, desc="Inserting link ids on movies..."):
+        imdbId_init = link["imdbId"]
+
+        imdbId_with_7_digits='{:0>7}'.format(imdbId_init)
+        imdbId = f'tt{imdbId_with_7_digits}'
+        movie = graph.nodes.match("Movie", imdb_id=imdbId).first()
+        if movie:
+            movie["linkMovieId"] = link["movieId"]
+            graph.push(movie)
+            found_movies_counter += 1
+        else:
+            not_found_movies_counter += 1
+            # print(f"Movie with imdb_id {imdbId} not found.")
+    print("Found movies:    ", found_movies_counter)
+    print("Not Found movies:", not_found_movies_counter)
+
 def insert_users_ratings(graph: Graph, ratings):
-    print("Creating user nodes and ratings edges...", end="  ")
-    for rating in ratings:
-        insert_rating(
+    found_movies_counter = 0
+    not_found_movies_counter = 0
+    for rating in tqdm(ratings, desc="Creating user nodes and ratings edges..."):
+        found = insert_rating(
             graph,
             rating["userId"],
             rating["movieId"],
             rating["rating"],
             rating["timestamp"]
         )
+        if found:
+            found_movies_counter += 1
+        else:
+            not_found_movies_counter += 1
+    print("Found movies ratings:   ", found_movies_counter)
+    print("Not Found movies movies:", not_found_movies_counter)
+
+# some DB cleaner method
+def delete_unrated_movies(graph: Graph):
+    print("Deletting the unrated movies...", end="  ")
+    graph.run("""
+        match (m:Movie)
+        where not (m)-[:RATES]-(:User)
+        detach delete m;
+    """)
     print("OK")
 
 # helpers
@@ -200,9 +221,8 @@ def transform_json_feature(movie, feature_name):
         print(e)
         return []
 
-def create_helper_nodes(movies_ids_to_keep, graph: Graph, movies_json, feature_name, feature_key, merge_key, labels):
-    print(f"Creating {feature_name} nodes...", end="  ")
-    nodes = get_nodes_set(movies_ids_to_keep, movies_json, feature_name, feature_key)
+def create_helper_nodes(movies_imdbIds_to_keep, graph: Graph, movies_json, feature_name, feature_key, merge_key, labels):
+    nodes = get_nodes_set(movies_imdbIds_to_keep, movies_json, feature_name, feature_key)
     if len(nodes):
         merge_nodes(
             tx=graph.auto(),
@@ -210,20 +230,16 @@ def create_helper_nodes(movies_ids_to_keep, graph: Graph, movies_json, feature_n
             merge_key=merge_key,
             labels=labels,
         )
-    print("OK")
 
-def get_nodes_set(movies_ids_to_keep, movies_json, feature_name, feature_key):
+def get_nodes_set(movies_imdbIds_to_keep, movies_json, feature_name, feature_key, desc=""):
     # take into account only the movies that exist in our database
-    nodes_nested = [
-        transform_json_feature(movie, feature_name)
-        for movie in movies_json
-        if keep_movie(movie, movies_ids_to_keep)
-    ]
     nodes_flattened = []
-    for nodes_list in nodes_nested:
-        if isinstance(nodes_list, list):
-            nodes_flattened += nodes_list
-    nodes_dict = { node[feature_key]: node for node in nodes_flattened }
+    for movie in tqdm(movies_json, desc=f"Collecting {feature_name} data..."):
+        if keep_movie(movie, movies_imdbIds_to_keep):
+            nodes_list = transform_json_feature(movie, feature_name)
+            if isinstance(nodes_list, list):
+                nodes_flattened += nodes_list
+    nodes_dict = { node[feature_key]: node for node in tqdm(nodes_flattened, desc=f"Creating {feature_name}...") }
     nodes_unique = nodes_dict.values()
     return nodes_unique
 
@@ -256,7 +272,7 @@ def write_fastRP_projection_embedding(graph, name):
         CALL gds.fastRP.write(
             '{name}',
             {{
-                embeddingDimension: 128,
+                embeddingDimension: 64,
                 writeProperty: '{name}'
             }}
         )    
@@ -271,8 +287,9 @@ def drop_fastRP_projection(graph, name):
     print("OK")
 
 def insert_rating(graph: Graph, userId: int, movieId: int, rating: float, timestamp: int):
-    movie = graph.nodes.match("Movie", id=f"{movieId}").first()
+    movie = graph.nodes.match("Movie", linkMovieId=movieId).first()
     username = generate_username(1)[0]
+
     if movie:
         user = Node("User", id=userId, username=username)
         user.__primarylabel__ = "User"
@@ -280,5 +297,7 @@ def insert_rating(graph: Graph, userId: int, movieId: int, rating: float, timest
         # datetime_ = datetime.datetime.fromtimestamp(timestamp)
         RATES = Relationship.type("RATES")
         graph.merge(RATES(user, movie, rating=rating, datetime=timestamp))
+        return True
     else:
-        print("Skipping rating of movie:", movieId)
+        # print("Skipping rating of movie:", movieId)
+        return False

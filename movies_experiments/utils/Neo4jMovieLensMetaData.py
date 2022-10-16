@@ -24,9 +24,9 @@ from scripts.populate_db import populate_db
 def transform_float_embedding_to_tensor(embedding):
     embedding = np.vstack(embedding).astype(np.float)
     embedding = torch.from_numpy(embedding).to(torch.float)
+    return embedding
 
-
-class Neo4jMovieLens(InMemoryDataset):
+class Neo4jMovieLensMetaData(InMemoryDataset):
 
     url = 'https://files.grouplens.org/datasets/movielens/ml-latest-small.zip'
 
@@ -39,17 +39,24 @@ class Neo4jMovieLens(InMemoryDataset):
         transform: Optional[Callable] = None,
         pre_transform: Optional[Callable] = None,
         model_name: Optional[str] = "all-MiniLM-L6-v2",
+        force_db_restore: bool = False,
         force_pre_process: bool = False,
         use_movies_fastRP: bool = False,
     ):
 
         self.model_name = model_name
 
-        if force_pre_process:
+        if force_db_restore:
             # delete the directory with the downloaded data, to force download and process again
             print(root)
-            shutil.rmtree(root)
-        
+            if os.path.exists(root) and os.path.isdir(root):
+                shutil.rmtree(root)
+
+        elif force_pre_process:
+            dir = os.path.join(root, "processed")
+            if os.path.exists(dir) and os.path.isdir(dir):
+                shutil.rmtree(dir)
+
         self.graph = Graph(
             database_url,
             auth=(database_username, database_password),
@@ -63,8 +70,7 @@ class Neo4jMovieLens(InMemoryDataset):
                 m.overview as overview,
                 m.tagline as tagline,
                 m.fastRP_embedding_companies_countries_languages as fastRP_embedding_companies_countries_languages,
-                m.fastRP_embedding_genres_keywords as fastRP_embedding_genres_keywords,
-
+                m.fastRP_embedding_genres_keywords as fastRP_embedding_genres_keywords
         """
         self.ratings_query = """
             MATCH (u:User)-[r:RATES]-(m:Movie)
@@ -72,7 +78,7 @@ class Neo4jMovieLens(InMemoryDataset):
                 u.id as userId,
                 r.rating as rating,
                 r.datetime as datetime,
-                m.id as movieId;
+                m.id as movieId
         """
         self.movies_df = None
         self.ratings_df = None
@@ -98,6 +104,13 @@ class Neo4jMovieLens(InMemoryDataset):
         return f'data_{self.model_name}.pt'
 
     def store_to_database(self):
+        """
+        * stores all the data to the database
+            * movies with metadata (other as features, other as seperate nodes)
+            * users
+            * ratings
+            * generates and saves some fastRP embeddings for the movies
+        """
         populate_db(self.graph, use_small_dataset=True)
 
     def download(self):
@@ -107,49 +120,53 @@ class Neo4jMovieLens(InMemoryDataset):
         self.store_to_database()
 
     def pre_process_movies_df(self):
-        
+
+        embeddings_list = []
         model = SentenceTransformer(self.model_name)
-        with torch.no_grad():
-            title_emb = model.encode(
-                self.movies_df['title'].values,
-                show_progress_bar=True,
-                convert_to_tensor=True
-            ).cpu()
-            original_title_emb = model.encode(
-                self.movies_df['original_title'].values,
-                show_progress_bar=True,
-                convert_to_tensor=True
-            ).cpu()
-            overview_emb = model.encode(
-                self.movies_df['overview'].values,
-                show_progress_bar=True,
-                convert_to_tensor=True
-            ).cpu()
-            tagline_emb = model.encode(
-                self.movies_df['tagline'].values,
-                show_progress_bar=True,
-                convert_to_tensor=True
-            ).cpu()
 
+        def encode_text_features(feature_names):
+            embeddings = []
+            with torch.no_grad():
+                for feature_name in feature_names:
+                    print(f"Encoding {feature_name}...")
+                    vals = list(map(
+                        lambda val: val if isinstance(val, str) else "",
+                        self.movies_df[feature_name].values
+                    ))
+                    emb = model.encode(
+                        vals,
+                        show_progress_bar=True,
+                        convert_to_tensor=True
+                    ).cpu() 
+                    embeddings.append(emb)
+            return embeddings
         
+        def encode_array_features(feature_names):
+            embeddings = []
+            for feature_name in feature_names:
+                print(f"Encoding {feature_name}...")
+                emb = self.movies_df[feature_name].values
+                emb = transform_float_embedding_to_tensor(emb)
+                embeddings.append(emb)
+            return embeddings
+
+        text_embeddings = encode_text_features([
+            "title",
+            "original_title",
+            "overview",
+            "tagline"
+        ])
+        embeddings_list += text_embeddings
+
         if self.use_movies_fastRP:
-            fastRP_embedding_companies_countries_languages = self.movies_df['fastRP_embedding_companies_countries_languages'].values
-            fastRP_embedding_companies_countries_languages = transform_float_embedding_to_tensor(fastRP_embedding_companies_countries_languages)
-
-            fastRP_embedding_genres_keywords = self.movies_df['fastRP_embedding_genres_keywords'].values
-            fastRP_embedding_genres_keywords = transform_float_embedding_to_tensor(fastRP_embedding_genres_keywords)
-
-            return torch.cat([
-                title_emb, original_title_emb, overview_emb, tagline_emb,
-                fastRP_embedding_companies_countries_languages,
-                fastRP_embedding_genres_keywords,
-            ], dim=-1)
+            fastRP_embeddings = encode_array_features([
+                # "fastRP_embedding_companies_countries_languages",
+                "fastRP_embedding_genres_keywords",
+            ])
+            embeddings_list += fastRP_embeddings
         
-        return torch.cat([
-            title_emb, original_title_emb, overview_emb, tagline_emb,
-        ], dim=-1)
-
-    
+        return torch.cat(embeddings_list, dim=-1)
+        
     def process(self):
         data = HeteroData()
 
