@@ -48,7 +48,7 @@ print("Epochs:", sys.argv[1])
 # Define the grid search space
 
 # 3 combinations
-layer_names = ["SAGE"]
+layer_names = ["GAT"]
 encoder_min_num_layers=10
 encoder_max_num_layers=18
 encoder_num_layers_step=4
