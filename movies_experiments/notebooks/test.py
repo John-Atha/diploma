@@ -41,7 +41,7 @@ print(len(imdb_ids_simple_ids))
 print(len(imdb_ids_simple_ids.difference(imdb_ids_metadata_ids)))
 print(len(imdb_ids_metadata_ids.difference(imdb_ids_simple_ids)))
 
-
+# test
 # users_metadata_ids = set(rated_movies_metadata["userId"].values)
 # rated_movies_simple_ids = set(rated_movies_simple["movieId"].values)
 # users_simple_ids = set(rated_movies_simple["userId"].values)
