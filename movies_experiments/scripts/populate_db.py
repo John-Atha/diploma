@@ -58,8 +58,12 @@ def populate_db(
         )
 
         movies_imdbIds_to_keep = []
+        movies_tmdbIds_to_keep = []
+
         if use_small_dataset: 
             movies_imdbIds_to_keep = [link["imdbId"] for link in links_json]
+            movies_tmdbIds_to_keep = [link["tmdbId"] for link in links_json]
+
         else:
             movies_imdbIds_to_keep = set([movie["imdbId"] for movie in movies_json[:movies_limit]])
 
@@ -69,7 +73,7 @@ def populate_db(
         insert_movies_production_countries(graph, movies_json, movies_imdbIds_to_keep)
         insert_movies_production_companies(graph, movies_json, movies_imdbIds_to_keep)
         insert_movies_spoken_languages(graph, movies_json, movies_imdbIds_to_keep)
-        insert_movies_keywords(graph, keywords_json, movies_imdbIds_to_keep)        
+        insert_movies_keywords(graph, keywords_json, movies_imdbIds_to_keep, movies_tmdbIds_to_keep)        
         if not skip_embeddings_insert:
             add_fastRP_embeddings(graph)
 

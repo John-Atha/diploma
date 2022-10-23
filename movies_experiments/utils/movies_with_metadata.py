@@ -11,6 +11,9 @@ def keep_movie(movie, imdbIds):
     except Exception as e:
         return False
     return imdbId in imdbIds
+
+def keep_movie_by_tmdb_id(movie, tmdbIds):
+    return movie["id"] in tmdbIds
     
 # main methods for movies metadata
 def insert_movies(graph: Graph, movies, ids_to_keep: list):
@@ -102,15 +105,17 @@ def insert_movies_spoken_languages(graph: Graph, movies_json, movies_imdbIds_to_
             node_label="Language",
         )
 
-def insert_movies_keywords(graph: Graph, keywords_json, movies_imdbIds_to_keep):
-    nodes = get_nodes_set(movies_imdbIds_to_keep, keywords_json, feature_name="keywords", feature_key="name")
+def insert_movies_keywords(graph: Graph, keywords_json, movies_imdbIds_to_keep, movies_tmdbIds_to_keep):
+    nodes = get_nodes_set(movies_imdbIds_to_keep, keywords_json, feature_name="keywords", feature_key="name", movies_tmdbIds_to_keep=movies_tmdbIds_to_keep)
+
     merge_nodes(
         tx=graph.auto(),
         data=nodes,
         merge_key=("Keyword", "name"),
         labels={"Keyword"},
     )
-    for item in tqdm(keywords_json, "Attaching keywords to movies..."):
+
+    for item in tqdm(keywords_json, desc="Attaching keywords to movies..."):
         movie_id = item["id"]
         keywords = transform_json_feature(item, "keywords")
         movie_node = graph.nodes.match("Movie", id=f"{movie_id}").first()
@@ -231,11 +236,12 @@ def create_helper_nodes(movies_imdbIds_to_keep, graph: Graph, movies_json, featu
             labels=labels,
         )
 
-def get_nodes_set(movies_imdbIds_to_keep, movies_json, feature_name, feature_key, desc=""):
+def get_nodes_set(movies_imdbIds_to_keep, movies_json, feature_name, feature_key, movies_tmdbIds_to_keep=[]):
     # take into account only the movies that exist in our database
     nodes_flattened = []
     for movie in tqdm(movies_json, desc=f"Collecting {feature_name} data..."):
-        if keep_movie(movie, movies_imdbIds_to_keep):
+        keep = keep_movie_by_tmdb_id(movie, movies_tmdbIds_to_keep) if movies_tmdbIds_to_keep else keep_movie(movie, movies_imdbIds_to_keep)
+        if keep:
             nodes_list = transform_json_feature(movie, feature_name)
             if isinstance(nodes_list, list):
                 nodes_flattened += nodes_list
@@ -272,7 +278,7 @@ def write_fastRP_projection_embedding(graph, name):
         CALL gds.fastRP.write(
             '{name}',
             {{
-                embeddingDimension: 64,
+                embeddingDimension: 32,
                 writeProperty: '{name}'
             }}
         )    
