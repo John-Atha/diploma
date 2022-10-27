@@ -18,27 +18,27 @@ print("Epochs:", sys.argv[1])
 # Define the grid search space
 
 # 2 combinations
-layer_names = ["GAT"]
+layer_names = ["SAGE", "GAT"]
 # [min, max, step]
 encoder_num_layers = [6, 6, 1]
 skip_connections = [True]
 # [min, max, step]
 decoder_num_layers = [8, 8, 1]
-hidden_channels = [16, 32]
+hidden_channels = [8, 16, 32]
 # 1 combination
 epochs = int(sys.argv[1])
 logging_step = 10
 lrs = [0.012]
 # 2 combinations
 features_config=[
+    # {
+    #     "text_features": ["title", "original_title"],
+    #     "list_features": ["genres"],
+    #     "use_movies_fastRP": False,
+    #     "fastRP_features": [],
+    # },
     {
-        "text_features": ["title", "original_title"],
-        "list_features": ["genres"],
-        "use_movies_fastRP": False,
-        "fastRP_features": [],
-    },
-    {
-        "text_features": ["title", "original_title", "overview"],
+        "text_features": ["title", "original_title", "overview", "tagline"],
         "list_features": ["genres"],
         "use_movies_fastRP": False,
         "fastRP_features": [],
