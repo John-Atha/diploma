@@ -71,7 +71,7 @@ class EdgeDecoder(torch.nn.Module):
         self.layers = torch.nn.ModuleList()
 
         self.layers.append(LazyLinear(self.hidden_channels))
-        for i in range(self.num_layers-2):
+        for _ in range(self.num_layers-2):
             self.layers.append(
                 Linear(self.hidden_channels, self.hidden_channels))
         self.layers.append(Linear(self.hidden_channels, 1))

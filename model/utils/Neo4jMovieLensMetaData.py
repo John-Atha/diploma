@@ -52,7 +52,7 @@ class Neo4jMovieLensMetaData(InMemoryDataset):
         self.model_name = model_name
 
         if force_db_restore:
-            # delete the directory with the downloaded data, to force download and process again
+            # delete the directory with the downloaded data, to force download and populate_db again
             print(root)
             if os.path.exists(root) and os.path.isdir(root):
                 shutil.rmtree(root)
