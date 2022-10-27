@@ -1,2 +1,3 @@
 */*notebooks*/** linguist-vendored
 */*visualizations*/** linguist-vendored
+*/*/**.ipynb** linguist-vendored
