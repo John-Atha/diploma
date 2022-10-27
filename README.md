@@ -10,8 +10,8 @@
 > * Steps (assuming that [Neo4j Desktop](https://neo4j.com/download/) is installed):
 >     * create a new local DMBS with password: `admin`
 >     * add the Neo4j [Graph Data Science Library](https://neo4j.com/docs/graph-data-science/current/) plugin to the DBMS
->     * download and extract the (Movies Dataset) under the directory `/movies_experiments/movies_with_metadata`
->     * run the script `/movies_experiments/scripts/popylate_db.py`
+>     * download and extract the (Movies Dataset) under the directory `/model/movies_with_metadata`
+>     * run the script `/model/scripts/popylate_db.py`
 >       * The following graph will be built:
 >           * nodes:
 >               * Movie
