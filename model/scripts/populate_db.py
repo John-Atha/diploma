@@ -11,7 +11,8 @@ from utils.movies_with_metadata import \
     insert_movies, insert_movies_genres, \
     insert_movies_production_countries, insert_movies_production_companies, \
     insert_movies_spoken_languages, add_fastRP_embeddings, \
-    insert_movies_keywords, insert_users_ratings, insert_movies_links, delete_unrated_movies
+    insert_movies_keywords, insert_users_ratings, insert_movies_links, delete_unrated_movies, \
+    insert_movies_credits
 
 def populate_db(
     graph,
@@ -50,6 +51,12 @@ def populate_db(
                 parent_dir_name=data_dir,
             )
         )
+        credits_json = df_to_json(
+            read_csv(
+                filename="credits",
+                parent_dir_name=data_dir,
+            )
+        )
         links_json = df_to_json(
             read_csv(
                 filename="links_small" if use_small_dataset else "links",
@@ -74,6 +81,7 @@ def populate_db(
         insert_movies_production_companies(graph, movies_json, movies_imdbIds_to_keep)
         insert_movies_spoken_languages(graph, movies_json, movies_imdbIds_to_keep)
         insert_movies_keywords(graph, keywords_json, movies_imdbIds_to_keep, movies_tmdbIds_to_keep)        
+        insert_movies_credits(graph, credits_json, movies_tmdbIds_to_keep)
         if not skip_embeddings_insert:
             add_fastRP_embeddings(graph)
 
@@ -82,7 +90,7 @@ def populate_db(
         insert_users_ratings(graph, ratings_json)
 
         # delete movies and users without rating edges
-        delete_unrated_movies(graph)
+        # delete_unrated_movies(graph)
     
     print("Completed!")
 
