@@ -78,7 +78,9 @@ class EdgeDecoder(torch.nn.Module):
 
     def forward(self, z_dict, edge_label_index):
         row, col = edge_label_index
-        z = torch.cat([z_dict['user'][row], z_dict['movie'][col]], dim=-1)
+        user_embeddings = z_dict['user'][row]
+        movie_embeddings = z_dict['movie'][col]
+        z = torch.cat([user_embeddings, movie_embeddings], dim=-1)
         for i in range(self.num_layers-1):
             z = self.layers[i](z).relu()
         z = self.layers[self.num_layers-1](z)

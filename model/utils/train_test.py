@@ -26,11 +26,12 @@ def train_test(model, epochs, train_data, test_data, val_data, logging_step, lr=
         target = train_data['user', 'movie'].edge_label
         
         # if log:
-        #     plt.figure(epoch, figsize=(30, 10))
-        #     plt.plot(target.detach()[:200])
-        #     plt.plot(pred.detach()[:200])
-        #     plt.legend(["target", "predictions"])
-        #     plt.show()
+        #  print(f"FOR TRAIN LOSS:\npredicted: {len(pred)}, target: {len(target)}")
+        #  plt.figure(epoch, figsize=(30, 10))
+        #  plt.plot(target.detach()[:200])
+        #  plt.plot(pred.detach()[:200])
+        #  plt.legend(["target", "predictions"])
+        #  plt.show()
 
         loss = weighted_mse_loss(pred, target, weight)
         loss.backward()
@@ -46,6 +47,7 @@ def train_test(model, epochs, train_data, test_data, val_data, logging_step, lr=
         target = data['user', 'movie'].edge_label.float()
 
         # if log:
+        #     print(f"FOR TEST EVAL:\npredicted: {len(pred)}, target: {len(target)}")
         #     print(type(pred), type(target))
         #     plt.figure(epoch, figsize=(30, 10))
         #     plt.plot(target[:200])
@@ -61,7 +63,7 @@ def train_test(model, epochs, train_data, test_data, val_data, logging_step, lr=
         loss = train(log=not(epoch%20))
         train_rmse = test(train_data)
         val_rmse = test(val_data)
-        test_rmse = test(test_data)
+        test_rmse = test(test_data, log=not(epoch%20))
         losses.append((loss, train_rmse, val_rmse, test_rmse))
         if (logging_step and not epoch%logging_step) or (not logging_step):
             print(f'Epoch: {epoch:03d}, Loss: {loss:.4f}, Train: {train_rmse:.4f}, '
