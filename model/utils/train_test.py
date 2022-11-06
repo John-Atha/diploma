@@ -1,6 +1,7 @@
 import torch
 import torch.nn.functional as F
 import matplotlib.pyplot as plt
+from utils.EarlyStopper import EarlyStopper
 
 def train_test(model, epochs, train_data, test_data, val_data, logging_step, lr=0.01):
 
@@ -58,6 +59,7 @@ def train_test(model, epochs, train_data, test_data, val_data, logging_step, lr=
         rmse = F.mse_loss(pred, target).sqrt()
         return float(rmse)
     
+    early_stopper = EarlyStopper(patience=100, min_delta=0.1)
     losses = []
     for epoch in range(1, epochs+1):
         loss = train(log=not(epoch%20))
@@ -68,4 +70,10 @@ def train_test(model, epochs, train_data, test_data, val_data, logging_step, lr=
         if (logging_step and not epoch%logging_step) or (not logging_step):
             print(f'Epoch: {epoch:03d}, Loss: {loss:.4f}, Train: {train_rmse:.4f}, '
                 f'Val: {val_rmse:.4f}, Test: {test_rmse:.4f}')
+        if epoch > 50 and early_stopper.early_stop(val_rmse):
+            print("Early stopping...")
+            break
+    
+    last_losses = losses[-1]
+    losses = losses + [last_losses] * (epochs - len(losses))
     return losses
