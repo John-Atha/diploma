@@ -1,0 +1,37 @@
+{
+    "keywords": {
+        "node_name": "Keyword",
+        "merge_key": "id",
+        "rel_name": "HAS_KEYWORD"
+    },
+    "genres": {
+        "node_name": "Genre",
+        "merge_key": "id",
+        "rel_name": "BELONGS_TO"
+    },
+    "production_companies": {
+        "node_name": "ProductionCompany",
+        "merge_key": "id",
+        "rel_name": "PRODUCED_BY"
+    },
+    "production_countries": {
+        "node_name": "ProductionCountry",
+        "merge_key": "iso_3166_1",
+        "rel_name": "PRODUCED_IN"
+    },
+    "spoken_laguages": {
+        "node_name": "Language",
+        "merge_key": "iso_639_1",
+        "rel_name": "SPEAKING"
+    },
+    "cast": {
+        "node_name": "Person",
+        "merge_key": "id",
+        "rel_name": "HAS_CAST"
+    },
+    "crew": {
+        "node_name": "Person",
+        "merge_key": "id",
+        "rel_name": "HAS_CREW"
+    }
+}

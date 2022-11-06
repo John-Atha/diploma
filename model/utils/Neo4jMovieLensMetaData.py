@@ -1,3 +1,4 @@
+from collections import defaultdict
 import os
 import os.path as osp
 from typing import Callable, List, Optional
@@ -8,6 +9,7 @@ import torch
 import pandas as pd
 import shutil
 import ast
+import json
 from sentence_transformers import SentenceTransformer
 import numpy as np
 from torch_geometric.data import (
@@ -23,10 +25,14 @@ from scripts.populate_db import populate_db
 
 
 def transform_float_embedding_to_tensor(embedding):
-    embedding = np.array(list(map(lambda emb: emb[0], embedding)))
+    embedding = np.array(list(map(lambda emb: emb, embedding)))
     embedding = np.vstack(embedding).astype(np.float)
     embedding = torch.from_numpy(embedding).to(torch.float)
     return embedding
+
+graph_mappings_file = open(os.path.join("..", "utils", "mappings.json"))
+graph_mappings = json.load(graph_mappings_file)
+graph_mappings_file.close()
 
 class Neo4jMovieLensMetaData(InMemoryDataset):
 
@@ -38,15 +44,15 @@ class Neo4jMovieLensMetaData(InMemoryDataset):
         database_url: str,
         database_username: str,
         database_password: str,
+        text_features: list,
+        fastRP_features: list,
+        list_features: list,
+        numeric_features: list,
         transform: Optional[Callable] = None,
         pre_transform: Optional[Callable] = None,
         model_name: Optional[str] = "all-MiniLM-L6-v2",
         force_db_restore: bool = False,
         force_pre_process: bool = False,
-        use_movies_fastRP: bool = False,
-        text_features: list = ["title", "original_title", "overview", "tagline"],
-        fastRP_features: list = ["fastRP_embedding_companies_countries_languages", "fastRP_embedding_genres_keywords"],
-        list_features: list = ["genres"],
     ):
 
         self.model_name = model_name
@@ -75,6 +81,16 @@ class Neo4jMovieLensMetaData(InMemoryDataset):
                 m.genres as genres,
                 m.overview as overview,
                 m.tagline as tagline,
+                m.vote_average as vote_average,
+                m.vote_count as vote_count,
+                m.popularity as popularity,
+                m.fastRP_genres as fastRP_genres,
+                m.fastRP_keywords as fastRP_keywords,
+                m.fastRP_production_countries as fastRP_production_countries,
+                m.fastRP_production_companies as fastRP_production_companies,
+                m.fastPR_spoken_languages as fastPR_spoken_languages,
+                m.fastRP_crew as fastRP_crew,
+                m.fastPR_cast as fastRP_cast,
                 m.fastRP_embedding_companies_countries_languages as fastRP_embedding_companies_countries_languages,
                 m.fastRP_embedding_genres_keywords as fastRP_embedding_genres_keywords
         """
@@ -88,10 +104,10 @@ class Neo4jMovieLensMetaData(InMemoryDataset):
         """
         self.movies_df = None
         self.ratings_df = None
-        self.use_movies_fastRP = use_movies_fastRP
         self.text_features = text_features
-        self.fastRP_features = fastRP_features,
+        self.fastRP_features = fastRP_features
         self.list_features = list_features
+        self.numeric_features = numeric_features
 
         super().__init__(root, transform, pre_transform)
         self.data, self.slices = torch.load(self.processed_paths[0])
@@ -132,6 +148,12 @@ class Neo4jMovieLensMetaData(InMemoryDataset):
 
         model = SentenceTransformer(self.model_name)
 
+        def encode_numeric_features(feature_names):
+            print(f"Encoding {feature_names}...")
+            embeddings = self.movies_df[feature_names].values
+            embeddings_tensor = torch.from_numpy(embeddings).to(torch.float)
+            return [embeddings_tensor]
+
         def encode_text_features(feature_names):
             embeddings = []
             with torch.no_grad():
@@ -161,9 +183,31 @@ class Neo4jMovieLensMetaData(InMemoryDataset):
         def encode_list_str_features(feature_names):
             embeddings = []
             for feature_name in feature_names:
-                names = self.movies_df[feature_name] \
+                print(f"Encoding {feature_name}...")
+                rel_node_names = graph_mappings[feature_name]
+                relationship_name = rel_node_names["rel_name"]
+                node_name = rel_node_names["node_name"]
+                merge_key = rel_node_names["merge_key"]
+                raw_data = self.graph \
+                    .run(f"""
+                        match (m:Movie)
+                        optional match (m)-[r:{relationship_name}]-(n:{node_name})
+                        return m["id"] as movieId, n as {feature_name}
+                    """) \
+                    .data()
+                groupped_data = defaultdict(list)
+                for datum in raw_data:
+                    movieId, feature = datum["movieId"], datum[feature_name]
+                    groupped_data[movieId].append(dict(feature) if feature else {})
+                df = pd.DataFrame(groupped_data.items(), columns=["movieId", feature_name])   
+                names = df[feature_name] \
                     .map(lambda datum: \
-                        "|".join(map(lambda xs: xs["name"], ast.literal_eval(datum)))
+                        "|".join(
+                            map(
+                                lambda xs: str(xs[merge_key]) if xs else "",
+                                ast.literal_eval(datum) if isinstance(datum, str) else datum
+                            )
+                        )
                     )
                 names = names.str.get_dummies('|').values
                 embs = torch.from_numpy(names).to(torch.float)
@@ -172,18 +216,23 @@ class Neo4jMovieLensMetaData(InMemoryDataset):
 
         embeddings_list = []
 
-        text_embeddings = encode_text_features(self.text_features)
-        embeddings_list += text_embeddings
+        if self.text_features:
+            text_embeddings = encode_text_features(self.text_features)
+            embeddings_list += text_embeddings
         
-        if self.use_movies_fastRP and self.fastRP_features:
+        if self.fastRP_features:
             fastRP_embeddings = encode_fastRP_features(self.fastRP_features)
             embeddings_list += fastRP_embeddings
         
         if self.list_features:
             list_str_embeddings = encode_list_str_features(self.list_features)
             embeddings_list += list_str_embeddings
+        
+        if self.numeric_features:
+            numeric_embeddings = encode_numeric_features(self.numeric_features)
+            embeddings_list += numeric_embeddings
 
-        print([emb.shape for emb in embeddings_list])
+        print([emb.shape for emb in embeddings_list[:100]])
         return torch.cat(embeddings_list, dim=-1)
         
     def process(self):

@@ -15,8 +15,8 @@ def grid_search_data(
     features_config=[{
         "text_features": ["title", "original_title"],
         "list_features": ["genres"],
-        "use_movies_fastRP": False,
         "fastRP_features": ["fastRP_embedding_genres_keywords"],
+        "numeric_features": ["vote_average", "vote_count"]
     }],
     lrs=[0.01],
     logging_step=1,
@@ -27,8 +27,8 @@ def grid_search_data(
     for feature_config in features_config:
         text_features = feature_config.get("text_features") or []
         list_features = feature_config.get("list_features") or []
-        use_movies_fastRP = bool(feature_config.get("use_movies_fastRP"))
         fastRP_features = feature_config.get("fastRP_features") or []
+        numeric_features = ["vote_average", "vote_count"]
 
         path = osp.join(osp.dirname(osp.abspath('')), '../../data/MovieLensNeo4jMetaData')
         dataset = Neo4jMovieLensMetaData(
@@ -39,10 +39,10 @@ def grid_search_data(
             database_password="admin",
             force_pre_process=True,
             force_db_restore=False,
-            use_movies_fastRP=use_movies_fastRP,
             text_features=text_features,
             list_features=list_features,
             fastRP_features=fastRP_features,
+            numeric_features=numeric_features,
         )
         data = dataset[0].to(device)
         # Add user node features for message passing:
@@ -76,6 +76,7 @@ def grid_search_data(
                                     tuple(text_features),
                                     tuple(list_features),
                                     tuple(fastRP_features),
+                                    tuple(numeric_features),
                                 )
                                 print("-->>", experiment_config)
                                 model = Model(

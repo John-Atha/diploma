@@ -1,9 +1,13 @@
 from shutil import ExecError
 from py2neo import Graph, Node, Relationship
 from py2neo.bulk import merge_nodes, merge_relationships
-import ast
+import ast, os, json
 from random_username.generate import generate_username
 from tqdm import tqdm
+
+graph_mappings_file = open(os.path.join("..", "utils", "mappings.json"))
+graph_mappings = json.load(graph_mappings_file)
+graph_mappings_file.close()
 
 def keep_movie(movie, imdbIds):
     try:
@@ -209,40 +213,35 @@ def insert_movies_credits(graph: Graph, credits_json, movies_tmdbIds_to_keep):
 
 
 def add_fastRP_embeddings(graph: Graph):
-    embeddings = [
-        {
-            "name": "fastRP_embedding_genres_keywords",
-            "query": """
-                ['Movie', 'Genre', 'Keyword'],
-                {
-                    BELONGS_TO: {
-                        orientation: 'UNDIRECTED'
-                    },
-                    HAS_KEYWORD: {
-                        orientation: 'UNDIRECTED'
-                    }
-                }
-            """
-        },
-        {
-            "name": "fastRP_embedding_companies_countries_languages",
-            "query": """
-                ['Movie', 'ProductionCompany', 'ProductionCountry', 'Language'],
-                {
-                    PRODUCED_BY: {
-                        orientation: 'UNDIRECTED'
-                    },
-                    PRODUCED_IN: {
-                        orientation: 'UNDIRECTED'
-                    },
-                    SPEAKING: {
-                        orientation: 'UNDIRECTED'
-                    }
-                }
-            """
-        }
+
+    relationships_to_be_embedded = [
+        "genres",
+        "keywords",
+        "production_companies",
+        "production_countries",
+        "spoken_laguages",
+        "cast",
+        "crew",
     ]
 
+    embeddings = []
+    for feature_name in relationships_to_be_embedded:
+        rel_node_names = graph_mappings[feature_name]
+        relationship_name = rel_node_names["rel_name"]
+        node_name = rel_node_names["node_name"]
+        embedding = {
+            "name": f"fastRP_{feature_name}",
+            "query": f"""
+                ['Movie', '{node_name}'],
+                {{
+                    {relationship_name}: {{
+                        orientation: 'UNDIRECTED'
+                    }}
+                }}
+            """
+        }
+        embeddings.append(embedding)
+        
     for embedding in tqdm(embeddings):
         name = embedding["name"]
         query = embedding["query"]
