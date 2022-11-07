@@ -11,13 +11,8 @@ def grid_search_data(
     encoder_nums_layers,
     decoder_nums_layers,
     epochs,
+    features_config,
     hidden_channels=[16, 32],
-    features_config=[{
-        "text_features": ["title", "original_title"],
-        "list_features": ["genres"],
-        "fastRP_features": ["fastRP_embedding_genres_keywords"],
-        "numeric_features": ["vote_average", "vote_count"]
-    }],
     lrs=[0.01],
     logging_step=1,
     skip_connections=[True],
@@ -28,7 +23,7 @@ def grid_search_data(
         text_features = feature_config.get("text_features") or []
         list_features = feature_config.get("list_features") or []
         fastRP_features = feature_config.get("fastRP_features") or []
-        numeric_features = ["vote_average", "vote_count"]
+        numeric_features = feature_config.get("numeric_features") or []
 
         path = osp.join(osp.dirname(osp.abspath('')), '../../data/MovieLensNeo4jMetaData')
         dataset = Neo4jMovieLensMetaData(
