@@ -25,10 +25,12 @@ from scripts.populate_db import populate_db
 
 
 def transform_float_embedding_to_tensor(embedding):
-    embedding = np.array(list(map(lambda emb: emb, embedding)))
-    embedding = np.vstack(embedding).astype(np.float)
-    embedding = torch.from_numpy(embedding).to(torch.float)
-    return embedding
+    embeddings = [
+        torch.from_numpy(np.array(emb)).to(torch.float)
+        for emb in embedding
+    ]
+    embeddings = torch.stack(embeddings)
+    return embeddings
 
 graph_mappings_file = open(os.path.join("..", "utils", "mappings.json"))
 graph_mappings = json.load(graph_mappings_file)
@@ -88,9 +90,9 @@ class Neo4jMovieLensMetaData(InMemoryDataset):
                 m.fastRP_keywords as fastRP_keywords,
                 m.fastRP_production_countries as fastRP_production_countries,
                 m.fastRP_production_companies as fastRP_production_companies,
-                m.fastPR_spoken_languages as fastPR_spoken_languages,
+                m.fastRP_spoken_languages as fastPR_spoken_languages,
                 m.fastRP_crew as fastRP_crew,
-                m.fastPR_cast as fastRP_cast,
+                m.fastRP_cast as fastRP_cast,
                 m.fastRP_embedding_companies_countries_languages as fastRP_embedding_companies_countries_languages,
                 m.fastRP_embedding_genres_keywords as fastRP_embedding_genres_keywords
         """
@@ -232,7 +234,7 @@ class Neo4jMovieLensMetaData(InMemoryDataset):
             numeric_embeddings = encode_numeric_features(self.numeric_features)
             embeddings_list += numeric_embeddings
 
-        print([emb.shape for emb in embeddings_list[:100]])
+        print([emb.shape for emb in embeddings_list])
         return torch.cat(embeddings_list, dim=-1)
         
     def process(self):

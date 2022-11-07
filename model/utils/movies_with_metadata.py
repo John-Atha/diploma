@@ -277,6 +277,7 @@ def insert_users_ratings(graph: Graph, ratings):
         }
         for rating in ratings
     ]
+    print("Creating users nodes...")
     merge_nodes(
         tx=graph.auto(),
         data=users,
@@ -285,13 +286,13 @@ def insert_users_ratings(graph: Graph, ratings):
     )
 
     relationships_data = []
-    for rating in tqdm(ratings, desc="Creating user nodes and ratings edges..."):
+    for rating in tqdm(ratings, desc="Creating ratings edges..."):
         rel_data = {
             "rating": rating["rating"],
             "datetime": rating["timestamp"],
         }
         relationships_data.append((
-            str(rating["movieId"]),
+            int(rating["movieId"]),
             rel_data,
             rating["userId"],
         ))
@@ -300,7 +301,7 @@ def insert_users_ratings(graph: Graph, ratings):
         tx=graph.auto(),
         data=relationships_data,
         merge_key="RATES",
-        start_node_key=("Movie", "id"),
+        start_node_key=("Movie", "linkMovieId"),
         end_node_key=("User", "id")
     )
 
