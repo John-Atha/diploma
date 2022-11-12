@@ -1,8 +1,9 @@
 [
     {
-        "filename": "GNN_types",
-        "layer_names": ["SAGE", "GAT", "GraphConv"],
+        "filename": "GNN_types2_",
+        "layer_names": ["SAGE", "GAT", "GraphConv", "GIN"],
         "encoder_nums_layers": [6, 6, 1],
+        "encoder_aggregations": [["mean"]],
         "skip_connections": [1],
         "decoder_nums_layers": [8, 8, 1],
         "hidden_channels": [16],
@@ -11,7 +12,61 @@
             {
                 "text_features": ["title", "tagline", "overview"],
                 "list_features": [],
-                "fastRP_features": ["fastRP_genres", "fastRP_keywords"],
+                "fastRP_features": ["fastRP_genres", "fastRP_keywords", "fastRP_cast", "fastRP_crew"],
+                "numeric_features": ["vote_average", "vote_count"]
+            }
+        ]
+    },
+    {
+        "filename": "GNN32_types_",
+        "layer_names": ["SAGE", "GAT", "GraphConv", "GIN"],
+        "encoder_nums_layers": [6, 6, 1],
+        "encoder_aggregations": [["mean"]],
+        "skip_connections": [1],
+        "decoder_nums_layers": [8, 8, 1],
+        "hidden_channels": [32],
+        "lrs": [0.012],
+        "features_config": [
+            {
+                "text_features": ["title", "tagline", "overview"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_genres", "fastRP_keywords", "fastRP_cast", "fastRP_crew"],
+                "numeric_features": ["vote_average", "vote_count"]
+            }
+        ]
+    },
+    {
+        "filename": "GNN64_types_",
+        "layer_names": ["SAGE", "GAT", "GraphConv", "GIN"],
+        "encoder_nums_layers": [6, 6, 1],
+        "encoder_aggregations": [["mean"]],
+        "skip_connections": [1],
+        "decoder_nums_layers": [8, 8, 1],
+        "hidden_channels": [64],
+        "lrs": [0.012],
+        "features_config": [
+            {
+                "text_features": ["title", "tagline", "overview"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_genres", "fastRP_keywords", "fastRP_cast", "fastRP_crew"],
+                "numeric_features": ["vote_average", "vote_count"]
+            }
+        ]
+    },
+    {
+        "filename": "GNN32_types_optimized_dataset_",
+        "layer_names": ["SAGE", "GAT", "GraphConv", "GIN"],
+        "encoder_nums_layers": [6, 6, 1],
+        "encoder_aggregations": [["mean"]],
+        "skip_connections": [1],
+        "decoder_nums_layers": [8, 8, 1],
+        "hidden_channels": [32],
+        "lrs": [0.012],
+        "features_config": [
+            {
+                "text_features": ["title", "tagline"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_genres", "fastRP_keywords", "fastRP_cast", "fastRP_crew"],
                 "numeric_features": ["vote_average", "vote_count"]
             }
         ]
@@ -69,6 +124,53 @@
         "decoder_nums_layers": [8, 8, 1],
         "hidden_channels": [8],
         "lrs": [0.012],
+        "features_config": [
+            {
+                "text_features": ["title"],
+                "list_features": [],
+                "fastRP_features": [],
+                "numeric_features": []
+            },
+            {
+                "text_features": ["title", "tagline"],
+                "list_features": [],
+                "fastRP_features": [],
+                "numeric_features": []
+            },
+            {
+                "text_features": ["title", "tagline"],
+                "list_features": [],
+                "fastRP_features": [],
+                "numeric_features": ["vote_count", "vote_average"]
+            },
+            {
+                "text_features": ["title", "tagline"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_genres", "fastRP_keywords"],
+                "numeric_features": ["vote_average", "vote_count"]
+            },
+            {
+                "text_features": ["title", "tagline"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_genres", "fastRP_keywords", "fastRP_cast", "fastRP_crew"],
+                "numeric_features": ["vote_average", "vote_count"]
+            },
+            {
+                "text_features": ["title", "tagline", "overview"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_genres", "fastRP_keywords", "fastRP_cast", "fastRP_crew"],
+                "numeric_features": ["vote_average", "vote_count"]
+            }
+        ]
+    },
+    {
+        "filename": "SAGE32_metadata_combinations_",
+        "layer_names": ["SAGE"],
+        "encoder_nums_layers": [6, 6, 1],
+        "decoder_nums_layers": [8, 8, 1],
+        "hidden_channels": [32],
+        "lrs": [0.012],
+        "encoder_aggregations": [["mean"]],
         "features_config": [
             {
                 "text_features": ["title"],
@@ -194,6 +296,233 @@
             },
             {
                 "text_features": ["title", "tagline", "overview"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_genres", "fastRP_keywords", "fastRP_cast", "fastRP_crew"],
+                "numeric_features": ["vote_average", "vote_count"]
+            }
+        ]
+    },
+    {
+        "filename": "GIN8_metadata_combinations_",
+        "layer_names": ["GIN"],
+        "encoder_nums_layers": [6, 6, 1],
+        "encoder_aggregations": [["mean"]],
+        "decoder_nums_layers": [8, 8, 1],
+        "hidden_channels": [8],
+        "lrs": [0.012],
+        "features_config": [
+            {
+                "text_features": ["title"],
+                "list_features": [],
+                "fastRP_features": [],
+                "numeric_features": []
+            },
+            {
+                "text_features": ["title", "tagline"],
+                "list_features": [],
+                "fastRP_features": [],
+                "numeric_features": []
+            },
+            {
+                "text_features": ["title", "tagline"],
+                "list_features": [],
+                "fastRP_features": [],
+                "numeric_features": ["vote_count", "vote_average"]
+            },
+            {
+                "text_features": ["title", "tagline"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_genres", "fastRP_keywords"],
+                "numeric_features": ["vote_average", "vote_count"]
+            },
+            {
+                "text_features": ["title", "tagline"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_genres", "fastRP_keywords", "fastRP_cast", "fastRP_crew"],
+                "numeric_features": ["vote_average", "vote_count"]
+            },
+            {
+                "text_features": ["title", "tagline", "overview"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_genres", "fastRP_keywords", "fastRP_cast", "fastRP_crew"],
+                "numeric_features": ["vote_average", "vote_count"]
+            }
+        ]
+    },
+    {
+        "filename": "GIN16_metadata_combinations_",
+        "layer_names": ["GIN"],
+        "encoder_nums_layers": [6, 6, 1],
+        "encoder_aggregations": [["mean"]],
+        "decoder_nums_layers": [8, 8, 1],
+        "hidden_channels": [16],
+        "lrs": [0.012],
+        "features_config": [
+            {
+                "text_features": ["title"],
+                "list_features": [],
+                "fastRP_features": [],
+                "numeric_features": []
+            },
+            {
+                "text_features": ["title", "tagline"],
+                "list_features": [],
+                "fastRP_features": [],
+                "numeric_features": []
+            },
+            {
+                "text_features": ["title", "tagline"],
+                "list_features": [],
+                "fastRP_features": [],
+                "numeric_features": ["vote_count", "vote_average"]
+            },
+            {
+                "text_features": ["title", "tagline"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_genres", "fastRP_keywords"],
+                "numeric_features": ["vote_average", "vote_count"]
+            },
+            {
+                "text_features": ["title", "tagline"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_genres", "fastRP_keywords", "fastRP_cast", "fastRP_crew"],
+                "numeric_features": ["vote_average", "vote_count"]
+            },
+            {
+                "text_features": ["title", "tagline", "overview"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_genres", "fastRP_keywords", "fastRP_cast", "fastRP_crew"],
+                "numeric_features": ["vote_average", "vote_count"]
+            }
+        ]
+    },
+    {
+        "filename": "GIN32_metadata_combinations_",
+        "layer_names": ["GIN"],
+        "encoder_nums_layers": [6, 6, 1],
+        "encoder_aggregations": [["mean"]],
+        "decoder_nums_layers": [8, 8, 1],
+        "hidden_channels": [32],
+        "lrs": [0.012],
+        "features_config": [
+            {
+                "text_features": ["title"],
+                "list_features": [],
+                "fastRP_features": [],
+                "numeric_features": []
+            },
+            {
+                "text_features": ["title", "tagline"],
+                "list_features": [],
+                "fastRP_features": [],
+                "numeric_features": []
+            },
+            {
+                "text_features": ["title", "tagline"],
+                "list_features": [],
+                "fastRP_features": [],
+                "numeric_features": ["vote_count", "vote_average"]
+            },
+            {
+                "text_features": ["title", "tagline"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_genres", "fastRP_keywords"],
+                "numeric_features": ["vote_average", "vote_count"]
+            },
+            {
+                "text_features": ["title", "tagline"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_genres", "fastRP_keywords", "fastRP_cast", "fastRP_crew"],
+                "numeric_features": ["vote_average", "vote_count"]
+            },
+            {
+                "text_features": ["title", "tagline", "overview"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_genres", "fastRP_keywords", "fastRP_cast", "fastRP_crew"],
+                "numeric_features": ["vote_average", "vote_count"]
+            }
+        ]
+    },
+    {
+        "filename": "SAGE_multiple_aggregators",
+        "layer_names": ["SAGE"],
+        "encoder_nums_layers": [6, 6, 1],
+        "encoder_aggregations": [["mean"], ["max"], ["mean", "max"], ["max", "mean"]],
+        "decoder_nums_layers": [8, 8, 1],
+        "hidden_channels": [16],
+        "lrs": [0.012],
+        "features_config": [
+            {
+                "text_features": ["title", "tagline", "overview"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_genres", "fastRP_keywords", "fastRP_cast", "fastRP_crew"],
+                "numeric_features": ["vote_average", "vote_count"]
+            }
+        ]
+    },
+    {
+        "filename": "SAGE_32_multiple_basic_aggregators_",
+        "layer_names": ["SAGE"],
+        "encoder_nums_layers": [6, 6, 1],
+        "encoder_aggregations": [["mean"], ["max"], ["mean", "max"], ["max", "mean"]],
+        "decoder_nums_layers": [8, 8, 1],
+        "hidden_channels": [32],
+        "lrs": [0.012],
+        "features_config": [
+            {
+                "text_features": ["title", "tagline", "overview"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_genres", "fastRP_keywords", "fastRP_cast", "fastRP_crew"],
+                "numeric_features": ["vote_average", "vote_count"]
+            }
+        ]
+    },
+    {
+        "filename": "SAGE_32_multiple_aggregators_2_",
+        "layer_names": ["SAGE"],
+        "encoder_nums_layers": [6, 6, 1],
+        "encoder_aggregations": [["std"], ["softmax"], ["std"]],
+        "decoder_nums_layers": [8, 8, 1],
+        "hidden_channels": [32],
+        "lrs": [0.012],
+        "features_config": [
+            {
+                "text_features": ["title", "tagline", "overview"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_genres", "fastRP_keywords", "fastRP_cast", "fastRP_crew"],
+                "numeric_features": ["vote_average", "vote_count"]
+            }
+        ]
+    },
+    {
+        "filename": "SAGE_32_multiple_aggregators_3_",
+        "layer_names": ["SAGE"],
+        "encoder_nums_layers": [6, 6, 1],
+        "encoder_aggregations": [["mean"], ["quantile"], ["powermean"]],
+        "decoder_nums_layers": [8, 8, 1],
+        "hidden_channels": [32],
+        "lrs": [0.012],
+        "features_config": [
+            {
+                "text_features": ["title", "tagline", "overview"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_genres", "fastRP_keywords", "fastRP_cast", "fastRP_crew"],
+                "numeric_features": ["vote_average", "vote_count"]
+            }
+        ]
+    },
+    {
+        "filename": "GIN_optimize_2_",
+        "layer_names": ["GIN"],
+        "encoder_nums_layers": [6, 6, 1],
+        "encoder_aggregations": [["mean"]],
+        "skip_connections": [1],
+        "decoder_nums_layers": [8, 8, 1],
+        "hidden_channels": [64, 128, 256],
+        "lrs": [0.012],
+        "features_config": [
+            {
+                "text_features": ["title", "tagline"],
                 "list_features": [],
                 "fastRP_features": ["fastRP_genres", "fastRP_keywords", "fastRP_cast", "fastRP_crew"],
                 "numeric_features": ["vote_average", "vote_count"]

@@ -12,6 +12,7 @@ def grid_search_data(
     decoder_nums_layers,
     epochs,
     features_config,
+    encoder_aggregations=[[]],
     hidden_channels=[16, 32],
     lrs=[0.01],
     logging_step=1,
@@ -46,6 +47,7 @@ def grid_search_data(
         # Add a reverse ('movie', 'rev_rates', 'user') relation for message passing:
         data = T.ToUndirected()(data)
         del data['movie', 'rev_rates', 'user'].edge_label  # Remove "reverse" label.
+        
         # Perform a link-level split into training, validation, and test edges:
         train_data, val_data, test_data = T.RandomLinkSplit(
             num_val=0.1,
@@ -60,37 +62,40 @@ def grid_search_data(
                 for encoder_num_layers in range(encoder_nums_layers[0], encoder_nums_layers[1]+1, encoder_nums_layers[2]):
                     for encoder_skip_connections in skip_connections:
                         for decoder_num_layers in range(decoder_nums_layers[0], decoder_nums_layers[1]+1, decoder_nums_layers[2]):
-                            for hidden_channels_num in hidden_channels:
-                                experiment_config = (
-                                    layer_name,
-                                    encoder_num_layers,
-                                    encoder_skip_connections,
-                                    decoder_num_layers,
-                                    hidden_channels_num,
-                                    lr,
-                                    tuple(text_features),
-                                    tuple(list_features),
-                                    tuple(fastRP_features),
-                                    tuple(numeric_features),
-                                )
-                                print("-->>", experiment_config)
-                                model = Model(
-                                    data,
-                                    layer_name="SAGE",
-                                    encoder_num_layers=encoder_num_layers,
-                                    encoder_dropout=0.1,
-                                    encoder_skip_connections=encoder_skip_connections,
-                                    decoder_num_layers=decoder_num_layers,
-                                    hidden_channels=hidden_channels_num,
-                                    out_channels=hidden_channels_num,
-                                ).to(device)
-                                losses[experiment_config] = train_test(
-                                    model=model,
-                                    epochs=epochs,
-                                    train_data=train_data,
-                                    val_data=val_data,
-                                    test_data=test_data,
-                                    logging_step=logging_step,
-                                    lr=lr,
-                                )
+                            for encoder_aggr in encoder_aggregations:
+                                for hidden_channels_num in hidden_channels:
+                                    experiment_config = (
+                                        layer_name,
+                                        encoder_num_layers,
+                                        tuple(encoder_aggr),
+                                        encoder_skip_connections,
+                                        decoder_num_layers,
+                                        hidden_channels_num,
+                                        lr,
+                                        tuple(text_features),
+                                        tuple(list_features),
+                                        tuple(fastRP_features),
+                                        tuple(numeric_features),
+                                    )
+                                    print("-->>", experiment_config)
+                                    model = Model(
+                                        data,
+                                        layer_name="SAGE",
+                                        encoder_num_layers=encoder_num_layers,
+                                        encoder_dropout=0.1,
+                                        encoder_skip_connections=encoder_skip_connections,
+                                        encoder_aggr=encoder_aggr,
+                                        decoder_num_layers=decoder_num_layers,
+                                        hidden_channels=hidden_channels_num,
+                                        out_channels=hidden_channels_num,
+                                    ).to(device)
+                                    losses[experiment_config] = train_test(
+                                        model=model,
+                                        epochs=epochs,
+                                        train_data=train_data,
+                                        val_data=val_data,
+                                        test_data=test_data,
+                                        logging_step=logging_step,
+                                        lr=lr,
+                                    )
     return losses

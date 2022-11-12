@@ -1,7 +1,12 @@
 import torch
-from torch.nn import Linear, LazyLinear
+from torch import Tensor
+from torch.nn import Linear, LazyLinear, Sequential, BatchNorm1d, ReLU, Dropout
 import torch.nn.functional as F
-from torch_geometric.nn import SAGEConv, GATv2Conv, GCNConv, TransformerConv, GraphConv, to_hetero
+from torch_geometric.nn import SAGEConv, GATv2Conv, GCNConv, TransformerConv, GraphConv, GINConv, GINEConv, to_hetero, HeteroLinear, HeteroConv
+from torch_geometric.nn.models import GIN, GraphSAGE
+from torch_geometric.nn.aggr import MultiAggregation
+from typing import Union
+from torch_geometric.typing import Adj, OptPairTensor, Size
 
 layers = {
     "SAGE": SAGEConv,
@@ -9,11 +14,13 @@ layers = {
     "GCN": GCNConv,
     "Transformer": TransformerConv,
     "GraphConv": GraphConv,
+    "GIN": GINConv,
+    "GINE": GINEConv,
 }
 
 
 class GNNEncoder(torch.nn.Module):
-    def __init__(self, layer_name="SAGE", num_layers=4, in_channels=-1, hidden_channels=32, out_channels=32, dropout=0.1, skip_connections=True):
+    def __init__(self, layer_name="SAGE", num_layers=4, in_channels=-1, hidden_channels=32, out_channels=32, dropout=0.1, skip_connections=True, encoder_aggr=[]):
         assert num_layers > 4
         super().__init__()
         self.dropout = dropout
@@ -24,24 +31,77 @@ class GNNEncoder(torch.nn.Module):
         self.dropout = dropout
         self.skip_connections = skip_connections
         self.layer = layers.get(layer_name) or SAGEConv
+        self.layer_name = layer_name
         
+        self.aggr = None
+        if encoder_aggr:
+            if isinstance(encoder_aggr, str):
+                self.aggr = encoder_aggr
+            if len(encoder_aggr) == 1:
+                self.aggr = encoder_aggr[0]
+            if len(encoder_aggr) > 1:
+                self.aggr = MultiAggregation(encoder_aggr)
+        
+        print("Aggregation:", self.aggr)
+
         first_layer_args = {
             "in_channels": self.in_channels,
             "out_channels": self.hidden_channels,
+            "aggr": self.aggr,
+            # **encoder_extra_config,
         }
         hidden_layer_args = {
             "in_channels": self.hidden_channels,
             "out_channels": self.hidden_channels,
+            "aggr": self.aggr,
+            # **encoder_extra_config,
         }
         last_layer_args = {
             "in_channels": self.hidden_channels,
             "out_channels": self.out_channels,
+            "aggr": self.aggr,
+            # **encoder_extra_config,
         }
 
         if layer_name in ["GCN", "GAT"]:
             first_layer_args["add_self_loops"] = False
             hidden_layer_args["add_self_loops"] = False
             last_layer_args["add_self_loops"] = False
+        
+        if self.layer_name == "GIN" or self.layer_name == "GINE":
+            del hidden_layer_args["in_channels"]
+            del hidden_layer_args["out_channels"]
+            hidden_layer_args["train_eps"] = True
+            hidden_layer_args["nn"] = Sequential(
+                Linear(hidden_channels, hidden_channels),
+                BatchNorm1d(hidden_channels),
+                ReLU(),
+                Linear(hidden_channels, hidden_channels),
+                BatchNorm1d(hidden_channels),
+                ReLU(),
+                Linear(hidden_channels, hidden_channels),
+                BatchNorm1d(hidden_channels),
+                ReLU(),
+                Linear(hidden_channels, hidden_channels),
+                ReLU()
+            )
+
+            del last_layer_args["in_channels"]
+            del last_layer_args["out_channels"]
+            last_layer_args["train_eps"] = True
+            last_layer_args["nn"] = Sequential(
+                Linear(hidden_channels, hidden_channels),
+                BatchNorm1d(hidden_channels),
+                ReLU(),
+                Linear(hidden_channels, hidden_channels),
+                BatchNorm1d(hidden_channels),
+                ReLU(),
+                Linear(hidden_channels, hidden_channels),
+                BatchNorm1d(hidden_channels),
+                ReLU(),
+                Linear(hidden_channels, out_channels),
+                ReLU()
+            )
 
         self.convs = torch.nn.ModuleList()
         self.convs.append(self.layer(**first_layer_args))
@@ -53,7 +113,7 @@ class GNNEncoder(torch.nn.Module):
         prev_x = None
         for i in range(len(self.convs)-1):
             prev_x = x
-            x = self.convs[i](x, edge_index)
+            x = self.convs[i](x, edge_index, conv_index=i)
             if i > 0 and self.skip_connections:
                 x = x + prev_x
             x = x.relu()
@@ -88,7 +148,7 @@ class EdgeDecoder(torch.nn.Module):
 
 
 class Model(torch.nn.Module):
-    def __init__(self, data, in_channels=-1, hidden_channels=32, out_channels=32, encoder_num_layers=5, decoder_num_layers=4, layer_name="SAGE", encoder_dropout=0.1, encoder_skip_connections=True):
+    def __init__(self, data, in_channels=-1, hidden_channels=32, out_channels=32, encoder_num_layers=5, decoder_num_layers=4, layer_name="SAGE", encoder_dropout=0.1, encoder_skip_connections=True, encoder_aggr=[]):
         super().__init__()
         self.encoder = GNNEncoder(
             in_channels=in_channels,
@@ -98,7 +158,9 @@ class Model(torch.nn.Module):
             num_layers=encoder_num_layers,
             dropout=encoder_dropout,
             skip_connections=encoder_skip_connections,
+            encoder_aggr=encoder_aggr,
         )
+        # self.encoder = HeteroGNN(hidden_channels, out_channels, encoder_num_layers)
         self.in_channels = in_channels
         self.hidden_channels = hidden_channels
         self.out_channels = out_channels
@@ -111,3 +173,29 @@ class Model(torch.nn.Module):
     def forward(self, x_dict, edge_index_dict, edge_label_index):
         z_dict = self.encoder(x_dict, edge_index_dict)
         return self.decoder(z_dict, edge_label_index)
+
+
+class HeteroGNN(torch.nn.Module):
+    def __init__(self, hidden_channels, out_channels, num_layers):
+        super().__init__()
+
+        self.convs = torch.nn.ModuleList()
+        for _ in range(num_layers-1):
+            conv = HeteroConv({
+                ('user', 'rates', 'movie'): SAGEConv((-1, -1), hidden_channels),
+                ('movie', 'rev_rates', 'user'): GATv2Conv((-1, -1), hidden_channels, add_self_loops=False),
+            }, aggr='sum')
+            self.convs.append(conv)
+
+        conv = HeteroConv({
+            ('user', 'rates', 'movie'): SAGEConv((-1, -1), out_channels),
+            ('movie', 'rev_rates', 'user'): GATv2Conv((-1, -1), out_channels, add_self_loops=False),
+        }, aggr='sum')
+        self.convs.append(conv)
+
+    def forward(self, x_dict, edge_index_dict):
+        for conv in self.convs:
+            x_dict = conv(x_dict, edge_index_dict)
+            x_dict = {key: x.relu() for key, x in x_dict.items()}
+        return x_dict
+    
