@@ -21,12 +21,21 @@ experiments_file = open(os.path.join("..", "scripts", "experiments.json"))
 experiments = json.load(experiments_file)
 experiments_file.close()
 
-experiment_index = 1
-
+experiment_name = "GIN_optimize_2_"
 config = None
 
-if experiment_index is not None:
-    config = experiments[experiment_index]
+if experiment_name:
+    def first(iterable, default=None):
+        for item in iterable:
+            return item
+        return default
+    config = first(
+        experiment
+        for experiment in experiments
+        if experiment["filename"]==experiment_name
+    )
+    if config is None:
+        raise Exception(f"Experiment {experiment_name} not found")
 else:
     config = {
         "filename":  "SAGE_GAT_embeddings_hidden_channels_8_16",
