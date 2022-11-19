@@ -13,13 +13,21 @@ export class GeneralController {
     this.service = new GeneralService(session, node, nodeClass, keyProperty);
   }
 
-  getAll = async (pageSize: number, pageIndex: number) =>
-    this.service.getAll(pageSize, pageIndex);
+  getAll = async (
+    pageSize: number,
+    pageIndex: number,
+    sortBy?: string,
+    order?: "asc" | "desc"
+  ) => this.service.getAll(pageSize, pageIndex, sortBy, order);
+
   getOneByKey = async (value: string | number) =>
     this.service.getOneByKey(value);
+
   getRelatedMovies = async (
     value: string | number,
     pageSize: number,
-    pageIndex: number
-  ) => this.service.getRelatedMovies(value, pageSize, pageIndex);
+    pageIndex: number,
+    sortBy?: string,
+    order?: "asc" | "desc"
+  ) => this.service.getRelatedMovies(value, pageSize, pageIndex, sortBy, order);
 }

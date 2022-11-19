@@ -1,7 +1,7 @@
 import express from "express";
 import type { Session } from "neo4j-driver";
 import { GeneralController } from "../controllers/GeneralController";
-import { getPaginationParams } from "../utils/paginate";
+import { getOrderingParams, getPaginationParams } from "../utils/preProcessQuery";
 import { queryParamHandle } from "../utils/queryParams";
 import { notFound, PaginationResponse } from "../utils/responses";
 
@@ -36,7 +36,14 @@ export const generalRouter = ({
     } catch (err) {
       return res.status(400).send(err);
     }
-    const data = await controller.getAll(pageSize, pageIndex);
+    let sortBy = undefined;
+    let order = undefined;
+    try {
+      ({ sortBy, order } = getOrderingParams(req.query));
+    } catch (err) {
+      return res.status(400).send(err);
+    }
+    const data = await controller.getAll(pageSize, pageIndex, sortBy, order);
     const response = new PaginationResponse(data, pageIndex, pageSize);
     res.send(response);
   });
@@ -56,14 +63,17 @@ export const generalRouter = ({
     } catch (err) {
       return res.status(400).send(err);
     }
+    let sortBy = undefined;
+    let order = undefined;
+    try {
+      ({ sortBy, order } = getOrderingParams(req.query));
+    } catch (err) {
+      return res.status(400).send(err);
+    }
     const name = queryParamHandle(req.params[keyProperty], forceKeyAsString);
     const datum = await controller.getOneByKey(name);
     if (!datum) return res.status(400).send(notFound(objectName, name));
-    const movies = await controller.getRelatedMovies(
-      name,
-      pageSize,
-      pageIndex
-    );
+    const movies = await controller.getRelatedMovies(name, pageSize, pageIndex, sortBy, order);
     const response = new PaginationResponse(movies, pageIndex, pageSize);
     res.send(response);
   });
