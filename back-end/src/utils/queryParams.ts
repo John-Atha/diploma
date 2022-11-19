@@ -1,4 +1,4 @@
 export const queryParamHandle = (param: number | string) => {
-  if (isNaN(parseInt(param as string))) return `"${param}"`;
-  return param;
+  if (isNaN(parseInt(param as string))) return param;
+  return parseInt(param);
 };

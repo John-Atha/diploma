@@ -33,9 +33,10 @@ export class GeneralService {
     }
 
     async getOneByKey(value: string|number) {
-        const query = `MATCH (n:${this.node}) where n.${this.keyProperty}=${value} return n;`;
-        console.log("QUERY:", query);
-        const results = await this.session.run(query);
+        const query = `MATCH (n:${this.node}) where n.${this.keyProperty}=$value return n;`;
+        const params = { value };
+        console.log("QUERY:", query, params);
+        const results = await this.session.run(query, params);
         let item = null;
         if (results.records.length) {
             const datum = results.records[0].toObject().n.properties;
@@ -49,10 +50,11 @@ export class GeneralService {
     }
 
     async getRelatedMovies(value: string|number, pageSize: number, pageIndex: number) {
-        const initQuery =`MATCH (m:Movie)-[r]-(n:${this.node}) where n.${this.keyProperty}=${value} return m;`;
+        const initQuery =`MATCH (m:Movie)-[r]-(n:${this.node}) where n.${this.keyProperty}=$value return m;`;
+        const params = { value };
         const paginated = paginate({ query: initQuery, pageSize, pageIndex });
-        console.log("QUERY:", paginated);
-        const results = await this.session.run(paginated);
+        console.log("QUERY:", paginated, params);
+        const results = await this.session.run(paginated, params);
         const movies = results.records.map((result) => {
             const movie = result.toObject().m.properties;
             const item = new MovieBrief({ ...movie });
