@@ -2,6 +2,7 @@ import express from "express";
 import type { Session } from "neo4j-driver";
 import { GeneralController } from "../controllers/GeneralController";
 import { getPaginationParams } from "../utils/paginate";
+import { queryParamHandle } from "../utils/queryParams";
 import { notFound, PaginationResponse } from "../utils/responses";
 
 interface GeneralRouterProps {
@@ -39,8 +40,8 @@ export const generalRouter = ({
   });
 
   router.get(`/:${keyProperty}`, async (req, res) => {
-    const name = req.params[keyProperty];
-    const datum = await controller.getOneByKey(`"${name}"`);
+    const name = queryParamHandle(req.params[keyProperty]);
+    const datum = await controller.getOneByKey(name);
     if (!datum) res.status(400).send(notFound(objectName, name));
     else res.send(datum);
   });
@@ -53,11 +54,11 @@ export const generalRouter = ({
     } catch (err) {
       return res.status(400).send(err);
     }
-    const name = req.params[keyProperty];
-    const datum = await controller.getOneByKey(`"${name}"`);
+    const name = queryParamHandle(req.params[keyProperty]);
+    const datum = await controller.getOneByKey(name);
     if (!datum) return res.status(400).send(notFound(objectName, name));
     const movies = await controller.getRelatedMovies(
-      `"${name}"`,
+      name,
       pageSize,
       pageIndex
     );

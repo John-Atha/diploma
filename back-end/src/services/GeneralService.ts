@@ -24,6 +24,8 @@ export class GeneralService {
             const datum = result.toObject().n.properties;
             if (!!datum.id)
                 datum.id = datum.id["low"];
+            if (!!datum.gender)
+                datum.gender = datum.gender["low"];
             const item = new this.itemConstructor({ ...datum });
             return item;
         })
@@ -39,6 +41,8 @@ export class GeneralService {
             const datum = results.records[0].toObject().n.properties;
             if (!!datum.id)
                 datum.id = datum.id["low"];
+            if (!!datum.gender)
+                datum.gender = datum.gender["low"];
             item = new this.itemConstructor({ ...datum });
         }
         return item;
@@ -51,8 +55,6 @@ export class GeneralService {
         const results = await this.session.run(paginated);
         const movies = results.records.map((result) => {
             const movie = result.toObject().m.properties;
-            if (!!movie.id)
-                movie.id = movie.id["low"];
             const item = new MovieBrief({ ...movie });
             return item;
         })

@@ -23,18 +23,14 @@ export const getPaginationParams = (query: any) => {
   let pageSize = 15;
 
   if (page !== undefined) {
-    try {
-      pageIndex = parseInt(page as string);
-    } catch (err) {
+    pageIndex = parseInt(page as string);
+    if (isNaN(pageIndex))
       throw "Invalid pagination parameters";
-    }
   }
   if (size !== undefined) {
-    try {
       pageSize = parseInt(size as string);
-    } catch (err) {
-      throw "Invalid pagination parameters";
-    }
+      if (isNaN(pageSize))
+        throw "Invalid pagination parameters";
   }
   if (pageIndex <= 0 || pageSize <= 0)
     throw "Invalid pagination parameters";
