@@ -34,9 +34,6 @@
 | GET | /languages/\<name\>
 | GET | /languages/\<name\>/movies | | Y | Y |
 | --- | --- | --- | --- | --- |
-| GET | /languages | | Y | Y |
-| GET | /languages/\<name\>
-| GET | /languages/\<name\>/movies | | Y | Y |
 | --- | --- | --- | --- | --- |
 | GET | /search/movies | | Y |  |
 | GET | /search/actors | | Y |  |

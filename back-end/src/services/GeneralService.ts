@@ -1,4 +1,5 @@
 import type { Session } from "neo4j-driver";
+import { MovieBrief } from "../models/Movie";
 import { paginate } from "../utils/paginate";
 
 export class GeneralService {
@@ -41,6 +42,21 @@ export class GeneralService {
             item = new this.itemConstructor({ ...datum });
         }
         return item;
+    }
+
+    async getRelatedMovies(value: string|number, pageSize: number, pageIndex: number) {
+        const initQuery =`MATCH (m:Movie)-[r]-(n:${this.node}) where n.${this.keyProperty}=${value} return m;`;
+        const paginated = paginate({ query: initQuery, pageSize, pageIndex });
+        console.log("QUERY:", paginated);
+        const results = await this.session.run(paginated);
+        const movies = results.records.map((result) => {
+            const movie = result.toObject().m.properties;
+            if (!!movie.id)
+                movie.id = movie.id["low"];
+            const item = new MovieBrief({ ...movie });
+            return item;
+        })
+        return movies;
     }
 
 }

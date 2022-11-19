@@ -40,9 +40,29 @@ export const generalRouter = ({
 
   router.get(`/:${keyProperty}`, async (req, res) => {
     const name = req.params[keyProperty];
-    const genre = await controller.getOneByKey(`"${name}"`);
-    if (!genre) res.status(400).send(notFound(objectName, name));
-    else res.send(genre);
+    const datum = await controller.getOneByKey(`"${name}"`);
+    if (!datum) res.status(400).send(notFound(objectName, name));
+    else res.send(datum);
+  });
+
+  router.get(`/:${keyProperty}/movies`, async (req, res) => {
+    let pageSize = undefined;
+    let pageIndex = undefined;
+    try {
+      ({ pageIndex, pageSize } = getPaginationParams(req.query));
+    } catch (err) {
+      return res.status(400).send(err);
+    }
+    const name = req.params[keyProperty];
+    const datum = await controller.getOneByKey(`"${name}"`);
+    if (!datum) return res.status(400).send(notFound(objectName, name));
+    const movies = await controller.getRelatedMovies(
+      `"${name}"`,
+      pageSize,
+      pageIndex
+    );
+    const response = new PaginationResponse(movies, pageIndex, pageSize);
+    res.send(response);
   });
 
   return router;
