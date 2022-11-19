@@ -1,9 +1,15 @@
+# MODEL
 *.json.*
 *.csv
 /.history
 /environ
+**/.env
 *__pycache__*
 */data/*.json
 *.ipynb_checkpoints*
 *.gz
 *.pt
+
+# BACK-END
+**/back-env
+**/node_modules
