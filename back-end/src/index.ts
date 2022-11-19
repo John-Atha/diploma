@@ -5,10 +5,12 @@ import helmet from "helmet";
 import http from "http";
 import BodyParser from "body-parser";
 import neo4j from "neo4j-driver";
-import { GenresController } from "./controllers/GenresController";
-import { notFound, PaginationResponse } from "./utils/responses";
-import { getPaginationParams } from "./utils/paginate";
-import { ProductionCompaniesController } from "./controllers/ProductionCompaniesController";
+import { Genre } from "./models/Genre";
+import { ProductionCompany } from "./models/ProductionCompany";
+import { ProductionCountry } from "./models/ProductionCountry";
+import { Language } from "./models/Language";
+import { Keyword } from "./models/Keyword";
+import { generalRouter } from "./routers/generalRouter";
 
 dotenv.config();
 if (!process.env.PORT) process.exit(1);
@@ -30,61 +32,42 @@ const driver = neo4j.driver(
 const session = driver.session();
 
 const router = express.Router();
-
-const genresController = new GenresController(session);
-const productionCompaniesController = new ProductionCompaniesController(session);
-
-router.get("/genres", async (req, res) => {
-    let pageSize = undefined;
-    let pageIndex = undefined;
-    try {
-        ({ pageIndex, pageSize } = getPaginationParams(req.query));
-    }
-    catch (err) {
-        return res.status(400).send(err);
-    }
-    const data = await genresController.getAll(pageSize, pageIndex);
-    const response = new PaginationResponse(data, pageIndex, pageSize);
-    res.send(response);
+const genresRouter = generalRouter({
+  session,
+  model: Genre,
+  keyProperty: "name",
+  objectName: "Genre",
 });
-
-router.get("/genres/:name", async (req, res) => {
-    const name = req.params.name;
-    const genre = await genresController.getOneByKey(`"${name}"`);
-    if (!genre)
-        res.status(400).send(notFound("Genre", name));
-    else
-        res.send(genre);
+const productionCompaniesRouter = generalRouter({
+  session,
+  model: ProductionCompany,
+  keyProperty: "name",
+  objectName: "ProductionCompany",
 });
-
-
-router.get("/productionCompanies", async (req, res) => {
-    let pageSize = undefined;
-    let pageIndex = undefined;
-    try {
-        ({ pageIndex, pageSize } = getPaginationParams(req.query));
-    }
-    catch (err) {
-        return res.status(400).send(err);
-    }
-    const data = await productionCompaniesController.getAll(pageSize, pageIndex);
-    const response = new PaginationResponse(data, pageIndex, pageSize);
-    res.send(response);
+const productionCountriesRouter = generalRouter({
+  session,
+  model: ProductionCountry,
+  keyProperty: "iso_3166_1",
+  objectName: "ProductionCountry",
 });
-
-router.get("/productionCompanies/:name", async (req, res) => {
-    const name = req.params.name;
-    const company = await productionCompaniesController.getOneByKey(`"${name}"`);
-    if (!company)
-        res.status(400).send(notFound("Production Company", name));
-    else
-        res.send(company);
+const languagesRouter = generalRouter({
+  session,
+  model: Language,
+  keyProperty: "iso_639_1",
+  objectName: "Language",
 });
-
-
-
-
+const keywordsRouter = generalRouter({
+  session,
+  model: Keyword,
+  keyProperty: "name",
+  objectName: "Keyword",
+});
 
 app.use("/", router);
+app.use("/genres", genresRouter);
+app.use("/productionCompanies", productionCompaniesRouter);
+app.use("/productionCountries", productionCountriesRouter);
+app.use("/languages", languagesRouter);
+app.use("/keywords", keywordsRouter);
 
 server.listen(PORT, () => console.log(`Listening on ${PORT}`));
