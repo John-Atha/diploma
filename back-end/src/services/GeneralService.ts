@@ -22,9 +22,9 @@ export class GeneralService {
         const results = await this.session.run(paginated);
         const items = results.records.map((result) => {
             const datum = result.toObject().n.properties;
-            if (!!datum.id)
+            if (!!datum.id?.["low"])
                 datum.id = datum.id["low"];
-            if (!!datum.gender)
+            if (!!datum.gender?.["low"])
                 datum.gender = datum.gender["low"];
             const item = new this.itemConstructor({ ...datum });
             return item;
@@ -40,9 +40,9 @@ export class GeneralService {
         let item = null;
         if (results.records.length) {
             const datum = results.records[0].toObject().n.properties;
-            if (!!datum.id)
+            if (!!datum.id?.["low"])
                 datum.id = datum.id["low"];
-            if (!!datum.gender)
+            if (!!datum.gender?.["low"])
                 datum.gender = datum.gender["low"];
             item = new this.itemConstructor({ ...datum });
         }

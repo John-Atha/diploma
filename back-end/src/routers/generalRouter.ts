@@ -9,6 +9,7 @@ interface GeneralRouterProps {
   session: Session;
   model: any;
   keyProperty: string;
+  forceKeyAsString?: boolean;
   objectName: string;
 }
 
@@ -16,6 +17,7 @@ export const generalRouter = ({
   session,
   model,
   keyProperty,
+  forceKeyAsString,
   objectName,
 }: GeneralRouterProps) => {
   const router = express.Router();
@@ -40,7 +42,7 @@ export const generalRouter = ({
   });
 
   router.get(`/:${keyProperty}`, async (req, res) => {
-    const name = queryParamHandle(req.params[keyProperty]);
+    const name = queryParamHandle(req.params[keyProperty], forceKeyAsString);
     const datum = await controller.getOneByKey(name);
     if (!datum) res.status(400).send(notFound(objectName, name));
     else res.send(datum);
@@ -54,7 +56,7 @@ export const generalRouter = ({
     } catch (err) {
       return res.status(400).send(err);
     }
-    const name = queryParamHandle(req.params[keyProperty]);
+    const name = queryParamHandle(req.params[keyProperty], forceKeyAsString);
     const datum = await controller.getOneByKey(name);
     if (!datum) return res.status(400).send(notFound(objectName, name));
     const movies = await controller.getRelatedMovies(

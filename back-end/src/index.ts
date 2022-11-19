@@ -12,6 +12,7 @@ import { Language } from "./models/Language";
 import { Keyword } from "./models/Keyword";
 import { generalRouter } from "./routers/generalRouter";
 import { Person } from "./models/Person";
+import { MovieBrief } from "./models/Movie";
 
 dotenv.config();
 if (!process.env.PORT) process.exit(1);
@@ -68,7 +69,14 @@ const peopleRouter = generalRouter({
   model: Person,
   keyProperty: "id",
   objectName: "Person",
-})
+});
+const moviesRouter = generalRouter({
+  session,
+  model: MovieBrief,
+  keyProperty: "id",
+  objectName: "Movie",
+  forceKeyAsString: true,
+});
 
 app.use("/", router);
 app.use("/genres", genresRouter);
@@ -77,5 +85,6 @@ app.use("/productionCountries", productionCountriesRouter);
 app.use("/languages", languagesRouter);
 app.use("/keywords", keywordsRouter);
 app.use("/people", peopleRouter);
+app.use("/movies", moviesRouter);
 
 server.listen(PORT, () => console.log(`Listening on ${PORT}`));

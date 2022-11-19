@@ -10,7 +10,7 @@ export interface MovieBriefProps {
   release_date: string;
   homepage: string;
 
-  genres: Genre[];
+  // genres: Genre[];
   ratings_count: number;
   ratings_average: number;
 }
@@ -22,7 +22,7 @@ export class MovieBrief {
   release_date: string;
   homepage: string;
 
-  genres: Genre[];
+  // genres: Genre[];
   ratings_count: number;
   ratings_average: number;
 
@@ -32,7 +32,7 @@ export class MovieBrief {
     this.poster_path = movie.poster_path;
     this.release_date = movie.release_date;
     this.homepage = movie.homepage;
-    this.genres = [];
+    // this.genres = [];
     this.ratings_count = 0;
     this.ratings_average = 0;
   }
