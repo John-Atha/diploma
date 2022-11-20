@@ -19,4 +19,7 @@ export const queriesKeys = {
 
     'getTopMovies': `movies/top/get`,
     'getLatestMovies': `movies/latest/get`,
+
+    'getTopGenres': `genres/top/get`,
+
 }
