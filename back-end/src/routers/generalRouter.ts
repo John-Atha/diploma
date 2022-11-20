@@ -1,12 +1,12 @@
 import express from "express";
-import type { Session } from "neo4j-driver";
+import type { Driver } from "neo4j-driver";
 import { GeneralController } from "../controllers/GeneralController";
 import { getOrderingParams, getPaginationParams } from "../utils/preProcessQuery";
 import { queryParamHandle } from "../utils/queryParams";
 import { notFound, PaginationResponse } from "../utils/responses";
 
 interface GeneralRouterProps {
-  session: Session;
+  driver: Driver;
   model: any;
   keyProperty: string;
   forceKeyAsString?: boolean;
@@ -14,7 +14,7 @@ interface GeneralRouterProps {
 }
 
 export const generalRouter = ({
-  session,
+  driver,
   model,
   keyProperty,
   forceKeyAsString,
@@ -22,7 +22,7 @@ export const generalRouter = ({
 }: GeneralRouterProps) => {
   const router = express.Router();
   const controller = new GeneralController(
-    session,
+    driver,
     objectName,
     model,
     keyProperty

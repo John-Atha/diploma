@@ -13,6 +13,7 @@ import { Keyword } from "./models/Keyword";
 import { generalRouter } from "./routers/generalRouter";
 import { Person } from "./models/Person";
 import { MovieBrief } from "./models/Movie";
+import { SummaryController } from "./controllers/SummaryController";
 
 dotenv.config();
 if (!process.env.PORT) process.exit(1);
@@ -31,47 +32,46 @@ const driver = neo4j.driver(
   neo4jUrl,
   neo4j.auth.basic(neo4jUsername, neo4jPassword)
 );
-const session = driver.session();
 
 const router = express.Router();
 const genresRouter = generalRouter({
-  session,
+  driver,
   model: Genre,
   keyProperty: "name",
   objectName: "Genre",
 });
 const productionCompaniesRouter = generalRouter({
-  session,
+  driver,
   model: ProductionCompany,
   keyProperty: "name",
   objectName: "ProductionCompany",
 });
 const productionCountriesRouter = generalRouter({
-  session,
+  driver,
   model: ProductionCountry,
   keyProperty: "iso_3166_1",
   objectName: "ProductionCountry",
 });
 const languagesRouter = generalRouter({
-  session,
+  driver,
   model: Language,
   keyProperty: "iso_639_1",
   objectName: "Language",
 });
 const keywordsRouter = generalRouter({
-  session,
+  driver,
   model: Keyword,
   keyProperty: "name",
   objectName: "Keyword",
 });
 const peopleRouter = generalRouter({
-  session,
+  driver,
   model: Person,
   keyProperty: "id",
   objectName: "Person",
 });
 const moviesRouter = generalRouter({
-  session,
+  driver,
   model: MovieBrief,
   keyProperty: "id",
   objectName: "Movie",
@@ -87,4 +87,9 @@ app.use("/keywords", keywordsRouter);
 app.use("/people", peopleRouter);
 app.use("/movies", moviesRouter);
 
+router.get("/summary", async (req, res) => {
+  const controller = new SummaryController(driver);
+  const data = await controller.getSummary();
+  res.send(data);
+})
 server.listen(PORT, () => console.log(`Listening on ${PORT}`));
