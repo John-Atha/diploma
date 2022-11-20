@@ -39,6 +39,7 @@ export const OneMovie = ({
   return (
     <CardOverlay
       src={logo}
+      fallbackSrc={movieImage}
       title={title || original_title}
       subtitle={release_date}
       href={`/movies/${id}`}

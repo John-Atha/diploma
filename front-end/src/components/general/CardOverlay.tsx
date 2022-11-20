@@ -6,11 +6,12 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
 
 interface CardOverlayProps {
   src: string;
+  fallbackSrc?: string;
   title: string;
   subtitle?: string;
   height?: number | string;
@@ -21,6 +22,7 @@ interface CardOverlayProps {
 
 export const CardOverlay = ({
   src,
+  fallbackSrc,
   title,
   subtitle,
   height = 150,
@@ -29,6 +31,8 @@ export const CardOverlay = ({
   href,
 }: CardOverlayProps) => {
   const theme = useTheme();
+  const [logo, setLogo] = useState<any>(src);
+
   return (
     <Card
       sx={{
@@ -52,6 +56,8 @@ export const CardOverlay = ({
           width: 1,
         }}
       />
+      {/* <img src={logo} onError={() => setLogo(fallbackSrc)} /> */}
+      {/* </CardMedia> */}
       <CardContent
         sx={{
           // width,
@@ -68,8 +74,8 @@ export const CardOverlay = ({
         }}
       >
         <div style={{ position: "absolute", bottom: 0 }}>
-            <Typography variant="body1">{title}</Typography>
-            <Typography variant="caption">{subtitle}</Typography>
+          <Typography variant="body1">{title}</Typography>
+          <Typography variant="caption">{subtitle}</Typography>
         </div>
       </CardContent>
     </Card>
