@@ -20,16 +20,23 @@ export interface SecondaryEntityProps {
   name: string;
   movies_count: number;
   distribution?: number[];
-  height: number | string;
-  width: number | string;
+  height?: number | string;
+  width?: number | string;
   href: string;
 }
+
+export const placeholderSecondaryEntity = {
+  id: 0,
+  name: "",
+  movies_count: 0,
+  href: "",
+};
 
 export const OneSecondaryEntity = ({
   id,
   name,
   movies_count,
-  height,
+  height=150,
   width,
   href,
   distribution = [

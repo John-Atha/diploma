@@ -22,6 +22,7 @@ export const getRequest = async ({ requestUrl, headers, params }: GetProps) => {
             ...(headers && { headers }),
             params: {
                 per_page: pagiStep,
+                size: pagiStep,
                 ...params,
             },
         }

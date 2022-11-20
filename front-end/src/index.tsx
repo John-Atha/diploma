@@ -12,6 +12,12 @@ import { createTheme, ThemeProvider } from '@mui/material';
 import { Provider } from 'react-redux';
 import { store } from './redux/store';
 import { Users } from './pages/Users';
+import { GenresPage } from './pages/GenresPage';
+import { KeywordsPage } from './pages/KeywordsPage';
+import { LanguagesPage } from './pages/LanguagesPage';
+import { CompaniesPage } from './pages/CompaniesPage';
+import { CountriesPage } from './pages/CountriesPage';
+import { PeoplePage } from './pages/PeoplePage';
 
 const queryClient = new QueryClient(({
   defaultOptions: {
@@ -42,6 +48,12 @@ root.render(
           <BrowserRouter>
             <Routes>
               <Route path="/"           element={<App />} />
+              <Route path="/genres"     element={<GenresPage />} />
+              <Route path="/keywords"   element={<KeywordsPage />} />
+              <Route path="/languages"  element={<LanguagesPage />} />
+              <Route path="/companies"  element={<CompaniesPage />} />
+              <Route path="/countries"  element={<CountriesPage />} />
+              <Route path="/people"     element={<PeoplePage />} />
               <Route path="/users"      element={<Users /> }       />
               <Route path="/contacts"   element={<ContactsPage />} />
               <Route path="/explore"    element={<Explore />} />
