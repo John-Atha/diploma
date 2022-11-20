@@ -4,6 +4,7 @@ import { PageSkeleton } from './PageSkeleton';
 import { TopMovies } from '../components/movies/TopMovies';
 import { LatestMovies } from '../components/movies/LatestMovies';
 import { TopGenres } from '../components/genres/TopGenres';
+import { Summary } from '../components/dashboard/Summary';
 
 export const App = () => {
 
@@ -11,12 +12,15 @@ export const App = () => {
     <PageSkeleton>
       <Grid container rowSpacing={2} spacing={1} justifyContent="center">
         <Grid item xs={12}>
-          <TopMovies />
+          <Summary />
         </Grid>
-        <Grid item xs={12}>
+        <Grid item>
           <LatestMovies />
         </Grid>
-        <Grid item xs={12}>
+        <Grid item>
+          <TopMovies />
+        </Grid>
+        <Grid item>
           <TopGenres />
         </Grid>
         {/* <Grid item md={6} xs={12}>
