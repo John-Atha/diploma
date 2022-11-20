@@ -3,6 +3,7 @@ import { Grid } from '@mui/material';
 import { PageSkeleton } from './PageSkeleton';
 import { TopMovies } from '../components/movies/TopMovies';
 import { LatestMovies } from '../components/movies/LatestMovies';
+import { TopGenres } from '../components/genres/TopGenres';
 
 export const App = () => {
 
@@ -14,6 +15,9 @@ export const App = () => {
         </Grid>
         <Grid item xs={12}>
           <LatestMovies />
+        </Grid>
+        <Grid item xs={12}>
+          <TopGenres />
         </Grid>
         {/* <Grid item md={6} xs={12}>
           <Grid container justifyContent={"center"}>
