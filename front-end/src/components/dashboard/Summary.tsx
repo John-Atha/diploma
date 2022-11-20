@@ -25,25 +25,25 @@ const configs: Configs = {
     subtitle: "Movies",
     color: "success",
     icon: <MovieIcon />,
-    href: "/movies",
+    href: "movies",
   },
   Genre: {
     subtitle: "Genres",
     color: "info",
     icon: <ClassIcon />,
-    href: "/genres",
+    href: "genres",
   },
   Person: {
     subtitle: "People",
     color: "warning",
     icon: <GroupOutlined />,
-    href: "/people",
+    href: "people",
   },
   Keyword: {
     subtitle: "Keywords",
     color: "error",
     icon: <NavigationIcon />,
-    href: "/keywords",
+    href: "keywords",
   },
 };
 
