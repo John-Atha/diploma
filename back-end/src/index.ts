@@ -13,6 +13,7 @@ import { Keyword } from "./models/Keyword";
 import { generalRouter } from "./routers/generalRouter";
 import { Person } from "./models/Person";
 import { MovieBrief } from "./models/Movie";
+import { SummaryController } from "./controllers/SummaryController";
 
 dotenv.config();
 if (!process.env.PORT) process.exit(1);
@@ -86,4 +87,9 @@ app.use("/keywords", keywordsRouter);
 app.use("/people", peopleRouter);
 app.use("/movies", moviesRouter);
 
+router.get("/summary", async (req, res) => {
+  const controller = new SummaryController(driver);
+  const data = await controller.getSummary();
+  res.send(data);
+})
 server.listen(PORT, () => console.log(`Listening on ${PORT}`));
