@@ -1,22 +1,21 @@
 import React from 'react';
 import { Grid } from '@mui/material';
 import { PageSkeleton } from './PageSkeleton';
-import { FamousUsers } from '../components/users/FamousUsers';
-import { FamousRepos } from '../components/repos/FamousRepos';
-import { AllUsers } from '../components/dashboard/AllUsers';
-import { PersonOutlined, WarehouseOutlined } from '@mui/icons-material';
-import { TopLanguages } from '../components/dashboard/TopLanguages';
-import { LanguagesTabs } from '../components/dashboard/LanguagesTabs';
+import { TopMovies } from '../components/movies/TopMovies';
+import { LatestMovies } from '../components/movies/LatestMovies';
 
 export const App = () => {
 
   return (
     <PageSkeleton>
-      <Grid container rowSpacing={2} justifyContent="center">
-        <Grid item>
-          <FamousRepos />
+      <Grid container rowSpacing={2} spacing={1} justifyContent="center">
+        <Grid item xs={12}>
+          <TopMovies />
         </Grid>
-        <Grid item md={6} xs={12}>
+        <Grid item xs={12}>
+          <LatestMovies />
+        </Grid>
+        {/* <Grid item md={6} xs={12}>
           <Grid container justifyContent={"center"}>
             <Grid item xs={12}>
               <AllUsers
@@ -39,7 +38,7 @@ export const App = () => {
         </Grid>
         <Grid item xs={12}>
           <LanguagesTabs />
-        </Grid>
+        </Grid> */}
       </Grid>
     </PageSkeleton>
   );

@@ -10,12 +10,12 @@ const responsive = {
     },
     desktop: {
       breakpoint: { max: 3000, min: 1100 },
-      items: 3,
+      items: 4,
       paritialVisibilityGutter: 20
     },
     tablet: {
       breakpoint: { max: 1100, min: 464 },
-      items: 2,
+      items: 3,
       paritialVisibilityGutter: 10
     },
     mobile: {

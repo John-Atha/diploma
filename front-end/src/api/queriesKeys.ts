@@ -16,4 +16,7 @@ export const queriesKeys = {
     'getLanguageRepos': `language/repos/get/all`,
     'getOneRepo': `repos/one/get`,
     'getRepoDailyCommits': `repos/one/commits/daily/get`,
+
+    'getTopMovies': `movies/top/get`,
+    'getLatestMovies': `movies/latest/get`,
 }
