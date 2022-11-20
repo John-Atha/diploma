@@ -1,16 +1,16 @@
-import { Session } from "neo4j-driver";
+import { Driver } from "neo4j-driver";
 import { GeneralService } from "../services/GeneralService";
 
 export class GeneralController {
   service: GeneralService;
 
   constructor(
-    session: Session,
+    driver: Driver,
     node: string,
     nodeClass: any,
     keyProperty: string
   ) {
-    this.service = new GeneralService(session, node, nodeClass, keyProperty);
+    this.service = new GeneralService(driver, node, nodeClass, keyProperty);
   }
 
   getAll = async (

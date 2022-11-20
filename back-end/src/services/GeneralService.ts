@@ -1,22 +1,18 @@
-import type { Session } from "neo4j-driver";
+import type { Driver } from "neo4j-driver";
 import { MovieBrief } from "../models/Movie";
 import { paginateQuery, sortQuery } from "../utils/preProcessQuery";
+import { queryResultToClassObject } from "../utils/transforms";
 
 export class GeneralService {
-  session: Session;
+  driver: Driver;
   node: string;
-  itemConstructor: any;
+  itemClass: any;
   keyProperty: string;
 
-  constructor(
-    session: Session,
-    node: string,
-    itemConstructor: any,
-    keyProperty: string
-  ) {
-    this.session = session;
+  constructor(driver: Driver, node: string, itemClass: any, keyProperty: string) {
+    this.driver = driver;
     this.node = node;
-    this.itemConstructor = itemConstructor;
+    this.itemClass = itemClass;
     this.keyProperty = keyProperty;
   }
 
@@ -26,7 +22,10 @@ export class GeneralService {
     sortBy?: string,
     order?: "asc" | "desc"
   ) {
-    const initQuery = `MATCH (n:${this.node}) return n;`;
+    let initQuery = `MATCH (n:${this.node}) return n;`;
+    if (this.node !== "Movie") {
+      initQuery = `MATCH (n:${this.node})-[r]-(m:Movie) return n, count(m) as movies_count;`;
+    }
     const { sortedQuery, params } = sortQuery({
       query: initQuery,
       sortBy,
@@ -38,29 +37,32 @@ export class GeneralService {
       pageSize,
       pageIndex,
     });
+    const session = this.driver.session();
     console.log("QUERY:", paginated, params);
-    const results = await this.session.run(paginated, params);
-    const items = results.records.map((result) => {
-      const datum = result.toObject().n.properties;
-      if (!!datum.id?.["low"]) datum.id = datum.id["low"];
-      if (!!datum.gender?.["low"]) datum.gender = datum.gender["low"];
-      const item = new this.itemConstructor({ ...datum });
-      return item;
-    });
+    const results = await session.executeRead((tx) =>
+      tx.run(paginated, params)
+    );
+    const items = results.records.map((record) =>
+      queryResultToClassObject(record, this.itemClass)
+    );
+    await session.close();
     return items;
   }
 
   async getOneByKey(value: string | number) {
-    const query = `MATCH (n:${this.node}) where n.${this.keyProperty}=$value return n;`;
+    const session = this.driver.session();
+    let query = `MATCH (n:${this.node}) where n.${this.keyProperty}=$value return n;`;
+    if (this.node !== "Movie") {
+      query = `MATCH (n:${this.node})-[r]-(m:Movie) where n.${this.keyProperty}=$value return n, count(m) as movies_count;`;
+    }
     const params = { value };
     console.log("QUERY:", query, params);
-    const results = await this.session.run(query, params);
+    const results = await session.executeRead((tx) => tx.run(query, params));
+    await session.close();
     let item = null;
     if (results.records.length) {
-      const datum = results.records[0].toObject().n.properties;
-      if (!!datum.id?.["low"]) datum.id = datum.id["low"];
-      if (!!datum.gender?.["low"]) datum.gender = datum.gender["low"];
-      item = new this.itemConstructor({ ...datum });
+      const record = results.records[0];
+      item = queryResultToClassObject(record, this.itemClass);
     }
     return item;
   }
@@ -72,6 +74,7 @@ export class GeneralService {
     sortBy?: string,
     order?: "asc" | "desc"
   ) {
+    const session = this.driver.session();
     const initQuery = `MATCH (m:Movie)-[r]-(n:${this.node}) where n.${this.keyProperty}=$value return m;`;
     let params = { value };
     const { sortedQuery, params: sortingParams } = sortQuery({
@@ -81,12 +84,19 @@ export class GeneralService {
       resultNodeName: "m",
     });
     params = {
-        ...params,
-        ...sortingParams,
+      ...params,
+      ...sortingParams,
     };
-    const paginated = paginateQuery({ query: sortedQuery, pageSize, pageIndex });
+    const paginated = paginateQuery({
+      query: sortedQuery,
+      pageSize,
+      pageIndex,
+    });
     console.log("QUERY:", paginated, params);
-    const results = await this.session.run(paginated, params);
+    const results = await session.executeRead((tx) =>
+      tx.run(paginated, params)
+    );
+    await session.close();
     const movies = results.records.map((result) => {
       const movie = result.toObject().m.properties;
       const item = new MovieBrief({ ...movie });

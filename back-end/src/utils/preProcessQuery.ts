@@ -1,3 +1,5 @@
+import { customFields } from "./customFields";
+
 interface PaginateQueryProps {
   query: string;
   pageSize: number;
@@ -59,9 +61,26 @@ export const sortQuery = ({
   resultNodeName,
 }: SortQueryProps) => {
   if (!sortBy) return { sortedQuery: query, params: {} };
-  const sortedQuery = query
+
+  let sortFieldName = customFields.includes(sortBy)
+    ? `${sortBy}`
+    : `${resultNodeName}[$sortBy]`;
+  let sortedQuery = query
     .replace(";", " ")
-    .concat(`order by ${resultNodeName}[$sortBy] ${order};`);
+    .concat(`order by ${sortFieldName} ${order};`);
+  if (!customFields.includes(sortBy)) {
+    if (sortedQuery.toLowerCase().includes("where")) {
+      sortedQuery = sortedQuery.replace(
+        "return",
+        `and tostring(${resultNodeName}[$sortBy])<>"NaN" return`
+      );
+    } else {
+      sortedQuery = sortedQuery.replace(
+        "return",
+        `where tostring(${resultNodeName}[$sortBy])<>"NaN" return`
+      );
+    }
+  }
   const params = { sortBy };
   return { sortedQuery, params };
 };
