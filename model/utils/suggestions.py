@@ -17,7 +17,11 @@ def make_recommendations(dataset, data, model):
     results = []
 
     for user_id in range(0, num_users): 
-
+        """
+        * to predict the ratings for each user to all the movies
+        * add one edge from the user to each one of the movies to the: `edge_label_index`
+        * the Model will predict the rating that the user would give to each one of the movies
+        """
         row = torch.tensor([user_id] * num_movies)
         col = torch.arange(num_movies)
         edge_label_index = torch.stack([row, col], dim=0)
