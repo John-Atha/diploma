@@ -8,6 +8,15 @@
 >   * small version (100K ratings)
 >   * a full version (1M ratings)
 
+## The Task
+> * The task is to recommend movies to users 
+> * To achieve that
+>   * We represent the dataset as a graph, where
+>       * users and movies are nodes
+>       * a rating by a user to a movie is an edge between the two nodes 
+>       * the value of the rating (0-5) is the weight of the edge
+>   * We train a Model (GNN+DNN) to perform the link weight prediction task, and therefore predict the rating a user would give to a movie
+>   * Using the predicted rating, we can the recommend new movies to a specific user
 ## Database initialization
 > * Database used: [Neo4j](https://neo4j.com/) 
 > * Steps (assuming that [Neo4j Desktop](https://neo4j.com/download/) is installed):
