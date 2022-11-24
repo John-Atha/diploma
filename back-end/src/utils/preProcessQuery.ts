@@ -32,7 +32,7 @@ export const getPaginationParams = (query: any) => {
     pageSize = parseInt(size as string);
     if (isNaN(pageSize)) throw "Invalid pagination parameters";
   }
-  if (pageIndex <= 0 || pageSize <= 0) throw "Invalid pagination parameters";
+  if (pageIndex <= 0 || (pageSize <= 0 && pageSize!==-1)) throw "Invalid pagination parameters";
   return { pageIndex, pageSize };
 };
 

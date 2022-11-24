@@ -32,11 +32,11 @@ export class GeneralService {
       order,
       resultNodeName: "n",
     });
-    const paginated = paginateQuery({
+    const paginated = pageSize!==-1 ? paginateQuery({
       query: sortedQuery,
       pageSize,
       pageIndex,
-    });
+    }) : sortedQuery;
     const session = this.driver.session();
     console.log("QUERY:", paginated, params);
     const results = await session.executeRead((tx) =>
