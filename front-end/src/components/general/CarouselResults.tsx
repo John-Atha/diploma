@@ -11,6 +11,7 @@ interface CarouselResultsProps {
   width?: number | string;
   maxWidth?: number | string;
   oneResultComponent: ReactElement;
+  isSmallList?: boolean;
 }
 export const CarouselResults = ({
   data,
@@ -20,6 +21,7 @@ export const CarouselResults = ({
   width,
   maxWidth,
   oneResultComponent,
+  isSmallList = false,
 }: CarouselResultsProps) => {
   let content = null;
 
@@ -33,6 +35,7 @@ export const CarouselResults = ({
         items={data?.map((datum: any) =>
           cloneElement(oneResultComponent, { ...datum })
         )}
+        isSmallList={isSmallList}
       />
     );
   }
@@ -42,6 +45,7 @@ export const CarouselResults = ({
       sx={{
         width: width || 1,
         ...(maxWidth && { maxWidth }),
+        bgcolor: "inherit",
       }}
       elevation={elevation}
     >
@@ -49,7 +53,7 @@ export const CarouselResults = ({
         <Typography variant="h6" sx={{ padding: 1 }}>
           {title}
         </Typography>
-        <Paper elevation={0} sx={{ padding: 1 }}>
+        <Paper elevation={0} sx={{ padding: 1, bgcolor: "inherit" }}>
           {content}
         </Paper>
       </CardContent>

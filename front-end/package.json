@@ -1,5 +1,5 @@
 {
-  "name": "giton",
+  "name": "movieon",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -33,6 +33,7 @@
     "react-router-dom": "^6.3.0",
     "react-scripts": "5.0.1",
     "react-sparklines": "^1.7.0",
+    "react-use-measure": "^2.1.1",
     "simplebar-react": "^2.3.7",
     "typescript": "^4.6.4",
     "web-vitals": "^2.1.4"

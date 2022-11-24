@@ -2,19 +2,20 @@ import { StarBorder } from "@mui/icons-material";
 import React from "react";
 import { useQuery } from "react-query";
 import { getTopGenres } from "../../api/genres";
+import { getTopKeywords } from "../../api/keywords";
 import { queriesKeys } from "../../api/queriesKeys";
 import { CarouselResults } from "../general/CarouselResults";
+import { OneSecondaryEntityRow } from "../general/OneGenreRow";
 import {
   OneSecondaryEntity,
   placeholderSecondaryEntity,
 } from "../general/OneSecondaryEntity";
 import { SmallList } from "../general/SmallList";
-import { OneSecondaryEntityRow } from "../general/OneGenreRow";
 
-export const TopGenres = () => {
+export const TopKeywords = () => {
   const { data, isLoading } = useQuery(
-    queriesKeys["getTopGenres"],
-    () => getTopGenres(),
+    queriesKeys["getTopKeywords"],
+    () => getTopKeywords(),
     {
       cacheTime: 0,
       refetchOnWindowFocus: false,
@@ -25,12 +26,12 @@ export const TopGenres = () => {
     <SmallList
       data={data?.data}
       isLoading={isLoading}
-      title="Top Genres"
+      title="Top Keywords"
       icon={<StarBorder />}
       oneElement={
         <OneSecondaryEntityRow
           {...placeholderSecondaryEntity}
-          entityName="genres"
+          entityName="keywords"
           width="auto"
         />
       }

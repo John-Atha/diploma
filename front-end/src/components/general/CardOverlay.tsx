@@ -6,12 +6,13 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { cloneElement, ReactElement, useState } from "react";
 import { NavLink } from "react-router-dom";
 
 interface CardOverlayProps {
   src: string;
   fallbackSrc?: string;
+  fallbackImg?: ReactElement;
   title: string;
   subtitle?: string;
   height?: number | string;
@@ -23,6 +24,7 @@ interface CardOverlayProps {
 export const CardOverlay = ({
   src,
   fallbackSrc,
+  fallbackImg,
   title,
   subtitle,
   height = 150,
@@ -56,6 +58,13 @@ export const CardOverlay = ({
           width: 1,
         }}
       />
+      {!src && !!fallbackImg && cloneElement(fallbackImg, { style: {
+        width: "100%",
+        height: "100%",
+        position: "absolute",
+        top: "0",
+        borderRadius: 5,
+      }})}
       {/* <img src={logo} onError={() => setLogo(fallbackSrc)} /> */}
       {/* </CardMedia> */}
       <CardContent

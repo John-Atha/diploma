@@ -30,10 +30,12 @@ const queryClient = new QueryClient(({
 
 const theme = createTheme({
   palette: {
-    // mode: "dark",
+    mode: "dark",
     primary: {
-      main:  "#13a155",
-      light: "#bcf7cb",
+      // main:  "#13a155",
+      main:  "#c9322a",
+      // light: "#bcf7cb",
+      light: "#c96e69",
     }
   }
 })

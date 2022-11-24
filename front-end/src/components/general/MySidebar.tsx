@@ -31,6 +31,7 @@ import {
 } from "@mui/material";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { LoginDialog } from "../login/LoginDialog";
+import backgroundImage from "../../images/bg2.png";
 
 const drawerWidth = 240;
 
@@ -167,7 +168,7 @@ export default function MySidebar({ children }: MySidebarProps) {
         onClick={() => goToPage(slug)}
         sx={{
           borderRadius: 2,
-          bgcolor: selected ? theme?.palette?.success?.light : "inherit",
+          bgcolor: selected ? theme?.palette?.primary?.light : "inherit",
           color: "auto",
         }}
       >
@@ -225,13 +226,21 @@ export default function MySidebar({ children }: MySidebarProps) {
               justifyContent: "flex-start",
             }}
           >
-            GitOn
+            MovieOn
           </Button>
         </DrawerHeader>
         <Divider sx={{ marginBottom: 1 }} />
         <List>{renderNavs()}</List>
       </Drawer>
-      <Main sx={{ paddingBottom: "24px !important" }}>
+      <Main
+        style={{
+          paddingBottom: "24px !important",
+          backgroundImage: `url(${backgroundImage})`,
+          backgroundPositionY: "bottom",
+          backgroundSize: "cover",
+          
+        }}
+      >
         <DrawerHeader />
         {children}
         {renderLogin()}

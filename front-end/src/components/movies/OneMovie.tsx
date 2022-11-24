@@ -1,5 +1,6 @@
 import { CardOverlay } from "../general/CardOverlay";
 import movieImage from "../../images/denise-jans-Lq6rcifGjOU-unsplash.jpg";
+import { tmdb_base_url } from "../../data/cloud_base_urls";
 
 export interface BriefMovieProps {
   id: string;
@@ -34,7 +35,7 @@ export const OneMovie = ({
   ratings_average,
 }: BriefMovieProps) => {
   const logo = poster_path
-    ? `https://image.tmdb.org/t/p/original${poster_path}`
+    ? `${tmdb_base_url}${poster_path}`
     : movieImage;
   return (
     <CardOverlay

@@ -20,8 +20,8 @@ export const LatestMovies = () => {
       data={data?.data}
       isLoading={isLoading}
       title="Latest Releases"
-      width={"80vw"}
-      maxWidth="1200px"
+      width={"100%"}
+      // maxWidth="900px"
       oneResultComponent={<OneMovie {...placeholderMovie} />}
     />
   );

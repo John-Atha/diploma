@@ -25,14 +25,38 @@ const responsive = {
   },
 };
 
+const responsiveSmall = {
+  superLargeDesktop: {
+    // the naming can be any, depends on you.
+    breakpoint: { max: 4000, min: 3000 },
+    items: 3,
+  },
+  desktop: {
+    breakpoint: { max: 3000, min: 1100 },
+    items: 2,
+    paritialVisibilityGutter: 20,
+  },
+  tablet: {
+    breakpoint: { max: 1100, min: 464 },
+    items: 2,
+    paritialVisibilityGutter: 10,
+  },
+  mobile: {
+    breakpoint: { max: 464, min: 0 },
+    items: 2,
+    paritialVisibilityGutter: 10,
+  },
+};
+
 interface CarouselProps {
   items: any[];
+  isSmallList?: boolean;
 }
-function MyCarousel({ items }: CarouselProps) {
+function MyCarousel({ items, isSmallList=false }: CarouselProps) {
   return (
     <div>
       <Carousel
-        responsive={responsive}
+        responsive={isSmallList ? responsiveSmall : responsive}
         // autoPlaySpeed={3000}
         autoPlay={false}
         shouldResetAutoplay

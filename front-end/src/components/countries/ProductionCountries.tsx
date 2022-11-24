@@ -112,6 +112,7 @@ export const ProductionCountries = () => {
               top: 8,
               zIndex: 400,
               padding: 1,
+              minWidth: 200,
             }}
             component={Stack}
             spacing={1}

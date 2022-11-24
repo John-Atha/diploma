@@ -20,9 +20,10 @@ export const TopMovies = () => {
       data={data?.data}
       isLoading={isLoading}
       title="Top Movies"
-      width={"80vw"}
-      maxWidth="1200px"
+      width={"100%"}
+      // maxWidth="900px"
       oneResultComponent={<OneMovie {...placeholderMovie} />}
+      isSmallList
     />
   );
 };
