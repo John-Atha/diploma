@@ -1,3 +1,4 @@
+import { ProductionCountries } from "../components/countries/ProductionCountries";
 import {
     OneSecondaryEntity,
     placeholderSecondaryEntity,
@@ -16,10 +17,7 @@ import {
     return (
       <PageSkeleton
         children={
-          <SecondaryEntitiesList
-            name="ProductionCountries"
-            component={<OneSecondaryEntity {...placeholderSecondaryEntity} />}
-          />
+          <ProductionCountries />
         }
       />
     );

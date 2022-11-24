@@ -18,6 +18,7 @@ import { LanguagesPage } from './pages/LanguagesPage';
 import { CompaniesPage } from './pages/CompaniesPage';
 import { CountriesPage } from './pages/CountriesPage';
 import { PeoplePage } from './pages/PeoplePage';
+import { OneProductionCountry } from './pages/OneCountryPage';
 
 const queryClient = new QueryClient(({
   defaultOptions: {
@@ -47,17 +48,18 @@ root.render(
         <Provider store={store}>
           <BrowserRouter>
             <Routes>
-              <Route path="/"           element={<App />} />
-              <Route path="/genres"     element={<GenresPage />} />
-              <Route path="/keywords"   element={<KeywordsPage />} />
-              <Route path="/languages"  element={<LanguagesPage />} />
-              <Route path="/companies"  element={<CompaniesPage />} />
-              <Route path="/countries"  element={<CountriesPage />} />
-              <Route path="/people"     element={<PeoplePage />} />
-              <Route path="/users"      element={<Users /> }       />
-              <Route path="/contacts"   element={<ContactsPage />} />
-              <Route path="/explore"    element={<Explore />} />
-              <Route path="/repos"      element={<Repositories />} />
+              <Route path="/"                       element={<App />} />
+              <Route path="/genres"                 element={<GenresPage />} />
+              <Route path="/keywords"               element={<KeywordsPage />} />
+              <Route path="/languages"              element={<LanguagesPage />} />
+              <Route path="/companies"              element={<CompaniesPage />} />
+              <Route path="/countries"              element={<CountriesPage />} />
+              <Route path="/countries/:iso_3166_1"  element={<OneProductionCountry />} />
+              <Route path="/people"                 element={<PeoplePage />} />
+              <Route path="/users"                  element={<Users /> }       />
+              <Route path="/contacts"               element={<ContactsPage />} />
+              <Route path="/explore"                element={<Explore />} />
+              <Route path="/repos"                  element={<Repositories />} />
             </Routes>
           </BrowserRouter>
         </Provider>
