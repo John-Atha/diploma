@@ -31,7 +31,7 @@ export const ProductionCountries = () => {
 
   const countryStyle = (feature: any) => {
     let mapStyle = {
-      fillColor: "green",
+      fillColor: "yellow",
       weight: 1,
       fillOpacity:
         1 -

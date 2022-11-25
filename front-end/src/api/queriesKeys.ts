@@ -26,6 +26,7 @@ export const queriesKeys = {
     'getTopPeople': `people/top/get`,
     'getTopKeywords': `keywords/top/get`,
 
+    'getGenreTopMovies': `genres/movies/top/get`,
     getEntities: (name: string) => `${name}/all/get`,
 
 }

@@ -8,6 +8,7 @@ import {
   OneSecondaryEntity,
   placeholderSecondaryEntity,
 } from "./OneSecondaryEntity";
+import { Stack, Typography } from "@mui/material";
 
 interface SecondaryEntitiesListProps {
   name: string;
@@ -41,13 +42,18 @@ export const SecondaryEntitiesList = ({ name }: SecondaryEntitiesListProps) => {
   console.log({ all });
 
   return (
-    <Results
-      data={all}
-      isLoading={isLoading}
-      noMore={noMore}
-      onNextPage={() => setPage(page + 1)}
-      keyword="data"
-      oneComponent={<OneSecondaryEntity {...placeholderSecondaryEntity} />}
-    />
+    <Stack spacing={1}>
+      <Typography variant="h6" sx={{ paddingLeft: "18px !important" }}>
+        All {name}
+      </Typography>
+      <Results
+        data={all}
+        isLoading={isLoading}
+        noMore={noMore}
+        onNextPage={() => setPage(page + 1)}
+        keyword="data"
+        oneComponent={<OneSecondaryEntity {...placeholderSecondaryEntity} />}
+      />
+    </Stack>
   );
 };
