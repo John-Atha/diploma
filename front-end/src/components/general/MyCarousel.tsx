@@ -52,7 +52,7 @@ interface CarouselProps {
   items: any[];
   isSmallList?: boolean;
 }
-function MyCarousel({ items, isSmallList=false }: CarouselProps) {
+function MyCarousel({ items, isSmallList = false }: CarouselProps) {
   return (
     <div>
       <Carousel
@@ -71,7 +71,8 @@ function MyCarousel({ items, isSmallList=false }: CarouselProps) {
             <div
               key={index}
               draggable={false}
-              style={{ padding: "4px", paddingLeft: 0 }}
+              style={{ padding: "8px", paddingLeft: 0 }}
+              className="zoomable"
             >
               {item}
             </div>

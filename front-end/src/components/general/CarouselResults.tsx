@@ -1,5 +1,6 @@
-import { Card, CardContent, Paper, Typography } from "@mui/material";
+import { Card, CardContent, Paper, Typography, useTheme } from "@mui/material";
 import React, { cloneElement, ReactElement } from "react";
+import { NavLink } from "react-router-dom";
 import MyCarousel from "./MyCarousel";
 import Spinner from "./Spinner";
 
@@ -7,6 +8,7 @@ interface CarouselResultsProps {
   data: any[];
   isLoading: boolean;
   title?: string;
+  titleHref?: string;
   elevation?: number;
   width?: number | string;
   maxWidth?: number | string;
@@ -17,12 +19,14 @@ export const CarouselResults = ({
   data,
   isLoading,
   title = "",
+  titleHref,
   elevation = 0,
   width,
   maxWidth,
   oneResultComponent,
   isSmallList = false,
 }: CarouselResultsProps) => {
+  const theme = useTheme();
   let content = null;
 
   if (isLoading) {
@@ -50,7 +54,15 @@ export const CarouselResults = ({
       elevation={elevation}
     >
       <CardContent>
-        <Typography variant="h6" sx={{ padding: 1 }}>
+        <Typography
+          variant="h6"
+          sx={{ padding: 1 }}
+          {...(!!titleHref && {
+            component: NavLink,
+            to: titleHref,
+            style: { color: theme.palette.text.primary },
+          })}
+        >
           {title}
         </Typography>
         <Paper elevation={0} sx={{ padding: 1, bgcolor: "inherit" }}>

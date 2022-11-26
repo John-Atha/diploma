@@ -19,7 +19,7 @@ export const placeholderCardOverlay = {
   width: 50,
   alt: "",
   href: "#",
-}
+};
 
 interface CardOverlayProps {
   src: string;
@@ -70,13 +70,17 @@ export const CardOverlay = ({
           width: 1,
         }}
       />
-      {!src && !!fallbackImg && cloneElement(fallbackImg, { style: {
-        width: "100%",
-        height: "100%",
-        position: "absolute",
-        top: "0",
-        borderRadius: 5,
-      }})}
+      {!src &&
+        !!fallbackImg &&
+        cloneElement(fallbackImg, {
+          style: {
+            width: "100%",
+            height: "100%",
+            position: "absolute",
+            top: "0",
+            borderRadius: 5,
+          },
+        })}
       {/* <img src={logo} onError={() => setLogo(fallbackSrc)} /> */}
       {/* </CardMedia> */}
       <CardContent

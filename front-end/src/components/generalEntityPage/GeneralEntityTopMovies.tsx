@@ -32,6 +32,7 @@ export const GeneralEntityTopMovies = ({
       data={data?.data}
       isLoading={isLoading}
       title={name}
+      titleHref={`/${entityName}/${keyValue}`}
       width={"100%"}
       oneResultComponent={<OneMovie {...placeholderMovie} />}
       isSmallList
