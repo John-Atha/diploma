@@ -1,4 +1,4 @@
-import React, { useState, ReactElement } from "react";
+import React, { useState, ReactElement, cloneElement } from "react";
 import { styled } from "@mui/material/styles";
 import {
   GitHub,
@@ -101,6 +101,16 @@ export default function MySidebar({ children }: MySidebarProps) {
       icon: <NavigationOutlined />,
     },
     {
+      slug: "people",
+      text: "Crew",
+      icon: <PersonOutlined />,
+    },
+    {
+      slug: "countries",
+      text: "Countries",
+      icon: <PublicOutlined />,
+    },
+    {
       slug: "languages",
       text: "Languages",
       icon: <LanguageOutlined />,
@@ -109,16 +119,6 @@ export default function MySidebar({ children }: MySidebarProps) {
       slug: "companies",
       text: "Companies",
       icon: <FactoryOutlined />,
-    },
-    {
-      slug: "countries",
-      text: "Countries",
-      icon: <PublicOutlined />,
-    },
-    {
-      slug: "people",
-      text: "People",
-      icon: <PersonOutlined />,
     },
     // {
     //   slug: "users",
@@ -161,18 +161,20 @@ export default function MySidebar({ children }: MySidebarProps) {
   const renderOneNav = ({ text, slug, icon, index }: NavProps) => {
     const path = location.pathname;
     const selected = path.slice(1) === slug;
+    const color = selected ? theme?.palette?.primary?.main : "inherit";
     return (
       <ListItem
         button
         key={index}
         onClick={() => goToPage(slug)}
         sx={{
-          borderRadius: 2,
-          bgcolor: selected ? theme?.palette?.primary?.light : "inherit",
-          color: "auto",
+          borderRadius: 0,
+          color,
+          borderRight: `5px solid ${color}`
+          // color: "auto",
         }}
       >
-        <ListItemIcon>{icon}</ListItemIcon>
+        <ListItemIcon>{cloneElement(icon, { htmlColor: color })}</ListItemIcon>
         <ListItemText primary={text} />
       </ListItem>
     );
@@ -187,7 +189,7 @@ export default function MySidebar({ children }: MySidebarProps) {
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
-      <MyAppBar>
+      {/* <MyAppBar>
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             Welcome
@@ -200,7 +202,7 @@ export default function MySidebar({ children }: MySidebarProps) {
             Login
           </Button>
         </Toolbar>
-      </MyAppBar>
+      </MyAppBar> */}
       <Drawer
         sx={{
           width: drawerWidth,
@@ -238,10 +240,9 @@ export default function MySidebar({ children }: MySidebarProps) {
           backgroundImage: `url(${backgroundImage})`,
           backgroundPositionY: "bottom",
           backgroundSize: "cover",
-          
         }}
       >
-        <DrawerHeader />
+        {/* <DrawerHeader /> */}
         {children}
         {renderLogin()}
       </Main>

@@ -8,6 +8,7 @@ import { Summary } from "../components/dashboard/Summary";
 import { TopPeople } from "../components/people/TopPeople";
 import { TopKeywords } from "../components/keywords/TopKeywords";
 import useMeasure from "react-use-measure";
+import { SearchBar } from "../components/search/SearchBar";
 
 export const App = () => {
   const [ref, bounds] = useMeasure();
@@ -23,8 +24,11 @@ export const App = () => {
         justifyContent="center"
         width={bounds.width}
       >
-        <Grid item xs={12}>
+        {/* <Grid item xs={12}>
           <Summary />
+        </Grid> */}
+        <Grid item xs={12}>
+          <SearchBar initValue="" placeholder="Search for a Movie..." />
         </Grid>
         <Grid item xs={9}>
           <Stack>

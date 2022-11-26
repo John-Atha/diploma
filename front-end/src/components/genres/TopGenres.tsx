@@ -26,6 +26,7 @@ export const TopGenres = () => {
       data={data?.data}
       isLoading={isLoading}
       title="Top Genres"
+      href="/genres"
       icon={<StarBorder />}
       oneElement={
         <OneSecondaryEntityRow

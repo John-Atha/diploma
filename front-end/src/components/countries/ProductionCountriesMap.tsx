@@ -13,7 +13,7 @@ interface ProductionCountry {
   movies_count: number;
 }
 
-export const ProductionCountries = () => {
+export const ProductionCountriesMap = () => {
   const [countries, setCountries] = useState(countries_data);
   const [avgCountryMovies, setAvgCountryMovies] = useState(1);
   const [focusedCountry, setFocusedCountry] = useState<any>(null);

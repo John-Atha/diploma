@@ -9,6 +9,18 @@ import {
 import React, { cloneElement, ReactElement, useState } from "react";
 import { NavLink } from "react-router-dom";
 
+export const placeholderCardOverlay = {
+  src: "",
+  fallbackSrc: "",
+  fallbackImg: undefined,
+  title: "",
+  subtitle: "",
+  height: 100,
+  width: 50,
+  alt: "",
+  href: "#",
+}
+
 interface CardOverlayProps {
   src: string;
   fallbackSrc?: string;

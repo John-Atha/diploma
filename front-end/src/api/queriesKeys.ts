@@ -27,6 +27,10 @@ export const queriesKeys = {
     'getTopKeywords': `keywords/top/get`,
 
     'getGenreTopMovies': `genres/movies/top/get`,
+
+    getTopEntities: (entityName: string) => `${entityName}/top.get`,
+    getTopConnectedMovies: (name: string) => `${name}/movies/top/get`,
+
     getEntities: (name: string) => `${name}/all/get`,
 
 }

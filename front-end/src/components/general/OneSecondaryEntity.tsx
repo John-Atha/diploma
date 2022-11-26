@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Sparklines, SparklinesLine } from "react-sparklines";
+import { stringSlice } from "../../helpers/stringSlice";
 
 export interface SecondaryEntityProps {
   id: number;
@@ -72,14 +73,14 @@ export const OneSecondaryEntity = ({
         width: width || 300,
         ...(height && { height }),
         ...(!height && { minHeight: 250 }),
-        backgroundColor: alpha(theme.palette.primary.main, 0.03),
+        backgroundColor: alpha(theme.palette.primary.main, 0.15),
       }}
     >
       <Grid container height={1} alignItems="space-between">
         <Grid item xs={12}>
           <CardContent>
             <Grid container justifyContent="space-between">
-              <Grid item>
+              <Grid item xs>
                 <Stack>
                   <Typography
                     variant="h6"
@@ -90,7 +91,7 @@ export const OneSecondaryEntity = ({
                       color: "black",
                     }}
                   >
-                    {name}
+                    {stringSlice(name, 15)}
                   </Typography>
                   <Typography
                     variant="body2"
@@ -103,7 +104,9 @@ export const OneSecondaryEntity = ({
                   </Typography>
                 </Stack>
               </Grid>
-              <Grid item>{renderSparkLine()}</Grid>
+              <Grid item xs={2}>
+                {renderSparkLine()}
+              </Grid>
             </Grid>
           </CardContent>
         </Grid>

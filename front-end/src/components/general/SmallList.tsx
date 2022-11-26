@@ -1,11 +1,13 @@
 import { Button, Grid, Paper, Stack, Typography } from "@mui/material";
 import React, { cloneElement, ReactElement } from "react";
 import { useQuery } from "react-query";
+import { useNavigate } from "react-router-dom";
 import SimpleBar from "simplebar-react";
 import Spinner from "./Spinner";
 
 interface SmallListProps {
   title: string;
+  href: string;
   icon: ReactElement;
   data: any[];
   isLoading: boolean;
@@ -13,11 +15,13 @@ interface SmallListProps {
 }
 export const SmallList = ({
   title,
+  href,
   icon,
   data,
   isLoading,
   oneElement,
 }: SmallListProps) => {
+  const navigate = useNavigate();
   let content = null;
 
   if (isLoading) {
@@ -45,7 +49,7 @@ export const SmallList = ({
               </Grid>
             </Grid>
             <Grid item>
-              <Button>Explore</Button>
+              <Button onClick={() => navigate(href)}>Explore</Button>
             </Grid>
           </Grid>
         </Grid>

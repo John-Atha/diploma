@@ -1,20 +1,27 @@
 import React from "react";
 import { useQuery } from "react-query";
 import { getGenreTopMovies } from "../../api/genres";
+import { getTopConnectedMovies } from "../../api/movies";
 import { queriesKeys } from "../../api/queriesKeys";
 import { CarouselResults } from "../general/CarouselResults";
 import { OneMovie, placeholderMovie } from "../movies/OneMovie";
 
-interface GenreTopMoviesProps {
+interface GeneralEntityTopMoviesProps {
+  entityName: string;
   name: string;
+  keyValue: string;
 }
 
-export const GenreTopMovies = ({ name }: GenreTopMoviesProps) => {
+export const GeneralEntityTopMovies = ({
+  entityName,
+  name,
+  keyValue,
+}: GeneralEntityTopMoviesProps) => {
   const { data, isLoading, isError } = useQuery(
-    [queriesKeys["getGenreTopMovies"], name],
-    () => getGenreTopMovies(name),
+    [queriesKeys.getTopConnectedMovies(entityName), keyValue],
+    () => getTopConnectedMovies(entityName, keyValue),
     {
-      enabled: !!name,
+      enabled: !!keyValue,
       cacheTime: 0,
       refetchOnWindowFocus: false,
     }

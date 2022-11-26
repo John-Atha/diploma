@@ -28,6 +28,7 @@ export const TopKeywords = () => {
       isLoading={isLoading}
       title="Top Keywords"
       icon={<StarBorder />}
+      href="/keywords"
       oneElement={
         <OneSecondaryEntityRow
           {...placeholderSecondaryEntity}

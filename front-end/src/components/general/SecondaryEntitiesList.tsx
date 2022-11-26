@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useState } from "react";
+import React, { cloneElement, ReactElement, useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { queriesKeys } from "../../api/queriesKeys";
 import { pagiStep } from "../../api/config";
@@ -9,19 +9,23 @@ import {
   placeholderSecondaryEntity,
 } from "./OneSecondaryEntity";
 import { Stack, Typography } from "@mui/material";
+import { CardOverlay, placeholderCardOverlay } from "./CardOverlay";
 
 interface SecondaryEntitiesListProps {
   name: string;
   component: ReactElement;
 }
 
-export const SecondaryEntitiesList = ({ name }: SecondaryEntitiesListProps) => {
+export const SecondaryEntitiesList = ({
+  name,
+  component,
+}: SecondaryEntitiesListProps) => {
   const [page, setPage] = useState(1);
   const [all, setAll] = useState<any>([]);
   const [noMore, setNoMore] = useState(false);
 
   const { data, isLoading } = useQuery(
-    [queriesKeys.getEntities(name), page],
+    [queriesKeys.getEntities(name), page, name],
     () => getEntities({ name, page }),
     {
       enabled: Boolean(name),
@@ -39,8 +43,6 @@ export const SecondaryEntitiesList = ({ name }: SecondaryEntitiesListProps) => {
     setNoMore(data?.data.length < pagiStep);
   }, [data]);
 
-  console.log({ all });
-
   return (
     <Stack spacing={1}>
       <Typography variant="h6" sx={{ paddingLeft: "18px !important" }}>
@@ -52,7 +54,7 @@ export const SecondaryEntitiesList = ({ name }: SecondaryEntitiesListProps) => {
         noMore={noMore}
         onNextPage={() => setPage(page + 1)}
         keyword="data"
-        oneComponent={<OneSecondaryEntity {...placeholderSecondaryEntity} />}
+        oneComponent={cloneElement(component)}
       />
     </Stack>
   );
