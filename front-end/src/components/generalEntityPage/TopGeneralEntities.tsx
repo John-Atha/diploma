@@ -3,8 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { getTopEntities } from "../../api/general";
 import { queriesKeys } from "../../api/queriesKeys";
-import { SecondaryEntityProps } from "../general/OneSecondaryEntity";
-import { GeneralEntityTopMovies } from "./GeneralEntityTopMovies";
+import { GeneralEntityLatestMovies } from "./GeneralEntityLatestMovies";
 
 export interface GeneralEntityTopConnectedMoviesProps {
   entityName: string;
@@ -45,7 +44,7 @@ export const TopGeneralEntities = ({
       </Grid>
       {topEntities.map(({ name, keyValue }) => (
         <Grid item md={6} xs={12} key={name}>
-          <GeneralEntityTopMovies
+          <GeneralEntityLatestMovies
             entityName={entityName}
             name={name}
             keyValue={keyValue}

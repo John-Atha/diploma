@@ -1,11 +1,12 @@
 import React from "react";
 import { useQuery } from "react-query";
-import { getTopConnectedMovies } from "../../api/movies";
+import { getGenreTopMovies } from "../../api/genres";
+import { getLatestConnectedMovies } from "../../api/movies";
 import { queriesKeys } from "../../api/queriesKeys";
 import { CarouselResults } from "../general/CarouselResults";
 import { OneMovie, placeholderMovie } from "../movies/OneMovie";
 
-interface GeneralEntityTopMoviesProps {
+interface GeneralEntityLatestMoviesProps {
   entityName: string;
   name: string;
   keyValue: string;
@@ -13,16 +14,16 @@ interface GeneralEntityTopMoviesProps {
   titleIsHref?: boolean;
 }
 
-export const GeneralEntityTopMovies = ({
+export const GeneralEntityLatestMovies = ({
   entityName,
   name,
   keyValue,
   isSmallList = true,
   titleIsHref = true,
-}: GeneralEntityTopMoviesProps) => {
+}: GeneralEntityLatestMoviesProps) => {
   const { data, isLoading, isError } = useQuery(
-    [queriesKeys.getTopConnectedMovies(entityName), keyValue],
-    () => getTopConnectedMovies(entityName, keyValue),
+    [queriesKeys.getLatestConnectedMovies(entityName), keyValue],
+    () => getLatestConnectedMovies(entityName, keyValue),
     {
       enabled: !!keyValue,
       cacheTime: 0,

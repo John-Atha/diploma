@@ -16,8 +16,14 @@ export const getLatestMovies = async () => {
   return getRequest({ requestUrl, params });
 };
 
-export const getTopConnectedMovies = async (entityName: string, key: string) => {
+export const getLatestConnectedMovies = async (entityName: string, key: string) => {
   const requestUrl = `/${entityName}/${key}/movies`;
   const params = { sort_by: "release_date", order: "desc", size: 5 };
+  return getRequest({ requestUrl, params });
+}
+
+export const getTopConnectedMovies = async (entityName: string, key: string) => {
+  const requestUrl = `/${entityName}/${key}/movies`;
+  const params = { sort_by: "vote_average", order: "desc", size: 5 };
   return getRequest({ requestUrl, params });
 }

@@ -47,18 +47,18 @@ root.render(
           <BrowserRouter>
             <Routes>
               <Route path="/"                                 element={<App />} />
-              <Route path="/genres"                           element={<GeneralEntityPageSkeleton key="genres" name='Genres' searchName='genre' keyField="name" />} />
-              <Route path="/keywords"                         element={<GeneralEntityPageSkeleton key="keywords" name='Keywords' searchName='keyword' keyField="name" />} />
-              <Route path="/languages"                        element={<GeneralEntityPageSkeleton key="languages" name='Languages' searchName='language' keyField="iso_639_1" />} />
-              <Route path="/productioncompanies"              element={<GeneralEntityPageSkeleton key="companies" name='ProductionCompanies' searchName='company' keyField="name" headerName="Production Companies" />} />
-              <Route path="/people"                           element={<GeneralEntityPageSkeleton key="people" name='People' searchName='person (actor, director)' keyField="id" />} />
+              <Route path="/genres"                           element={<GeneralEntityPageSkeleton key="genres"    name='Genres'               searchName='genre'                    keyField="name" />} />
+              <Route path="/keywords"                         element={<GeneralEntityPageSkeleton key="keywords"  name='Keywords'             searchName='keyword'                  keyField="name" />} />
+              <Route path="/languages"                        element={<GeneralEntityPageSkeleton key="languages" name='Languages'            searchName='language'                 keyField="iso_639_1" />} />
+              <Route path="/productioncompanies"              element={<GeneralEntityPageSkeleton key="companies" name='ProductionCompanies'  searchName='company'                  keyField="name" headerName="Production Companies" />} />
+              <Route path="/people"                           element={<GeneralEntityPageSkeleton key="people"    name='People'               searchName='person (actor, director)' keyField="id" />} />
               <Route path="/productioncountries"              element={<CountriesPage />} />
-              <Route path="/genres/:name"                     element={<GeneralItemPage entityName="genres" keyField="name" headerName="Genres" />} />
-              <Route path="/keywords/:name"                   element={<GeneralItemPage entityName="keywords" keyField="name" headerName="Keywords" />} />
-              <Route path="/languages/:iso_639_1"             element={<GeneralItemPage entityName="languages" keyField="iso_639_1" headerName="Languages" />} />
-              <Route path="/productioncompanies/:name"        element={<GeneralItemPage entityName="productioncompanies" keyField="name" headerName="Production Companies" />} />
-              <Route path="/people/:id"                       element={<GeneralItemPage entityName="people" keyField="id" headerName="Crew" />} />
-              <Route path="/productioncountries/:iso_3166_1"  element={<GeneralItemPage entityName="productioncountries" keyField="iso_3166_1" headerName="Production Countries" />} />
+              <Route path="/genres/:name"                     element={<GeneralItemPage entityName="genres"               keyField="name"       headerName="Genres" />} />
+              <Route path="/keywords/:name"                   element={<GeneralItemPage entityName="keywords"             keyField="name"       headerName="Keywords" />} />
+              <Route path="/languages/:iso_639_1"             element={<GeneralItemPage entityName="languages"            keyField="iso_639_1"  headerName="Languages" />} />
+              <Route path="/productioncompanies/:name"        element={<GeneralItemPage entityName="productioncompanies"  keyField="name"       headerName="Production Companies" />} />
+              <Route path="/people/:id"                       element={<GeneralItemPage entityName="people"               keyField="id"         headerName="Crew" />} />
+              <Route path="/productioncountries/:iso_3166_1"  element={<GeneralItemPage entityName="productioncountries"  keyField="iso_3166_1" headerName="Production Countries" />} />
               
               <Route path="/users"                            element={<Users /> }       />
               <Route path="/contacts"                         element={<ContactsPage />} />

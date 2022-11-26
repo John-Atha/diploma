@@ -34,3 +34,8 @@ export const getTopEntities = async (entityName: string) => {
   const params = { sort_by: "movies_count", order: "desc", size: 10 };
   return getRequest({ requestUrl, params });
 };
+
+export const getOneEntity = async (entityName: string, key: string) => {
+  const requestUrl = `/${entityName}/${key}`;
+  return getRequest({ requestUrl });
+};
