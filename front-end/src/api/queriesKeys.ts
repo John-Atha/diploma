@@ -32,6 +32,7 @@ export const queriesKeys = {
     getLatestConnectedMovies: (name: string) => `${name}/movies/latest/get`,
 
     getTopConnectedMovies: (name: string) => `${name}/movies/top/get`,
+    getConnectedMovies: (name: string) => `${name}/movies/get`,
 
     getEntities: (name: string) => `${name}/all/get`,
     getOneEntity: (entityName: string) => `${entityName}/one/get`,

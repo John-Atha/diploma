@@ -7,6 +7,7 @@ import { getOneEntity } from "../api/general";
 import { queriesKeys } from "../api/queriesKeys";
 import { GeneralEntityLatestMovies } from "../components/generalEntityPage/GeneralEntityLatestMovies";
 import { GeneralEntityTopMovies } from "../components/generalEntityPage/GeneralEntityTopMovies";
+import { GraphVisual } from "../components/graphVisualization/GraphVisual";
 import { useAppDispatch } from "../redux/hooks";
 import { setRoutes } from "../redux/slices/breadCrumbSlice";
 import { PageSkeleton } from "./PageSkeleton";
@@ -65,7 +66,9 @@ export const GeneralItemPage = ({
           <Stack spacing={2} width={bounds.width}>
             <Grid container alignItems="center" spacing={1}>
               <Grid item>
-                <Typography variant="h6">{!!data && `${data["name"]}`}</Typography>
+                <Typography variant="h6">
+                  {!!data && `${data["name"]}`}
+                </Typography>
               </Grid>
               <Grid item>
                 <Typography variant="body2">
@@ -91,7 +94,12 @@ export const GeneralItemPage = ({
                 />
               </Grid>
             </Grid>
-            <Typography paddingLeft={3} variant="h6">Graph visualization</Typography>
+            <GraphVisual
+              width={bounds.width}
+              entityName={entityName}
+              keyValue={keyValue as string}
+              nodeLabel={data?.name}
+            />
           </Stack>
         </>
       }

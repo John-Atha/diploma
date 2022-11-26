@@ -27,3 +27,9 @@ export const getTopConnectedMovies = async (entityName: string, key: string) => 
   const params = { sort_by: "vote_average", order: "desc", size: 5 };
   return getRequest({ requestUrl, params });
 }
+
+export const getConnectedMovies = async (entityName: string, key: string) => {
+  const requestUrl = `/${entityName}/${key}/movies`;
+  const params = { sort_by: "vote_average", order: "desc", size: 500 };
+  return getRequest({ requestUrl, params });
+}
