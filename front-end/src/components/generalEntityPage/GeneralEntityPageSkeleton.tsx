@@ -1,6 +1,7 @@
 import { Grid, Stack } from "@mui/material";
 import useMeasure from "react-use-measure";
 import { PageSkeleton } from "../../pages/PageSkeleton";
+import { MyHeader } from "../general/MyHeader";
 import {
   OneSecondaryEntity,
   placeholderSecondaryEntity,
@@ -31,9 +32,11 @@ export const GeneralEntityPageSkeleton = ({
           <div ref={ref} />
           <Stack spacing={2} width={bounds.width}>
             <Grid item xs={12}>
-              <SearchBar
-                initValue=""
-                placeholder={`Search for a ${searchName}...`}
+              <MyHeader
+                searchProps={{
+                  initValue: "",
+                  placeholder: `Search for a ${searchName}...`,
+                }}
               />
             </Grid>
             <TopGeneralEntities

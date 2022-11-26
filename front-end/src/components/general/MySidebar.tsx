@@ -13,6 +13,8 @@ import {
   LanguageOutlined,
   FactoryOutlined,
   PublicOutlined,
+  Explore,
+  SettingsOutlined,
 } from "@mui/icons-material";
 import {
   Box,
@@ -28,6 +30,7 @@ import {
   ListItemText,
   Button,
   useTheme,
+  Badge,
 } from "@mui/material";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { LoginDialog } from "../login/LoginDialog";
@@ -86,39 +89,70 @@ export default function MySidebar({ children }: MySidebarProps) {
 
   const navs = [
     {
+      isGroup: false,
       slug: "",
       text: "Dashboard",
       icon: <DashboardOutlined />,
     },
     {
-      slug: "genres",
-      text: "Genres",
-      icon: <ClassOutlined />,
+      isGroup: true,
+      slug: "",
+      text: "Explore",
+      icon: <Explore />,
+      navs: [
+        {
+          slug: "genres",
+          text: "Genres",
+          icon: <ClassOutlined />,
+        },
+        {
+          slug: "keywords",
+          text: "Keywords",
+          icon: <NavigationOutlined />,
+        },
+        {
+          slug: "people",
+          text: "Crew",
+          icon: <PersonOutlined />,
+        },
+        {
+          slug: "countries",
+          text: "Countries",
+          icon: <PublicOutlined />,
+        },
+        {
+          slug: "languages",
+          text: "Languages",
+          icon: <LanguageOutlined />,
+        },
+        {
+          slug: "companies",
+          text: "Companies",
+          icon: <FactoryOutlined />,
+        },
+      ],
     },
     {
-      slug: "keywords",
-      text: "Keywords",
-      icon: <NavigationOutlined />,
-    },
-    {
-      slug: "people",
-      text: "Crew",
+      isGroup: true,
+      slug: "",
+      text: "Account",
       icon: <PersonOutlined />,
-    },
-    {
-      slug: "countries",
-      text: "Countries",
-      icon: <PublicOutlined />,
-    },
-    {
-      slug: "languages",
-      text: "Languages",
-      icon: <LanguageOutlined />,
-    },
-    {
-      slug: "companies",
-      text: "Companies",
-      icon: <FactoryOutlined />,
+      navs: [
+        {
+          slug: "profile",
+          text: "Profile",
+          icon: <PersonOutlined />,
+        },
+        {
+          slug: "settings",
+          text: "Settings",
+          icon: (
+            <Badge badgeContent={2} color="primary">
+              <SettingsOutlined />
+            </Badge>
+          ),
+        },
+      ],
     },
     // {
     //   slug: "users",
@@ -155,34 +189,64 @@ export default function MySidebar({ children }: MySidebarProps) {
     text: string;
     slug: string;
     icon: ReactElement;
-    index: number;
+    isGroup?: boolean;
+    navs?: NavProps[];
   }
 
-  const renderOneNav = ({ text, slug, icon, index }: NavProps) => {
+  const renderOneLink = ({ text, slug, icon }: NavProps) => {
     const path = location.pathname;
     const selected = path.slice(1) === slug;
     const color = selected ? theme?.palette?.primary?.main : "inherit";
     return (
       <ListItem
         button
-        key={index}
+        key={text}
         onClick={() => goToPage(slug)}
         sx={{
           borderRadius: 0,
-          color,
-          borderRight: `5px solid ${color}`
-          // color: "auto",
+          borderRight: `5px solid ${color}`,
         }}
       >
         <ListItemIcon>{cloneElement(icon, { htmlColor: color })}</ListItemIcon>
-        <ListItemText primary={text} />
+        <ListItemText
+          primary={text}
+          primaryTypographyProps={{
+            sx: { fontWeight: selected ? "bold" : "normal" },
+          }}
+        />
       </ListItem>
     );
   };
 
+  const renderOneNav = ({ isGroup, text, slug, icon, navs }: NavProps) => {
+    if (isGroup) {
+      return (
+        <>
+          <ListItem key={text} sx={{ paddingBottom: 0 }}>
+            {/* <ListItemIcon>{cloneElement(icon)}</ListItemIcon> */}
+            <ListItemText
+              primary={text}
+              primaryTypographyProps={{
+                sx: { color: theme.palette.text.disabled },
+              }}
+            />{" "}
+          </ListItem>
+          <ListItem sx={{ paddingRight: 0, paddingTop: 0 }}>
+            <List sx={{ width: 1 }} disablePadding>
+              {navs?.map((nav) => renderOneLink(nav))}
+            </List>
+          </ListItem>
+        </>
+      );
+    }
+    return renderOneLink({ isGroup, text, slug, icon, navs });
+  };
+
   const renderNavs = () => {
-    return navs.map(({ text, slug, icon }, index) =>
-      renderOneNav({ text, slug, icon, index })
+    return (
+      <List>
+        {navs.map((nav, index) => renderOneNav({ ...nav, index } as any))}
+      </List>
     );
   };
 
@@ -226,6 +290,7 @@ export default function MySidebar({ children }: MySidebarProps) {
               textTransform: "none",
               fontSize: 20,
               justifyContent: "flex-start",
+              color: theme.palette.text.primary,
             }}
           >
             MovieOn

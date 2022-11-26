@@ -36,7 +36,7 @@ export const SmallList = ({
     );
   }
   return (
-    <Paper elevation={1} sx={{ padding: 1, paddingTop: 2, width: 1 }}>
+    <Paper elevation={0} sx={{ padding: 1, paddingTop: 2, width: 1 }}>
       <Grid container alignItems="center" rowSpacing={2}>
         <Grid item xs={12}>
           <Grid container alignItems="center" justifyContent="space-between">

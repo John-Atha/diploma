@@ -13,7 +13,6 @@ import { Provider } from 'react-redux';
 import { store } from './redux/store';
 import { Users } from './pages/Users';
 import { CountriesPage } from './pages/CountriesPage';
-import { PeoplePage } from './pages/PeoplePage';
 import { OneProductionCountry } from './pages/OneCountryPage';
 import { GeneralEntityPageSkeleton } from './components/generalEntityPage/GeneralEntityPageSkeleton';
 
@@ -48,11 +47,11 @@ root.render(
           <BrowserRouter>
             <Routes>
               <Route path="/"                       element={<App />} />
-              <Route path="/genres"                 element={<GeneralEntityPageSkeleton name='Genres' searchName='genre' keyField="name" />} />
-              <Route path="/keywords"               element={<GeneralEntityPageSkeleton name='Keywords' searchName='keyword' keyField="name" />} />
-              <Route path="/languages"              element={<GeneralEntityPageSkeleton name='Languages' searchName='language' keyField="iso_639_1" />} />
-              <Route path="/companies"              element={<GeneralEntityPageSkeleton name='ProductionCompanies' searchName='company' keyField="name" headerName="Production Companies" />} />
-              <Route path="/people"                 element={<GeneralEntityPageSkeleton name='People' searchName='person (actor, director)' keyField="id" />} />
+              <Route path="/genres"                 element={<GeneralEntityPageSkeleton key="genres" name='Genres' searchName='genre' keyField="name" />} />
+              <Route path="/keywords"               element={<GeneralEntityPageSkeleton key="keywords" name='Keywords' searchName='keyword' keyField="name" />} />
+              <Route path="/languages"              element={<GeneralEntityPageSkeleton key="languages" name='Languages' searchName='language' keyField="iso_639_1" />} />
+              <Route path="/companies"              element={<GeneralEntityPageSkeleton key="companies" name='ProductionCompanies' searchName='company' keyField="name" headerName="Production Companies" />} />
+              <Route path="/people"                 element={<GeneralEntityPageSkeleton key="people" name='People' searchName='person (actor, director)' keyField="id" />} />
               <Route path="/countries"              element={<CountriesPage />} />
               <Route path="/countries/:iso_3166_1"  element={<OneProductionCountry />} />
               <Route path="/users"                  element={<Users /> }       />

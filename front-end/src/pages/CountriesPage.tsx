@@ -1,8 +1,8 @@
 import { Grid, Stack } from "@mui/material";
 import useMeasure from "react-use-measure";
 import { ProductionCountriesMap } from "../components/countries/ProductionCountriesMap";
+import { MyHeader } from "../components/general/MyHeader";
 import { TopGeneralEntities } from "../components/generalEntityPage/TopGeneralEntities";
-import { SearchBar } from "../components/search/SearchBar";
 import { PageSkeleton } from "./PageSkeleton";
 
 export const CountriesPage = () => {
@@ -15,7 +15,12 @@ export const CountriesPage = () => {
           <div ref={ref} />
           <Stack spacing={2} width={bounds.width}>
             <Grid item xs={12}>
-              <SearchBar initValue="" placeholder={`Search for a country...`} />
+              <MyHeader
+                searchProps={{
+                  initValue: "",
+                  placeholder: `Search for a country...`,
+                }}
+              />{" "}
             </Grid>
             <TopGeneralEntities
               entityName="productioncountries"
