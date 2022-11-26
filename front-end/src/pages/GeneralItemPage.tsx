@@ -49,13 +49,13 @@ export const GeneralItemPage = ({
             href: `/${entityName}`,
           },
           {
-            text: keyValue,
+            text: data?.name || keyValue,
             href: "#",
           },
         ],
       })
     );
-  }, []);
+  }, [data]);
 
   return (
     <PageSkeleton
@@ -65,7 +65,7 @@ export const GeneralItemPage = ({
           <Stack spacing={2} width={bounds.width}>
             <Grid container alignItems="center" spacing={1}>
               <Grid item>
-                <Typography variant="h6">{keyValue}</Typography>
+                <Typography variant="h6">{!!data && `${data["name"]}`}</Typography>
               </Grid>
               <Grid item>
                 <Typography variant="body2">
