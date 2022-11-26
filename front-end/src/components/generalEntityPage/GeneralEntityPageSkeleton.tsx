@@ -1,6 +1,9 @@
 import { Grid, Stack } from "@mui/material";
+import { useEffect } from "react";
 import useMeasure from "react-use-measure";
 import { PageSkeleton } from "../../pages/PageSkeleton";
+import { useAppDispatch } from "../../redux/hooks";
+import { setRoutes } from "../../redux/slices/breadCrumbSlice";
 import { MyHeader } from "../general/MyHeader";
 import {
   OneSecondaryEntity,
@@ -23,7 +26,25 @@ export const GeneralEntityPageSkeleton = ({
   keyField = "name",
   headerName,
 }: GeneralEntityPageSkeletonProps) => {
+  const dispatch = useAppDispatch();
   const [ref, bounds] = useMeasure();
+
+  useEffect(() => {
+    dispatch(
+      setRoutes({
+        routes: [
+          {
+            text: "MovieOn",
+            href: "/",
+          },
+          {
+            text: headerName || name,
+            href: "#",
+          },
+        ],
+      })
+    );
+  }, []);
 
   return (
     <PageSkeleton

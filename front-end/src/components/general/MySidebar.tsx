@@ -1,5 +1,5 @@
 import React, { useState, ReactElement, cloneElement } from "react";
-import { styled } from "@mui/material/styles";
+import { alpha, styled } from "@mui/material/styles";
 import {
   GitHub,
   Home,
@@ -15,6 +15,7 @@ import {
   PublicOutlined,
   Explore,
   SettingsOutlined,
+  PersonOutline,
 } from "@mui/icons-material";
 import {
   Box,
@@ -31,10 +32,13 @@ import {
   Button,
   useTheme,
   Badge,
+  Grid,
+  IconButton,
 } from "@mui/material";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { LoginDialog } from "../login/LoginDialog";
 import backgroundImage from "../../images/bg2.png";
+import { BreadCrumb } from "./BreadCrumbRoutes";
 
 const drawerWidth = 240;
 
@@ -116,7 +120,7 @@ export default function MySidebar({ children }: MySidebarProps) {
           icon: <PersonOutlined />,
         },
         {
-          slug: "countries",
+          slug: "productioncountries",
           text: "Countries",
           icon: <PublicOutlined />,
         },
@@ -126,7 +130,7 @@ export default function MySidebar({ children }: MySidebarProps) {
           icon: <LanguageOutlined />,
         },
         {
-          slug: "companies",
+          slug: "productioncompanies",
           text: "Companies",
           icon: <FactoryOutlined />,
         },
@@ -195,7 +199,9 @@ export default function MySidebar({ children }: MySidebarProps) {
 
   const renderOneLink = ({ text, slug, icon }: NavProps) => {
     const path = location.pathname;
-    const selected = path.slice(1) === slug;
+    const curr = path.split("/")[1].toLowerCase();
+    console.log({ p: curr })
+    const selected = curr === slug.replace("/", "");
     const color = selected ? theme?.palette?.primary?.main : "inherit";
     return (
       <ListItem
@@ -253,20 +259,38 @@ export default function MySidebar({ children }: MySidebarProps) {
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
-      {/* <MyAppBar>
-        <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Welcome
-          </Typography>
-          <Button
-            startIcon={<GitHub />}
-            onClick={() => setShowingLogin(true)}
-            color="inherit"
-          >
-            Login
-          </Button>
+      <MyAppBar>
+        <Toolbar sx={{ backgroundColor: alpha(theme.palette.background.paper, 1) }}>
+          <Grid container justifyContent="space-between" alignItems="center">
+            <Grid item xs>
+              <BreadCrumb />
+            </Grid>
+            <Grid item>
+              <Grid
+                container
+                spacing={1}
+                height={1}
+                paddingTop={1}
+                justifyContent="flex-end"
+                alignItems="center"
+              >
+                <Grid item>
+                  <IconButton>
+                    <Badge badgeContent={2} color="primary">
+                      <SettingsOutlined />
+                    </Badge>
+                  </IconButton>
+                </Grid>
+                <Grid item>
+                  <IconButton>
+                    <PersonOutline />
+                  </IconButton>
+                </Grid>
+              </Grid>
+            </Grid>
+          </Grid>
         </Toolbar>
-      </MyAppBar> */}
+      </MyAppBar>
       <Drawer
         sx={{
           width: drawerWidth,
@@ -307,7 +331,7 @@ export default function MySidebar({ children }: MySidebarProps) {
           backgroundSize: "cover",
         }}
       >
-        {/* <DrawerHeader /> */}
+        <DrawerHeader />
         {children}
         {renderLogin()}
       </Main>

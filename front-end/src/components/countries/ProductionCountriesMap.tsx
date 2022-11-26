@@ -133,7 +133,7 @@ export const ProductionCountriesMap = () => {
           </DialogContent>
           <DialogActions>
             <Button variant="outlined" onClick={closeDialog}>Cancel</Button>
-            <Button variant="contained" onClick={() => navigate(`/countries/${selectedCountry.iso_a2}`)}>OK</Button>
+            <Button variant="contained" onClick={() => navigate(`/productioncountries/${selectedCountry.iso_a2}`)}>OK</Button>
           </DialogActions>
         </Dialog>
       )}

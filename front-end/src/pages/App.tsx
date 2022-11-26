@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Grid, Stack } from "@mui/material";
 import { PageSkeleton } from "./PageSkeleton";
 import { TopMovies } from "../components/movies/TopMovies";
@@ -9,9 +9,29 @@ import { TopPeople } from "../components/people/TopPeople";
 import { TopKeywords } from "../components/keywords/TopKeywords";
 import useMeasure from "react-use-measure";
 import { MyHeader } from "../components/general/MyHeader";
+import { useAppDispatch } from "../redux/hooks";
+import { setRoutes } from "../redux/slices/breadCrumbSlice";
 
 export const App = () => {
+  const dispatch = useAppDispatch();
   const [ref, bounds] = useMeasure();
+
+  useEffect(() => {
+    dispatch(
+      setRoutes({
+        routes: [
+          {
+            text: "MovieOn",
+            href: "/",
+          },
+          {
+            text: "Dashboard",
+            href: "#",
+          },
+        ],
+      })
+    );
+  }, []);
 
   console.log({ width: bounds.width });
   return (

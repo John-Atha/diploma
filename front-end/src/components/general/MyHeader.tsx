@@ -19,29 +19,6 @@ export const MyHeader = ({ searchProps }: MyHeaderProps) => {
       <Grid item xs={9} paddingRight={3}>
         <SearchBar {...searchProps} />
       </Grid>
-      <Grid item xs={3}>
-        <Grid
-          container
-          spacing={1}
-          height={1}
-          paddingTop={1}
-          justifyContent="flex-end"
-          alignItems="center"
-        >
-          <Grid item>
-            <IconButton>
-              <Badge badgeContent={2} color="primary">
-                <SettingsOutlined />
-              </Badge>
-            </IconButton>
-          </Grid>
-          <Grid item>
-            <IconButton>
-              <PersonOutline />
-            </IconButton>
-          </Grid>
-        </Grid>
-      </Grid>
     </Grid>
   );
 };
