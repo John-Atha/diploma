@@ -8,6 +8,7 @@ export interface GraphVisualProps {
   entityName: string;
   keyValue: string;
   nodeLabel: string;
+  centralNode: any;
 }
 
 export const GraphVisual = ({
@@ -15,6 +16,7 @@ export const GraphVisual = ({
   entityName,
   keyValue,
   nodeLabel,
+  centralNode,
 }: GraphVisualProps) => {
   return (
     <Stack spacing={2} width={width}>
@@ -26,6 +28,7 @@ export const GraphVisual = ({
         keyValue={keyValue}
         width={width}
         nodeLabel={nodeLabel}
+        centralNode={centralNode}
       />
     </Stack>
   );

@@ -99,6 +99,7 @@ export const GeneralItemPage = ({
               entityName={entityName}
               keyValue={keyValue as string}
               nodeLabel={data?.name}
+              centralNode={data}
             />
           </Stack>
         </>

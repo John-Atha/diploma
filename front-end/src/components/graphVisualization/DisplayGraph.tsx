@@ -7,27 +7,46 @@ import {
 } from "@react-sigma/core";
 import { GraphVisualProps } from "./GraphVisual";
 import { LoadGraph } from "./LoadGraph";
-import { alpha, Button, Grid, IconButton, Stack, Typography, useTheme } from "@mui/material";
+import {
+  Grid,
+  Slide,
+  Stack,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import {
   Fullscreen,
   FullscreenExit,
   ZoomIn,
   ZoomOut,
 } from "@mui/icons-material";
+import { GraphEvents } from "./GraphEvents";
+import { useState } from "react";
+import { MovieVisualizationPaper } from "./MovieVisualizationPaper";
+import { SecondaryEntityVisualizationPaper } from "./SecondaryEntityVisualizationPaper";
 
 export const DisplayGraph = ({
   entityName,
   keyValue,
   width,
   nodeLabel,
+  centralNode,
 }: GraphVisualProps) => {
-    const theme = useTheme();
+  const theme = useTheme();
+
+  const [selectedNode, setSelectedNode] = useState<any>(null);
+  const [isCentralNodeSelected, setIsCentralNodeSelected] = useState(false);
+
   return (
-    <SigmaContainer style={{ height: "80vh", width }}>
+    <SigmaContainer
+      style={{ height: "80vh", width }}
+      settings={{ renderEdgeLabels: true, defaultEdgeType: "arrow" }}
+    >
       <LoadGraph
         entityName={entityName}
         keyValue={keyValue}
         nodeLabel={nodeLabel}
+        centralNode={centralNode}
       />
       <ControlsContainer
         position={"top-left"}
@@ -60,8 +79,42 @@ export const DisplayGraph = ({
             </Grid>
           </Grid>
         </Stack>
-        <SearchControl style={{ borderBottom: "1px solid grey", borderRadius: 7, margin: 5 }} />
+        <SearchControl
+          style={{ borderBottom: "1px solid grey", borderRadius: 7, margin: 5 }}
+        />
       </ControlsContainer>
+      <GraphEvents
+        setFocusedNode={(n) => {
+          setSelectedNode(n);
+          setIsCentralNodeSelected(false);
+        }}
+        selectCentralNode={() => {
+          setIsCentralNodeSelected(true);
+          setSelectedNode(null);
+        }}
+      />
+      <Slide direction="left" in={!!selectedNode} mountOnEnter unmountOnExit>
+        <div>
+          <MovieVisualizationPaper
+            movie_id={selectedNode?.id}
+            clear={() => setSelectedNode(null)}
+          />
+        </div>
+      </Slide>
+      <Slide
+        direction="left"
+        in={!!isCentralNodeSelected}
+        mountOnEnter
+        unmountOnExit
+      >
+        <div>
+          <SecondaryEntityVisualizationPaper
+            clear={() => setIsCentralNodeSelected(false)}
+            entityName={entityName}
+            keyValue={keyValue}
+          />
+        </div>
+      </Slide>
     </SigmaContainer>
   );
 };

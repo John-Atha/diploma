@@ -14,11 +14,13 @@ import { CardOverlay, placeholderCardOverlay } from "./CardOverlay";
 interface SecondaryEntitiesListProps {
   name: string;
   component: ReactElement;
+  keyField: string;
 }
 
 export const SecondaryEntitiesList = ({
   name,
   component,
+  keyField,
 }: SecondaryEntitiesListProps) => {
   const [page, setPage] = useState(1);
   const [all, setAll] = useState<any>([]);
@@ -39,7 +41,13 @@ export const SecondaryEntitiesList = ({
   }, [name]);
 
   useEffect(() => {
-    if (data?.data) setAll(all.concat([...data.data]));
+    if (data?.data) {
+      const newData = data.data.map((datum: any) => ({
+        ...datum,
+        href: `/${name}/${datum[keyField]}`,
+      }));
+      setAll(all.concat([...newData]));
+    }
     setNoMore(data?.data.length < pagiStep);
   }, [data]);
 

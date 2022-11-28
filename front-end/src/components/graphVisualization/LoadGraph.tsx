@@ -35,18 +35,18 @@ export const LoadGraph = ({
       x: Math.random(),
       y: Math.random(),
       label: nodeLabel,
-      size: 30,
+      size: 20,
       color: theme.palette.primary.light,
     });
-    data.data.forEach(({ id, title, original_title }: any) => {
-      graph.addNode(`Movie ${id}`, {
+    data.data.forEach((movie: any) => {
+      graph.addNode(JSON.stringify(movie), {
         x: Math.random(),
         y: Math.random(),
-        label: title || original_title,
+        label: movie.title || movie.original_title,
         size: 5,
         color: alpha(theme.palette.primary.main, Math.max(Math.random(), 0.5)),
       });
-      graph.addEdgeWithKey(`Rel to Movie ${id}`, entityName, `Movie ${id}`);
+      graph.addEdgeWithKey(`Rel to Movie ${movie.id}`, entityName, JSON.stringify(movie));
     });
     loadGraph(graph);
     assign();
