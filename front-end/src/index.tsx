@@ -15,6 +15,7 @@ import { Users } from './pages/Users';
 import { CountriesPage } from './pages/CountriesPage';
 import { GeneralEntityPageSkeleton } from './components/generalEntityPage/GeneralEntityPageSkeleton';
 import { GeneralItemPage } from './pages/GeneralItemPage';
+import { NotFound } from './pages/NotFound';
 
 const queryClient = new QueryClient(({
   defaultOptions: {
@@ -64,6 +65,8 @@ root.render(
               <Route path="/contacts"                         element={<ContactsPage />} />
               <Route path="/explore"                          element={<Explore />} />
               <Route path="/repos"                            element={<Repositories />} />
+
+              <Route path="*"                                 element={<NotFound />} />
             </Routes>
           </BrowserRouter>
         </Provider>
