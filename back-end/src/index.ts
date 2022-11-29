@@ -14,6 +14,7 @@ import { generalRouter } from "./routers/generalRouter";
 import { Person } from "./models/Person";
 import { MovieBrief } from "./models/Movie";
 import { SummaryController } from "./controllers/SummaryController";
+import { MovieDetailsService } from "./services/MovieDetailsService";
 
 dotenv.config();
 if (!process.env.PORT) process.exit(1);
@@ -91,5 +92,10 @@ router.get("/summary", async (req, res) => {
   const controller = new SummaryController(driver);
   const data = await controller.getSummary();
   res.send(data);
+})
+router.get("/movies/:id", async (req, res) => {
+  const service = new MovieDetailsService(driver, req.params.id);
+  const data = await service.getOne();
+  res.send({ data });
 })
 server.listen(PORT, () => console.log(`Listening on ${PORT}`));
