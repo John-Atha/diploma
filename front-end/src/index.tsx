@@ -16,6 +16,7 @@ import { CountriesPage } from './pages/CountriesPage';
 import { GeneralEntityPageSkeleton } from './components/generalEntityPage/GeneralEntityPageSkeleton';
 import { GeneralItemPage } from './pages/GeneralItemPage';
 import { NotFound } from './pages/NotFound';
+import { MoviePage } from './pages/MoviePage';
 
 const queryClient = new QueryClient(({
   defaultOptions: {
@@ -54,6 +55,7 @@ root.render(
               <Route path="/productioncompanies"              element={<GeneralEntityPageSkeleton key="companies" name='ProductionCompanies'  searchName='company'                  keyField="name" headerName="Production Companies" />} />
               <Route path="/people"                           element={<GeneralEntityPageSkeleton key="people"    name='People'               searchName='person (actor, director)' keyField="id" />} />
               <Route path="/productioncountries"              element={<CountriesPage />} />
+              <Route path="/movies/:id"                       element={<MoviePage />} />
               <Route path="/genres/:name"                     element={<GeneralItemPage entityName="genres"               keyField="name"       headerName="Genres" />} />
               <Route path="/keywords/:name"                   element={<GeneralItemPage entityName="keywords"             keyField="name"       headerName="Keywords" />} />
               <Route path="/languages/:iso_639_1"             element={<GeneralItemPage entityName="languages"            keyField="iso_639_1"  headerName="Languages" />} />
