@@ -27,7 +27,7 @@ export const getRequest = async ({ requestUrl, headers, params }: GetProps) => {
             },
         }
     ).then(response => {
-        console.log(response.data);
+        // console.log(response.data);
         return response.data;
     }).catch(err => {
         console.log(err);

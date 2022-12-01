@@ -7,13 +7,7 @@ import {
 } from "@react-sigma/core";
 import { GraphVisualProps } from "./GraphVisual";
 import { LoadGraph } from "./LoadGraph";
-import {
-  Grid,
-  Slide,
-  Stack,
-  Typography,
-  useTheme,
-} from "@mui/material";
+import { Grid, Slide, Stack, Typography, useTheme } from "@mui/material";
 import {
   Fullscreen,
   FullscreenExit,
@@ -21,9 +15,38 @@ import {
   ZoomOut,
 } from "@mui/icons-material";
 import { GraphEvents } from "./GraphEvents";
-import { useState } from "react";
-import { MovieVisualizationPaper } from "./MovieVisualizationPaper";
+import { useEffect, useState } from "react";
 import { SecondaryEntityVisualizationPaper } from "./SecondaryEntityVisualizationPaper";
+
+export const nodeTypeToEntityType: any = {
+  Cast: "People",
+  Crew: "People",
+  Genre: "Genres",
+  Keyword: "Keywords",
+  ProductionCompany: "ProductionCompanies",
+  ProductionCountry: "ProductionCountries",
+  Language: "Languages",
+};
+
+export const entityTypeToKeyValue = (entityType: string, node: any) => {
+  if (!node) return null;
+  switch (entityType) {
+    case "People":
+      return node.id;
+    case "Genres":
+      return node.name;
+    case "Keywords":
+      return node.name;
+    case "ProductionCompanies":
+      return node.name;
+    case "ProductionCountries":
+      return node.iso_3166_1;
+    case "Languages":
+      return node.iso_639_1;
+    case "Movies":
+      return node.id;
+  }
+};
 
 export const DisplayGraph = ({
   entityName,
@@ -31,11 +54,19 @@ export const DisplayGraph = ({
   width,
   nodeLabel,
   centralNode,
+  data,
+  isLoading,
+  isError,
 }: GraphVisualProps) => {
   const theme = useTheme();
 
   const [selectedNode, setSelectedNode] = useState<any>(null);
-  const [isCentralNodeSelected, setIsCentralNodeSelected] = useState(false);
+
+  const clear = () => {
+    setSelectedNode(null);
+  };
+
+  console.log({ selectedNode })
 
   return (
     <SigmaContainer
@@ -44,9 +75,9 @@ export const DisplayGraph = ({
     >
       <LoadGraph
         entityName={entityName}
-        keyValue={keyValue}
         nodeLabel={nodeLabel}
-        centralNode={centralNode}
+        data={data}
+        isLoading={isLoading}
       />
       <ControlsContainer
         position={"top-left"}
@@ -57,7 +88,6 @@ export const DisplayGraph = ({
             container
             spacing={1}
             padding={1}
-            // justifyContent="space-between"
           >
             <Grid item>
               <Typography variant="body1">Zoom level:</Typography>
@@ -85,33 +115,26 @@ export const DisplayGraph = ({
       </ControlsContainer>
       <GraphEvents
         setFocusedNode={(n) => {
-          setSelectedNode(n);
-          setIsCentralNodeSelected(false);
+          setSelectedNode({
+            ...n,
+            nodeType: nodeTypeToEntityType[n?.nodeType] || "Movies",
+            keyValue: entityTypeToKeyValue(
+              nodeTypeToEntityType[n?.nodeType] || "Movies",
+              n
+            ),
+          });
         }}
         selectCentralNode={() => {
-          setIsCentralNodeSelected(true);
-          setSelectedNode(null);
+          setSelectedNode({ ...centralNode, nodeType: entityName, keyValue });
         }}
+        clear={clear}
       />
       <Slide direction="left" in={!!selectedNode} mountOnEnter unmountOnExit>
         <div>
-          <MovieVisualizationPaper
-            movie_id={selectedNode?.id}
-            clear={() => setSelectedNode(null)}
-          />
-        </div>
-      </Slide>
-      <Slide
-        direction="left"
-        in={!!isCentralNodeSelected}
-        mountOnEnter
-        unmountOnExit
-      >
-        <div>
           <SecondaryEntityVisualizationPaper
-            clear={() => setIsCentralNodeSelected(false)}
-            entityName={entityName}
-            keyValue={keyValue}
+            entityName={selectedNode?.nodeType || "Movies"}
+            keyValue={selectedNode?.keyValue}
+            clear={clear}
           />
         </div>
       </Slide>

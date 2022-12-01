@@ -24,6 +24,7 @@ export const SecondaryEntityVisualizationPaper = ({
   entityName,
   clear,
 }: MovieVisualizationPaperProps) => {
+  console.log(entityName, keyValue);
   const { data, isLoading } = useQuery(
     [queriesKeys.getOneEntity(entityName as string), keyValue],
     () => getOneEntity(entityName as string, keyValue as string),

@@ -24,6 +24,7 @@ export interface SecondaryEntityProps {
   height?: number | string;
   width?: number | string;
   href: string;
+  [key: string]: any;
 }
 
 export const placeholderSecondaryEntity = {

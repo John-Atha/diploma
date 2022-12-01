@@ -7,25 +7,32 @@ import { queriesKeys } from "../../api/queriesKeys";
 import { GraphVisualProps } from "./GraphVisual";
 import { useLayoutForceAtlas2 } from "@react-sigma/layout-forceatlas2";
 import { alpha, useTheme } from "@mui/material";
+import { entityTypeToKeyValue, nodeTypeToEntityType } from "./DisplayGraph";
 
 export const LoadGraph = ({
   entityName,
-  keyValue,
   nodeLabel,
+  data,
+  isLoading,
 }: GraphVisualProps) => {
   const theme = useTheme();
   const loadGraph = useLoadGraph();
   const { assign } = useLayoutForceAtlas2();
 
-  const { data, isLoading, isError } = useQuery(
-    [queriesKeys.getConnectedMovies(entityName), keyValue],
-    () => getConnectedMovies(entityName, keyValue),
-    {
-      enabled: !!keyValue,
-      cacheTime: 1000,
-      refetchOnWindowFocus: false,
-    }
-  );
+  const colors: any = {
+    Genre: theme.palette.warning.main,
+    Keyword: theme.palette.success.main,
+    Cast: theme.palette.error.main,
+    Crew: theme.palette.error.main,
+    default: () =>
+      alpha(theme.palette.primary.main, Math.max(Math.random(), 0.5)),
+  };
+
+  const neighboursList = data
+    ? Array.isArray(data.data)
+      ? data.data
+      : Object.values(data).flat()
+    : [];
 
   useEffect(() => {
     if (!data || isLoading) return;
@@ -38,17 +45,25 @@ export const LoadGraph = ({
       size: 20,
       color: theme.palette.primary.light,
     });
-    data.data.forEach((movie: any) => {
-      const node = JSON.stringify(movie);
+    neighboursList.forEach((datum: any) => {
+      const node = JSON.stringify(datum);
       if (graph.nodes().includes(node)) return;
       graph.addNode(node, {
         x: Math.random(),
         y: Math.random(),
-        label: movie.title || movie.original_title,
+        label: datum.name || datum.title || datum.original_title,
         size: 5,
-        color: alpha(theme.palette.primary.main, Math.max(Math.random(), 0.5)),
+        color: colors[datum?.nodeType] || colors["default"](),
       });
-      graph.addEdgeWithKey(`Rel to Movie ${movie.id}`, entityName, node);
+      const id = entityTypeToKeyValue(
+        nodeTypeToEntityType[datum?.nodeType] || "Movies",
+        datum
+      );
+      graph.addEdgeWithKey(
+        `Rel to ${datum?.nodeType || "Movies"} ${id}`,
+        entityName,
+        node
+      );
     });
     loadGraph(graph);
     assign();

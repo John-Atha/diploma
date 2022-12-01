@@ -6,11 +6,13 @@ import { useEffect, useState } from "react";
 export interface GraphEventsProps {
   setFocusedNode: (e: any) => void;
   selectCentralNode: () => void;
+  clear: () => void;
 }
 
 export const GraphEvents = ({
   setFocusedNode,
   selectCentralNode,
+  clear,
 }: GraphEventsProps) => {
   const registerEvents = useRegisterEvents();
   const sigma = useSigma();
@@ -29,7 +31,7 @@ export const GraphEvents = ({
         }
       },
       clickStage: () => {
-        setFocusedNode(null);
+        clear();
       },
       clickEdge: (e) => {
         console.log(e.edge);

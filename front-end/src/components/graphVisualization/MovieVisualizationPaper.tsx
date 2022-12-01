@@ -55,8 +55,8 @@ export const MovieVisualizationPaper = ({
               <Close />
             </IconButton>
           </Grid>
-          <Typography variant="body1">{data.title}</Typography>
-          <Typography variant="body2">{data.release_date}</Typography>
+          <Typography variant="body1">{data.data?.fields?.title}</Typography>
+          <Typography variant="body2">{data.data?.fields?.release_date}</Typography>
           <Chip
             variant="filled"
             color="success"

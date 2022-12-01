@@ -200,7 +200,6 @@ export default function MySidebar({ children }: MySidebarProps) {
   const renderOneLink = ({ text, slug, icon }: NavProps) => {
     const path = location.pathname;
     const curr = path.split("/")[1].toLowerCase();
-    console.log({ p: curr })
     const selected = curr === slug.replace("/", "");
     const color = selected ? theme?.palette?.primary?.main : "inherit";
     return (

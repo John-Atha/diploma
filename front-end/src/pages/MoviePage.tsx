@@ -52,7 +52,7 @@ export const MoviePage = () => {
     if (data && !isLoading) {
       const newRoutes: any = [...routes];
       newRoutes.push({
-        text: data.title,
+        text: data.data?.fields?.title,
         href: "#",
       });
       dispatch(

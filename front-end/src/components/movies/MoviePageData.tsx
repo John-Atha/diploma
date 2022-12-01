@@ -1,9 +1,11 @@
 import { CardMedia, Grid, Stack, Typography } from "@mui/material";
 import React from "react";
+import { useQuery } from "react-query";
 import { tmdb_base_url } from "../../data/cloud_base_urls";
 import { useMovieData } from "../../hooks/useMovieData";
 import movieImage from "../../images/denise-jans-Lq6rcifGjOU-unsplash.jpg";
 import { CarouselResults } from "../general/CarouselResults";
+import { GraphVisual } from "../graphVisualization/GraphVisual";
 import { OnePerson, placeholderPerson } from "../people/OnePerson";
 import { MovieRelatives } from "./MovieRelatives";
 
@@ -24,6 +26,7 @@ interface MovieData {
 export const MoviePageData = ({ data }: MovieData) => {
   const { fields, neighbours } = useMovieData(data);
   const {
+    id,
     title,
     original_title,
     poster_path,
@@ -33,6 +36,7 @@ export const MoviePageData = ({ data }: MovieData) => {
   } = fields;
   const logo = poster_path ? `${tmdb_base_url}${poster_path}` : movieImage;
   console.log({ neighbours });
+
   return (
     <Stack spacing={2}>
       <div style={{ paddingLeft: 16 }}>
@@ -65,12 +69,16 @@ export const MoviePageData = ({ data }: MovieData) => {
                 <MovieRelatives
                   title="Genres"
                   data={(neighbours as any)["Genre"]}
+                  keyField="name"
+                  entityName="Genres"
                 />
               </Grid>
               <Grid item xs>
                 <MovieRelatives
                   title="Keywords"
                   data={(neighbours as any)["Keyword"]}
+                  keyField="name"
+                  entityName="Keywords"
                 />
               </Grid>
             </Grid>
@@ -85,10 +93,14 @@ export const MoviePageData = ({ data }: MovieData) => {
                   <MovieRelatives
                     title="Language"
                     data={(neighbours as any)["Language"]}
+                    keyField="iso_639_1"
+                    entityName="Languages"
                   />
                   <MovieRelatives
                     title="Production Countries"
                     data={(neighbours as any)["ProductionCountry"]}
+                    keyField="iso_3166_1"
+                    entityName="ProductionCountries"
                   />
                 </Stack>
               </Grid>
@@ -96,6 +108,8 @@ export const MoviePageData = ({ data }: MovieData) => {
                 <MovieRelatives
                   title="Production Companies"
                   data={(neighbours as any)["ProductionCompany"]}
+                  keyField="name"
+                  entityName="ProductionCompanies"
                 />
               </Grid>
             </Grid>
@@ -128,6 +142,18 @@ export const MoviePageData = ({ data }: MovieData) => {
           </Grid>
         </Grid>
       </Grid>
+      <Typography variant="h6">Visualization</Typography>
+      <GraphVisual
+        // width={bounds.width}
+        entityName="movies"
+        keyValue={id}
+        nodeLabel={title || original_title}
+        centralNode={data.fields}
+        centralNodeIsMovie
+        data={neighbours}
+        isLoading={false}
+        isError={false}
+      />
     </Stack>
   );
 };

@@ -4,6 +4,7 @@ import { useQuery } from "react-query";
 import { useParams } from "react-router-dom";
 import useMeasure from "react-use-measure";
 import { getOneEntity } from "../api/general";
+import { getConnectedMovies } from "../api/movies";
 import { queriesKeys } from "../api/queriesKeys";
 import { GeneralEntityLatestMovies } from "../components/generalEntityPage/GeneralEntityLatestMovies";
 import { GeneralEntityTopMovies } from "../components/generalEntityPage/GeneralEntityTopMovies";
@@ -33,6 +34,16 @@ export const GeneralItemPage = ({
     {
       enabled: !!keyValue,
       cacheTime: 0,
+      refetchOnWindowFocus: false,
+    }
+  );
+
+  const { data: visData, isLoading: visLoading, isError: visError } = useQuery(
+    [queriesKeys.getConnectedMovies(entityName), keyValue],
+    () => getConnectedMovies(entityName, keyValue as string),
+    {
+      enabled: !!keyValue,
+      cacheTime: 1000,
       refetchOnWindowFocus: false,
     }
   );
@@ -100,6 +111,9 @@ export const GeneralItemPage = ({
               keyValue={keyValue as string}
               nodeLabel={data?.name}
               centralNode={data}
+              data={visData}
+              isLoading={visLoading}
+              isError={visError}
             />
           </Stack>
         </>
