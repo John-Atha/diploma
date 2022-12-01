@@ -14,7 +14,6 @@ export interface MovieBriefProps {
   vote_average: number;
   vote_count: number;
 
-  // genres: Genre[];
   ratings_count: number;
   ratings_average: number;
 }
@@ -60,8 +59,29 @@ export interface MovieProps extends MovieBriefProps {
   adult: string;
   budget: number;
   imdb_id: string;
+}
 
-  production_companies: ProductionCompany[];
-  production_countries: ProductionCountry[];
-  spoken_languages: Language[];
+export class Movie extends MovieBrief {
+    overview: string;
+    popularity: number;
+    tagline: string;
+    vote_average: number;
+    vote_count: number;
+    status: string;
+    adult: string;
+    budget: number;
+    imdb_id: string;
+
+    constructor(movie: MovieProps) {
+        super(movie);
+        this.overview = movie.overview;
+        this.popularity = movie.popularity;
+        this.tagline = movie.tagline;
+        this.vote_average = movie.vote_average;
+        this.vote_count = movie.vote_count;
+        this.status = movie.status;
+        this.adult = movie.adult;
+        this.budget = movie.budget;
+        this.imdb_id = movie.imdb_id;
+    }
 }
