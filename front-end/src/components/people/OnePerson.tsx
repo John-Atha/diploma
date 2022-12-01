@@ -40,7 +40,9 @@ export const OnePerson = ({
     ? `${department} - ${job}`
     : character
     ? `Character: ${character}`
-    : `${movies_count} Movies`;
+    : movies_count
+    ? `${movies_count} Movies`
+    : "";
   return (
     <CardOverlay
       src={logo}
