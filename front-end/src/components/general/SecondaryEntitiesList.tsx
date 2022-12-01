@@ -15,12 +15,18 @@ interface SecondaryEntitiesListProps {
   name: string;
   component: ReactElement;
   keyField: string;
+  sort_by?: string;
+  order?: "asc" | "desc";
+  itemWidth?: number;
 }
 
 export const SecondaryEntitiesList = ({
   name,
   component,
   keyField,
+  sort_by,
+  order,
+  itemWidth,
 }: SecondaryEntitiesListProps) => {
   const [page, setPage] = useState(1);
   const [all, setAll] = useState<any>([]);
@@ -28,7 +34,7 @@ export const SecondaryEntitiesList = ({
 
   const { data, isLoading } = useQuery(
     [queriesKeys.getEntities(name), page, name],
-    () => getEntities({ name, page }),
+    () => getEntities({ name, page, sort_by, order }),
     {
       enabled: Boolean(name),
       cacheTime: 0,
@@ -63,6 +69,7 @@ export const SecondaryEntitiesList = ({
         onNextPage={() => setPage(page + 1)}
         keyword="data"
         oneComponent={cloneElement(component)}
+        itemWidth={itemWidth}
       />
     </Stack>
   );

@@ -68,6 +68,7 @@ export const GeneralEntityPageSkeleton = ({
             <SecondaryEntitiesList
               name={name}
               keyField={keyField}
+              itemWidth={250}
               component={
                 <OneSecondaryEntity
                   {...placeholderSecondaryEntity}

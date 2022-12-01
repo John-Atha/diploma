@@ -13,6 +13,7 @@ export interface ResultsProps {
   onNextPage: () => void;
   oneComponent: any;
   keyword?: string;
+  itemWidth?: number;
 }
 
 export const Results = ({
@@ -22,6 +23,7 @@ export const Results = ({
   onNextPage,
   oneComponent,
   keyword = "data",
+  itemWidth,
 }: ResultsProps) => {
   if (isLoading && !data) {
     return <Spinner />;
@@ -38,10 +40,10 @@ export const Results = ({
       loader={<Spinner />}
       style={{ overflowY: "hidden", paddingBottom: 20 }}
     >
-      <Grid container spacing={2} justifyContent="center">
+      <Grid container spacing={2} paddingLeft={3}>
         {data?.map((datum) => {
           return (
-            <Grid item key={datum?.id}>
+            <Grid item key={datum?.id} width={itemWidth}>
               {cloneElement(oneComponent as ReactElement, { ...datum })}
             </Grid>
           );

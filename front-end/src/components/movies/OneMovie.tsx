@@ -11,6 +11,7 @@ export interface BriefMovieProps {
   homepage: string;
   ratings_count: number;
   ratings_average: number;
+  width?: number;
 }
 
 export const placeholderMovie = {
@@ -33,6 +34,7 @@ export const OneMovie = ({
   homepage,
   ratings_count,
   ratings_average,
+  width = 100,
 }: BriefMovieProps) => {
   const logo = poster_path
     ? `${tmdb_base_url}${poster_path}`
@@ -44,7 +46,7 @@ export const OneMovie = ({
       title={title || original_title}
       subtitle={release_date}
       href={`/movies/${id}`}
-      width={100}
+      width={width}
       height={200}
     />
   );

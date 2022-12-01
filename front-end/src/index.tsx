@@ -17,6 +17,7 @@ import { GeneralEntityPageSkeleton } from './components/generalEntityPage/Genera
 import { GeneralItemPage } from './pages/GeneralItemPage';
 import { NotFound } from './pages/NotFound';
 import { MoviePage } from './pages/MoviePage';
+import { MoviesPage } from './pages/MoviesPage';
 
 const queryClient = new QueryClient(({
   defaultOptions: {
@@ -49,6 +50,7 @@ root.render(
           <BrowserRouter>
             <Routes>
               <Route path="/"                                 element={<App />} />
+              <Route path="/movies"                           element={<MoviesPage />} />
               <Route path="/genres"                           element={<GeneralEntityPageSkeleton key="genres"    name='Genres'               searchName='genre'                    keyField="name" />} />
               <Route path="/keywords"                         element={<GeneralEntityPageSkeleton key="keywords"  name='Keywords'             searchName='keyword'                  keyField="name" />} />
               <Route path="/languages"                        element={<GeneralEntityPageSkeleton key="languages" name='Languages'            searchName='language'                 keyField="iso_639_1" />} />

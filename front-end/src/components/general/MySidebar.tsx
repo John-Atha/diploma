@@ -16,6 +16,7 @@ import {
   Explore,
   SettingsOutlined,
   PersonOutline,
+  MovieOutlined,
 } from "@mui/icons-material";
 import {
   Box,
@@ -104,6 +105,11 @@ export default function MySidebar({ children }: MySidebarProps) {
       text: "Explore",
       icon: <Explore />,
       navs: [
+        {
+          slug: "movies",
+          text: "Movies",
+          icon: <MovieOutlined />,
+        },
         {
           slug: "genres",
           text: "Genres",
@@ -259,7 +265,9 @@ export default function MySidebar({ children }: MySidebarProps) {
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
       <MyAppBar>
-        <Toolbar sx={{ backgroundColor: alpha(theme.palette.background.paper, 1) }}>
+        <Toolbar
+          sx={{ backgroundColor: alpha(theme.palette.background.paper, 1) }}
+        >
           <Grid container justifyContent="space-between" alignItems="center">
             <Grid item xs>
               <BreadCrumb />

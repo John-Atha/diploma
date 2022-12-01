@@ -12,22 +12,22 @@ export const getSummary = async () => {
 interface GetEntitiesProps {
   name: string;
   sort_by?: string;
-  order?: "asc|desc";
+  order?: "asc" | "desc";
   page: number;
   size?: number;
 }
 export const getEntities = async ({
   name,
-  sort_by,
-  order,
+  sort_by = "movies_count",
+  order = "desc",
   page,
   size = pagiStep,
 }: GetEntitiesProps) => {
   const requestUrl = `/${name}`;
-  const params = { page, sort_by: "movies_count", order: "desc", size };
+  const params = { page, sort_by, order, size };
+  console.log({ params })
   return getRequest({ requestUrl, params });
 };
-
 
 export const getTopEntities = async (entityName: string) => {
   const requestUrl = `/${entityName}`;

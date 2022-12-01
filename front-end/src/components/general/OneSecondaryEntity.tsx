@@ -71,7 +71,7 @@ export const OneSecondaryEntity = ({
       component={Paper}
       elevation={3}
       sx={{
-        width: width || 300,
+        // width: width || 300,
         ...(height && { height }),
         ...(!height && { minHeight: 250 }),
         backgroundColor: alpha(theme.palette.primary.main, 0.15),
