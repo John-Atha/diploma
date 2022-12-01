@@ -39,14 +39,16 @@ export const LoadGraph = ({
       color: theme.palette.primary.light,
     });
     data.data.forEach((movie: any) => {
-      graph.addNode(JSON.stringify(movie), {
+      const node = JSON.stringify(movie);
+      if (graph.nodes().includes(node)) return;
+      graph.addNode(node, {
         x: Math.random(),
         y: Math.random(),
         label: movie.title || movie.original_title,
         size: 5,
         color: alpha(theme.palette.primary.main, Math.max(Math.random(), 0.5)),
       });
-      graph.addEdgeWithKey(`Rel to Movie ${movie.id}`, entityName, JSON.stringify(movie));
+      graph.addEdgeWithKey(`Rel to Movie ${movie.id}`, entityName, node);
     });
     loadGraph(graph);
     assign();
