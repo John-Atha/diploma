@@ -15,6 +15,7 @@ import { Person } from "./models/Person";
 import { MovieBrief } from "./models/Movie";
 import { SummaryController } from "./controllers/SummaryController";
 import { MovieDetailsService } from "./services/MovieDetailsService";
+import { SearchService } from "./services/SearchService";
 
 dotenv.config();
 if (!process.env.PORT) process.exit(1);
@@ -92,10 +93,31 @@ router.get("/summary", async (req, res) => {
   const controller = new SummaryController(driver);
   const data = await controller.getSummary();
   res.send(data);
-})
+});
 router.get("/movies/:id", async (req, res) => {
   const service = new MovieDetailsService(driver, req.params.id);
   const data = await service.getOne();
   res.send({ data });
-})
+});
+router.get("/search/:entity/:key", async (req, res) => {
+  const entities = [
+    "movies",
+    "genres",
+    "keywords",
+    "people",
+    "languages",
+    "productioncompanies",
+    "productioncountries",
+  ];
+  const { entity, key } = req.params;
+  if (!entities.includes(entity.toLowerCase()))
+    res.status(400).send(`Entity ${entity} does not exist`);
+  const entityUpper = entity
+    .charAt(0)
+    .toUpperCase()
+    .concat(entity.slice(1).toLowerCase());
+  const service = new SearchService(driver, entityUpper, key);
+  const data = await service.Search();
+  res.send({ data });
+});
 server.listen(PORT, () => console.log(`Listening on ${PORT}`));

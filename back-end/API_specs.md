@@ -35,9 +35,13 @@
 | GET | /languages/\<name\>/movies | | Y | Y |
 | --- | --- | --- | --- | --- |
 | --- | --- | --- | --- | --- |
-| GET | /search/movies | | Y |  |
-| GET | /search/actors | | Y |  |
-| GET | /search/keywords | | Y | |
+| GET | /search/movies/:key | | Y |  |
+| GET | /search/genres/:key | | Y |  |
+| GET | /search/keywords/:key | | Y | |
+| GET | /search/people/:key | | Y |  |
+| GET | /search/productioncompanies/:key | | Y |  |
+| GET | /search/productioncountries/:key | | Y |  |
+| GET | /search/languages/:key | | Y |  |
 | --- | --- | --- | --- | --- |
 | GET | /ratings | Y | Y | Y
 | POST | /ratings | Y
