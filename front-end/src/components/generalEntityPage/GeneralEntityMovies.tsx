@@ -1,44 +1,39 @@
-import React, { cloneElement, ReactElement, useEffect, useState } from "react";
 import { queriesKeys } from "../../api/queriesKeys";
 import { Results } from "../general/Results";
 import { Grid, Stack, Typography } from "@mui/material";
 import { usePagination } from "../../hooks/usePagination";
+import { MovieCard } from "../movies/MovieCard";
+import { placeholderMovie } from "../movies/OneMovie";
 
-interface SecondaryEntitiesListProps {
-  name: string;
-  component: ReactElement;
-  keyField: string;
+interface MoviesListProps {
   itemWidth?: number;
+  entityName: string;
+  keyValue: string;
 }
 
-export const SecondaryEntitiesList = ({
-  name,
-  component,
-  keyField,
+export const GeneralEntityMovies = ({
   itemWidth,
-}: SecondaryEntitiesListProps) => {
-  const sort_by_options = ["movies_count", "name"];
+  entityName,
+  keyValue,
+}: MoviesListProps) => {
+  const sort_by_options = ["release_date", "title"];
 
-  const {
-    noMore,
-    all,
-    isLoading,
-    onNextPage,
-    PaginationFilters,
-  } = usePagination({
-    sort_by_options,
-    name,
-    keyField,
-    queryFnFirstKey: queriesKeys.getEntities(name),
-    requestUrl: `/${name}`,
-  });
+  const { noMore, all, isLoading, onNextPage, PaginationFilters } =
+    usePagination({
+      sort_by_options,
+      name: "movies",
+      keyField: "id",
+      queryFnFirstKey: queriesKeys.getEntities("movies"),
+      requestUrl: `${entityName}/${keyValue}/movies`,
+    });
 
   return (
-    <Stack spacing={1}>
+    <Stack spacing={3}>
+      <div id="pagination-start" />
       <Grid container alignItems="center" justifyContent="space-between">
         <Grid item>
           <Typography variant="h6" sx={{ paddingLeft: 2 }}>
-            All {name}
+            Related Movies
           </Typography>
         </Grid>
         <Grid item width={300}>
@@ -51,7 +46,7 @@ export const SecondaryEntitiesList = ({
         noMore={noMore}
         onNextPage={onNextPage}
         keyword="data"
-        oneComponent={cloneElement(component)}
+        oneComponent={<MovieCard {...placeholderMovie} />}
         itemWidth={itemWidth}
       />
     </Stack>

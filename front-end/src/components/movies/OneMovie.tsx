@@ -40,6 +40,7 @@ export const OneMovie = ({
   width = 100,
 }: BriefMovieProps) => {
   const logo = poster_path ? `${tmdb_base_url}${poster_path}` : movieImage;
+
   return (
     <CardOverlay
       src={logo}
@@ -52,6 +53,7 @@ export const OneMovie = ({
             name="read-only"
             value={ratings_average}
             size="small"
+            readOnly
           />
           <Typography variant="body2">({ratings_count})</Typography>
         </Grid>

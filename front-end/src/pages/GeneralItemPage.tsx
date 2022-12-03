@@ -6,6 +6,7 @@ import useMeasure from "react-use-measure";
 import { getOneEntity } from "../api/general";
 import { queriesKeys } from "../api/queriesKeys";
 import { GeneralEntityLatestMovies } from "../components/generalEntityPage/GeneralEntityLatestMovies";
+import { GeneralEntityMovies } from "../components/generalEntityPage/GeneralEntityMovies";
 import { GeneralEntityTopMovies } from "../components/generalEntityPage/GeneralEntityTopMovies";
 import { GraphVisualizationForGeneralEntity } from "../components/generalEntityPage/GraphVisualizationForGeneralEntity";
 import { useAppDispatch } from "../redux/hooks";
@@ -101,6 +102,13 @@ export const GeneralItemPage = ({
               nodeLabel={data?.name}
               centralNode={data}
             />
+            {!!entityName && !!keyValue && (
+              <GeneralEntityMovies
+                entityName={entityName}
+                keyValue={keyValue as string}
+                itemWidth={250}
+              />
+            )}
           </Stack>
         </>
       }
