@@ -125,7 +125,7 @@ export const MoviePageData = ({ data }: MovieData) => {
                 width={"100%"}
                 // maxWidth="900px"
                 oneResultComponent={<OnePerson {...placeholderPerson} />}
-                isSmallList
+                // isSmallList
               />
             </Grid>
             <Grid item md={6} xs={12}>
@@ -136,7 +136,7 @@ export const MoviePageData = ({ data }: MovieData) => {
                 width={"100%"}
                 // maxWidth="900px"
                 oneResultComponent={<OnePerson {...placeholderPerson} />}
-                isSmallList
+                // isSmallList
               />
             </Grid>
           </Grid>

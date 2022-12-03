@@ -1,9 +1,6 @@
 import { useLoadGraph } from "@react-sigma/core";
 import { MultiDirectedGraph } from "graphology";
 import { useEffect } from "react";
-import { useQuery } from "react-query";
-import { getConnectedMovies } from "../../api/movies";
-import { queriesKeys } from "../../api/queriesKeys";
 import { GraphVisualProps } from "./GraphVisual";
 import { useLayoutForceAtlas2 } from "@react-sigma/layout-forceatlas2";
 import { alpha, useTheme } from "@mui/material";
