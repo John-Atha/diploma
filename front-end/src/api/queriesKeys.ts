@@ -38,4 +38,6 @@ export const queriesKeys = {
     getEntities: (name: string) => `${name}/all/get`,
     getOneEntity: (entityName: string) => `${entityName}/one/get`,
 
+    'getSearch': `entities/search`, 
+
 }

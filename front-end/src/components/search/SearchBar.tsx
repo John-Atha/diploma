@@ -11,17 +11,30 @@ import { useSearchParams } from "react-router-dom";
 interface SearchBarProps {
   initValue: any;
   placeholder?: string;
+  onFocus?: () => void;
+  isBackdropTrigger?: boolean;
+  entityName?: string;
 }
 
-export const SearchBar = ({ initValue, placeholder }: SearchBarProps) => {
+export const SearchBar = ({
+  initValue,
+  placeholder,
+  onFocus,
+  isBackdropTrigger = false,
+  entityName = "Movies",
+}: SearchBarProps) => {
   const [value, setValue] = useState(initValue || "");
   const [searchParams, setSearchParams] = useSearchParams();
-  const [elevation, setElevation] = useState(1);
 
   const submit = (event: SyntheticEvent) => {
     console.log("submitting");
     event.preventDefault();
-    setSearchParams({ key: value });
+    const newSearchParams = new URLSearchParams(
+      Array.from(searchParams.entries())
+    );
+    newSearchParams.set("key", value);
+    newSearchParams.set("entity", entityName);
+    setSearchParams(newSearchParams);
   };
 
   const clear = () => setSearchParams({ key: "" });
@@ -31,7 +44,7 @@ export const SearchBar = ({ initValue, placeholder }: SearchBarProps) => {
   }, [searchParams]);
 
   return (
-    <Paper component="form" onSubmit={submit} elevation={elevation}>
+    <Paper component="form" onSubmit={submit} elevation={1}>
       <Grid container alignItems="center" padding={1}>
         <Grid item xs={11}>
           <Grid container alignItems="center" spacing={1}>
@@ -45,10 +58,12 @@ export const SearchBar = ({ initValue, placeholder }: SearchBarProps) => {
                 sx={{ width: 1 }}
                 placeholder={placeholder || "Search..."}
                 inputProps={{ "aria-label": placeholder || "search" }}
-                value={value}
-                onChange={(e) => setValue(e.target.value)}
-                onFocus={() => setElevation(5)}
-                onBlur={() => setElevation(1)}
+                value={isBackdropTrigger ? "" : value}
+                onChange={(e) =>
+                  isBackdropTrigger ? () => {} : setValue(e.target.value)
+                }
+                onFocus={() => !!onFocus && onFocus()}
+                {...(!isBackdropTrigger && { autoFocus: true })}
               />
             </Grid>
           </Grid>

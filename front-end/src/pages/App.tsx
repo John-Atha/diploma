@@ -53,6 +53,7 @@ export const App = () => {
             searchProps={{
               initValue: "",
               placeholder: `Search for a movie...`,
+              entityName: "Movies",
             }}
           />{" "}
         </Grid>

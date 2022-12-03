@@ -39,6 +39,7 @@ export const MoviesPage = () => {
                 searchProps={{
                   initValue: "",
                   placeholder: `Search for a Movie...`,
+                  entityName: "Movies",
                 }}
               />
             </Grid>

@@ -39,3 +39,8 @@ export const getOneEntity = async (entityName: string, key: string) => {
   const requestUrl = `/${entityName}/${key}`;
   return getRequest({ requestUrl });
 };
+
+export const searchEntities = async (entityName: string, key: string) => {
+  const requestUrl = `/search/${entityName}/${key}`;
+  return getRequest({ requestUrl });
+}

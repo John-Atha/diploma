@@ -20,7 +20,6 @@ export const Pagination = ({
       Array.from(searchParams.entries())
     );
     newSearchParams.set(key, value);
-    console.log(Array.from(newSearchParams.entries()));
     setSearchParams(newSearchParams);
   };
 

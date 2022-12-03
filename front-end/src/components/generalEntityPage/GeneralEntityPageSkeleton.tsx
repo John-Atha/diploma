@@ -57,6 +57,10 @@ export const GeneralEntityPageSkeleton = ({
                 searchProps={{
                   initValue: "",
                   placeholder: `Search for a ${searchName}...`,
+                  entityName: name
+                    .charAt(0)
+                    .toUpperCase()
+                    .concat(name.slice(1)),
                 }}
               />
             </Grid>
