@@ -43,7 +43,16 @@ export const Results = ({
       <Grid container spacing={2} paddingLeft={3}>
         {data?.map((datum) => {
           return (
-            <Grid item key={datum?.id} width={itemWidth}>
+            <Grid
+              item
+              key={datum?.id}
+              xl={2}
+              lg={3}
+              md={4}
+              sm={6}
+              xs={12}
+              minWidth={itemWidth}
+            >
               {cloneElement(oneComponent as ReactElement, { ...datum })}
             </Grid>
           );

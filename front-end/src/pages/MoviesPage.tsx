@@ -10,7 +10,6 @@ import { PageSkeleton } from "./PageSkeleton";
 export const MoviesPage = () => {
   const dispatch = useAppDispatch();
   const [ref, bounds] = useMeasure();
-  const [page, setPage] = useState(1);
 
   useEffect(() => {
     dispatch(
@@ -43,14 +42,6 @@ export const MoviesPage = () => {
                 }}
               />
             </Grid>
-            <Typography variant="h6">Movies</Typography>
-            {/* <SecondaryEntitiesList
-              name="movies"
-              keyField="id"
-              itemWidth={250}
-              component={<MovieCard
-                 {...placeholderMovie} width={250} />}
-            /> */}
             <MoviesList itemWidth={250} />
           </Stack>
         </>

@@ -1,6 +1,6 @@
 import { queriesKeys } from "../../api/queriesKeys";
 import { Results } from "../general/Results";
-import { Stack, Typography } from "@mui/material";
+import { Grid, Stack, Typography } from "@mui/material";
 import { usePagination } from "../../hooks/usePagination";
 import { MovieCard } from "./MovieCard";
 import { placeholderMovie } from "./OneMovie";
@@ -10,9 +10,16 @@ interface MoviesListProps {
 }
 
 export const MoviesList = ({ itemWidth }: MoviesListProps) => {
-  const sort_by_options = ["title"];
+  const sort_by_options = ["release_date", "title"];
 
-  const { noMore, all, isLoading, onNextPage, onPreviousPage } = usePagination({
+  const {
+    noMore,
+    all,
+    isLoading,
+    onNextPage,
+    onPreviousPage,
+    PaginationFilters,
+  } = usePagination({
     sort_by_options,
     name: "movies",
     keyField: "id",
@@ -21,10 +28,16 @@ export const MoviesList = ({ itemWidth }: MoviesListProps) => {
   });
 
   return (
-    <Stack spacing={1}>
-      <Typography variant="h6" sx={{ paddingLeft: "18px !important" }}>
-        All Movies
-      </Typography>
+    <Stack spacing={3}>
+      <div id="pagination-start" />
+      <Grid container alignItems="center" justifyContent="space-between">
+        <Grid item>
+          <Typography variant="h6" sx={{ paddingLeft: 2 }}>
+            Movies
+          </Typography>
+        </Grid>
+        <Grid item width={300}>{PaginationFilters}</Grid>
+      </Grid>
       <Results
         data={all}
         isLoading={isLoading}

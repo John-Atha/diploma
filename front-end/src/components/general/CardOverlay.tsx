@@ -26,7 +26,7 @@ interface CardOverlayProps {
   fallbackSrc?: string;
   fallbackImg?: ReactElement;
   title: string;
-  subtitle?: string;
+  subtitle?: string | ReactElement;
   height?: number | string;
   width?: number;
   alt?: string;

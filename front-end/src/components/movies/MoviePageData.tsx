@@ -117,17 +117,19 @@ export const MoviePageData = ({ data }: MovieData) => {
         </Grid>
         <Grid item xs={12}>
           <Grid container spacing={2}>
-            <Grid item md={6} xs={12}>
-              <CarouselResults
-                data={neighbours["Cast"]}
-                isLoading={false}
-                title="Cast"
-                width={"100%"}
-                // maxWidth="900px"
-                oneResultComponent={<OnePerson {...placeholderPerson} />}
-                // isSmallList
-              />
-            </Grid>
+            {!!neighbours["Cast"]?.length && (
+              <Grid item md={6} xs={12}>
+                <CarouselResults
+                  data={neighbours["Cast"]}
+                  isLoading={false}
+                  title="Cast"
+                  width={"100%"}
+                  // maxWidth="900px"
+                  oneResultComponent={<OnePerson {...placeholderPerson} />}
+                  // isSmallList
+                />
+              </Grid>
+            )}
             <Grid item md={6} xs={12}>
               <CarouselResults
                 data={neighbours["Crew"]}

@@ -11,9 +11,9 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import { NavLink } from "react-router-dom";
 import { useState } from "react";
 import { stringSlice } from "../../helpers/stringSlice";
+import { NavLink } from "react-router-dom";
 
 export interface BriefMovieProps {
   id: string;
@@ -25,6 +25,7 @@ export interface BriefMovieProps {
   ratings_count: number;
   ratings_average: number;
   width?: number | string;
+  overview: string;
 }
 
 export const MovieCard = ({
@@ -36,6 +37,7 @@ export const MovieCard = ({
   homepage,
   ratings_count,
   ratings_average,
+  overview,
   width = 250,
 }: BriefMovieProps) => {
   const theme = useTheme();
@@ -45,14 +47,27 @@ export const MovieCard = ({
   const renderCardContent = () => {
     return (
       <>
-        <Typography variant="body1">{stringSlice(title || original_title, 25)}</Typography>
+        <Typography variant="body1">
+          {stringSlice(title || original_title, 25)}
+        </Typography>
         <Typography variant="caption">{release_date}</Typography>
         <Grid container alignItems="center">
-          <Rating name="read-only" value={ratings_average} size="small" />
-          <Typography variant="body2">
-            ({ratings_count})
-          </Typography>
+          <Rating
+            precision={0.5}
+            name="read-only"
+            value={ratings_average}
+            size="small"
+          />
+          <Typography variant="body2">({ratings_count})</Typography>
         </Grid>
+        {isFocused && (
+          <>
+            <Typography variant="body2">Predticted: <b>3.5</b></Typography>
+            <Typography variant="caption">
+              {stringSlice(overview, 100)}
+            </Typography>
+          </>
+        )}
       </>
     );
   };
@@ -65,16 +80,20 @@ export const MovieCard = ({
         borderRadius: 7,
         position: "relative",
         textDecoration: "none",
-        bgcolor: theme.palette.background.paper,
       }}
-      //   component={NavLink}
-      //   to={`/movies/${id}`}
+      component={NavLink}
+      to={`/movies/${id}`}
+      onMouseOver={() => setIsFocused(true)}
+      onMouseOut={() => setIsFocused(false)}
     >
       <CardMedia
         component="img"
         height={isFocused ? 100 : 200}
         image={logo}
         alt={title || original_title}
+        sx={{
+          bgcolor: theme.palette.background.paper,
+        }}
       />
       <CardContent
         sx={{
@@ -89,8 +108,6 @@ export const MovieCard = ({
         }}
         component={Stack}
         justifyContent="flex-start"
-        onMouseOver={() => setIsFocused(true)}
-        onMouseOut={() => setIsFocused(false)}
       >
         {renderCardContent()}
       </CardContent>
