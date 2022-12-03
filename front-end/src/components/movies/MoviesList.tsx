@@ -1,49 +1,42 @@
-import React, { cloneElement, ReactElement, useEffect, useState } from "react";
 import { queriesKeys } from "../../api/queriesKeys";
 import { Results } from "../general/Results";
 import { Grid, Stack, Typography } from "@mui/material";
 import { usePagination } from "../../hooks/usePagination";
+import { MovieCard } from "./MovieCard";
+import { placeholderMovie } from "./OneMovie";
 
-interface SecondaryEntitiesListProps {
-  name: string;
-  component: ReactElement;
-  keyField: string;
+interface MoviesListProps {
   itemWidth?: number;
 }
 
-export const SecondaryEntitiesList = ({
-  name,
-  component,
-  keyField,
-  itemWidth,
-}: SecondaryEntitiesListProps) => {
-  const sort_by_options = ["movies_count", "name"];
+export const MoviesList = ({ itemWidth }: MoviesListProps) => {
+  const sort_by_options = ["release_date", "title"];
 
   const {
     noMore,
     all,
     isLoading,
     onNextPage,
+    onPreviousPage,
     PaginationFilters,
   } = usePagination({
     sort_by_options,
-    name,
-    keyField,
-    queryFnFirstKey: queriesKeys.getEntities(name),
-    requestUrl: `/${name}`,
+    name: "movies",
+    keyField: "id",
+    queryFnFirstKey: queriesKeys.getEntities("movies"),
+    requestUrl: `/movies`,
   });
 
   return (
-    <Stack spacing={1}>
+    <Stack spacing={3}>
+      <div id="pagination-start" />
       <Grid container alignItems="center" justifyContent="space-between">
         <Grid item>
           <Typography variant="h6" sx={{ paddingLeft: 2 }}>
-            All {name}
+            Movies
           </Typography>
         </Grid>
-        <Grid item width={300}>
-          {PaginationFilters}
-        </Grid>
+        <Grid item width={300}>{PaginationFilters}</Grid>
       </Grid>
       <Results
         data={all}
@@ -51,7 +44,7 @@ export const SecondaryEntitiesList = ({
         noMore={noMore}
         onNextPage={onNextPage}
         keyword="data"
-        oneComponent={cloneElement(component)}
+        oneComponent={<MovieCard {...placeholderMovie} />}
         itemWidth={itemWidth}
       />
     </Stack>

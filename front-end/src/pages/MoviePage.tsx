@@ -71,6 +71,7 @@ export const MoviePage = () => {
           searchProps={{
             initValue: "",
             placeholder: `Search for a movie...`,
+            entityName: "Movies",
           }}
         />{" "}
         {isLoading && <Spinner />}

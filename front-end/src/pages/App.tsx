@@ -11,6 +11,7 @@ import useMeasure from "react-use-measure";
 import { MyHeader } from "../components/general/MyHeader";
 import { useAppDispatch } from "../redux/hooks";
 import { setRoutes } from "../redux/slices/breadCrumbSlice";
+import { MoviesList } from "../components/movies/MoviesList";
 
 export const App = () => {
   const dispatch = useAppDispatch();
@@ -52,6 +53,7 @@ export const App = () => {
             searchProps={{
               initValue: "",
               placeholder: `Search for a movie...`,
+              entityName: "Movies",
             }}
           />{" "}
         </Grid>
@@ -79,6 +81,9 @@ export const App = () => {
             <TopGenres />
             <TopKeywords />
           </Stack>
+        </Grid>
+        <Grid item xs={12}>
+          <MoviesList itemWidth={250} />
         </Grid>
 
         {/* <Grid item md={6} xs={12}>

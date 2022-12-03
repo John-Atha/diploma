@@ -106,7 +106,7 @@ export default function MySidebar({ children }: MySidebarProps) {
       icon: <Explore />,
       navs: [
         {
-          slug: "movies",
+          slug: "movies?sort_by=release_date&order=desc",
           text: "Movies",
           icon: <MovieOutlined />,
         },
@@ -206,7 +206,10 @@ export default function MySidebar({ children }: MySidebarProps) {
   const renderOneLink = ({ text, slug, icon }: NavProps) => {
     const path = location.pathname;
     const curr = path.split("/")[1].toLowerCase();
-    const selected = curr === slug.replace("/", "");
+    const slug_root = slug.replace("/", "").slice(0, slug.indexOf("?")===-1 ? slug.indexOf("?") : slug.length);
+    const selected = curr === slug.replace("/", "").slice(0, slug.indexOf("?")!==-1 ? slug.indexOf("?") : slug.length);
+    console.log({ slug_root })
+    
     const color = selected ? theme?.palette?.primary?.main : "inherit";
     return (
       <ListItem

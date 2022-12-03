@@ -1,12 +1,8 @@
 import { Grid, Stack, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { useQuery } from "react-query";
 import useMeasure from "react-use-measure";
-import { getEntities } from "../api/general";
-import { queriesKeys } from "../api/queriesKeys";
 import { MyHeader } from "../components/general/MyHeader";
-import { SecondaryEntitiesList } from "../components/general/SecondaryEntitiesList";
-import { OneMovie, placeholderMovie } from "../components/movies/OneMovie";
+import { MoviesList } from "../components/movies/MoviesList";
 import { useAppDispatch } from "../redux/hooks";
 import { setRoutes } from "../redux/slices/breadCrumbSlice";
 import { PageSkeleton } from "./PageSkeleton";
@@ -14,7 +10,6 @@ import { PageSkeleton } from "./PageSkeleton";
 export const MoviesPage = () => {
   const dispatch = useAppDispatch();
   const [ref, bounds] = useMeasure();
-  const [page, setPage] = useState(1);
 
   useEffect(() => {
     dispatch(
@@ -44,18 +39,11 @@ export const MoviesPage = () => {
                 searchProps={{
                   initValue: "",
                   placeholder: `Search for a Movie...`,
+                  entityName: "Movies",
                 }}
               />
             </Grid>
-            <Typography variant="h6">Movies</Typography>
-            <SecondaryEntitiesList
-              name="movies"
-              keyField="id"
-              sort_by="release_date"
-              order="asc"
-              itemWidth={250}
-              component={<OneMovie {...placeholderMovie} width={300} />}
-            />
+            <MoviesList itemWidth={250} />
           </Stack>
         </>
       }
