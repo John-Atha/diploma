@@ -25,7 +25,7 @@ export const Results = ({
   keyword = "data",
   itemWidth,
 }: ResultsProps) => {
-  if (isLoading && !data) {
+  if (isLoading && !data?.length) {
     return <Spinner />;
   }
   if (!data?.length) {

@@ -1,4 +1,4 @@
-import { Divider, Drawer } from "@mui/material";
+import { Divider, Drawer, Typography } from "@mui/material";
 import { ThemeDrawerContent } from "../general/ThemeDrawerContent";
 
 export interface RightDrawerProps {
@@ -25,7 +25,11 @@ export const RightDrawer = ({
       open={open}
       onClose={onClose}
     >
-      <DrawerHeader>Theming</DrawerHeader>
+      <DrawerHeader>
+        <Typography variant="h6" sx={{ width: 1 }}>
+          Theming
+        </Typography>
+      </DrawerHeader>
       <Divider sx={{ marginBottom: 1 }} />
       <ThemeDrawerContent />
     </Drawer>
