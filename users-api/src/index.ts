@@ -6,6 +6,7 @@ import http from "http";
 import BodyParser from "body-parser";
 import neo4j from "neo4j-driver";
 import { UsersRouter } from "./routers/usersRouter";
+import { RatingsRouter } from "./routers/ratingsRouter";
 
 dotenv.config();
 if (!process.env.PORT) process.exit(1);
@@ -29,11 +30,11 @@ const usersRouter = UsersRouter({
   driver,
 });
 
-// const ratingsRouter = RatingsRouter({
-//   driver,
-// });
+const ratingsRouter = RatingsRouter({
+  driver,
+});
 
 app.use("/users", usersRouter);
-// app.use("/ratings", ratingsRouter);
+app.use("/ratings", ratingsRouter);
 
 server.listen(PORT, () => console.log(`Listening on ${PORT}`));
