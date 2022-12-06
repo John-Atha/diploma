@@ -83,8 +83,8 @@ export const UsersRouter = ({ driver }: UsersRouterProps) => {
   router.post("/login", async (req, res) => {
     const { username, password } = req.body;
     try {
-      const token = await usersService.login(username, password);
-      res.send(token);
+      const response = await usersService.login(username, password);
+      res.send(response);
     } catch (err) {
       res.status(401).send(err);
     }

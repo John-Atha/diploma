@@ -110,8 +110,12 @@ export class UsersService {
     const session = this.driver.session();
     console.log("QUERY:", query, params);
     await session.executeWrite((tx) => tx.run(query, params));
+    const token = JsonWebToken.sign(
+      { id: user.id, username: user.username },
+      process.env.SECRET_KEY || "placeholder421%$#^Secret1241Key"
+    );
     const { hashedPassword: p, ...userData } = user;
-    return userData;
+    return { ...userData, access: token };
   }
 
   async login(username: string, password: string) {
@@ -127,7 +131,7 @@ export class UsersService {
       { id: user.id, username: user.username },
       process.env.SECRET_KEY || "placeholder421%$#^Secret1241Key"
     );
-    return { access: token };
+    return { access: token, username: user.username, id: user.id };
   }
 
   async logged(token: string) {
