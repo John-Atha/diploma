@@ -1,11 +1,13 @@
 import axios from "axios";
+import { getCookie } from "../helpers/cookies";
 import { pagiStep } from "./config";
 
 export const buildAuthHeader = () => {
-    const token = localStorage.getItem("token");
+    const token = getCookie("token");
     const header = {
-        "Authorization": `token ${token}`,
+        "Authorization": `Bearer ${token}`,
     };
+    console.log({ header })
     return header;
 }
 

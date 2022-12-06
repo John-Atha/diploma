@@ -34,7 +34,6 @@ export const App = () => {
     );
   }, []);
 
-  console.log({ width: bounds.width });
   return (
     <PageSkeleton>
       <div ref={ref}></div>

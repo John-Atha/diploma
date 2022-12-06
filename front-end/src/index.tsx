@@ -18,6 +18,7 @@ import { GeneralItemPage } from './pages/GeneralItemPage';
 import { NotFound } from './pages/NotFound';
 import { MoviePage } from './pages/MoviePage';
 import { MoviesPage } from './pages/MoviesPage';
+import { ProfilePage } from './pages/ProfilePage';
 
 const queryClient = new QueryClient(({
   defaultOptions: {
@@ -31,10 +32,7 @@ const theme = createTheme({
   palette: {
     mode: "dark",
     primary: {
-      // main:  "#13a155",
       main:  "#c9322a",
-      // light: "#bcf7cb",
-      light: "#c96e69",
     }
   }
 })
@@ -64,6 +62,7 @@ root.render(
               <Route path="/productioncompanies/:name"        element={<GeneralItemPage key="productioncompanies" entityName="productioncompanies"  keyField="name"       headerName="Production Companies" />} />
               <Route path="/people/:id"                       element={<GeneralItemPage key="people"              entityName="people"               keyField="id"         headerName="Crew" />} />
               <Route path="/productioncountries/:iso_3166_1"  element={<GeneralItemPage key="productioncountries" entityName="productioncountries"  keyField="iso_3166_1" headerName="Production Countries" />} />
+              <Route path="/profile"                          element={<ProfilePage />} />
               
               <Route path="/users"                            element={<Users /> }       />
               <Route path="/contacts"                         element={<ContactsPage />} />
