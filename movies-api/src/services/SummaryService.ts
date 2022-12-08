@@ -13,6 +13,7 @@ export class SummaryService {
     const session = this.driver.session();
     console.log("QUERY:", query);
     const result = await session.executeRead((tx) => tx.run(query));
+    await session.close();
     const data: any = {};
     result.records.forEach((record) => {
       const {

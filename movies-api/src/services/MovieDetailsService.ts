@@ -15,6 +15,7 @@ export class MovieDetailsService {
     const session = this.driver.session();
     const neighbours = await this.getNeighboursData(session);
     const fields = await this.GetMovieDetails(session);
+    await session.close();
     const data = { neighbours, fields };
     return data;
   }

@@ -110,6 +110,7 @@ export class UsersService {
     const session = this.driver.session();
     console.log("QUERY:", query, params);
     await session.executeWrite((tx) => tx.run(query, params));
+    await session.close();
     const token = JsonWebToken.sign(
       { id: user.id, username: user.username },
       process.env.SECRET_KEY || "placeholder421%$#^Secret1241Key"
@@ -172,6 +173,7 @@ export class UsersService {
     const query = `MATCH (u:User { id: $id }) SET u.username = $username, u.hashedPassword = $hashedPassword return u`;
     const params = user;
     await session.executeWrite((tx) => tx.run(query, params));
+    await session.close();
     const { hashedPassword: p, ...userData } = user;
     return userData;
   }
@@ -181,6 +183,7 @@ export class UsersService {
     const session = this.driver.session();
     console.log("QUERY:", query);
     const results = await session.executeRead((tx) => tx.run(query));
+    await session.close();
     const {
       id: { low: id },
     } = results.records?.[0].toObject();
