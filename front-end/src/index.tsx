@@ -5,13 +5,9 @@ import { App } from './pages/App';
 import reportWebVitals from './reportWebVitals';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { Repositories } from './pages/Repositories';
-import { ContactsPage } from './pages/ContactsPage';
-import { Explore } from './pages/Explore';
 import { createTheme, ThemeProvider } from '@mui/material';
 import { Provider } from 'react-redux';
 import { store } from './redux/store';
-import { Users } from './pages/Users';
 import { CountriesPage } from './pages/CountriesPage';
 import { GeneralEntityPageSkeleton } from './components/generalEntityPage/GeneralEntityPageSkeleton';
 import { GeneralItemPage } from './pages/GeneralItemPage';
@@ -66,11 +62,6 @@ root.render(
               <Route path="/profile"                          element={<ProfilePage />} />
               <Route path="/ratings"                          element={<RatingsHistoryPage />} />
               
-              <Route path="/users"                            element={<Users /> }       />
-              <Route path="/contacts"                         element={<ContactsPage />} />
-              <Route path="/explore"                          element={<Explore />} />
-              <Route path="/repos"                            element={<Repositories />} />
-
               <Route path="*"                                 element={<NotFound />} />
             </Routes>
           </BrowserRouter>
