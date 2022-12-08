@@ -1,10 +1,11 @@
 from .model import Model
 import torch
-
+import os
 
 def get_model(data):
+    model_name = get_model_name()
     try:
-        model = torch.load("pickled_model")
+        model = torch.load(model_name)
     except Exception as e:
         print("Could not load model")
         print(e)
@@ -21,3 +22,8 @@ def get_model(data):
             encoder_aggr=["mean"],
         ).to(device)
     return model
+
+def get_model_name():
+    use_large_model = os.environ.get("USE_LARGE_MODEL") == "1"
+    model_name = "pickled_model_large" if use_large_model else "pickled_model_small"
+    return model_name

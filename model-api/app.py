@@ -2,7 +2,7 @@ from flask import Flask, jsonify
 from helpers.recommendations import make_predictions, recommend
 from helpers.train_test import train_test
 from helpers.dataset import load_data_dataset, split_dataset
-from helpers.get_model import get_model
+from helpers.get_model import get_model, get_model_name
 import torch
 
 app = Flask(__name__)
@@ -40,10 +40,11 @@ def re_train_model(epochs):
         train_data=train_data,
         val_data=val_data,
         test_data=test_data,
-        logging_step=5,
+        logging_step=1,
         lr=0.012,
     )
-    torch.save(model, "pickled_model")
+    model_name = get_model_name()
+    torch.save(model, model_name)
     return "OK"
 
 @app.route('/refresh', methods=["POST"])
