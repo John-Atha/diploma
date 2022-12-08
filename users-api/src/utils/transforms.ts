@@ -26,21 +26,27 @@ export const flattenNumericFields = (object: any) => {
   return res;
 };
 
-export const Neo4jRecordToRatingObject = (record: any) => {
+export const Neo4jRecordToRatingObject = (record: any, includeMoviesData: boolean) => {
   const { u, r, m, ratings_count, ratings_average } = record.toObject();
   const { datetime: seconds, rating } = r.properties;
   const datetime = new Date();
   datetime.setTime(seconds * 1000);
-  const movie = new MovieBrief({
-    ...m.properties,
-    ratings_count:
-      ratings_count?.low !== undefined ? ratings_count?.low : ratings_count,
-    ratings_average,
-  });
-  const user = new User({
-    username: u.properties.username,
-    id: u.properties.id.low,
-  });
-  const ratingModel = new Rating({ user, movie, rating, datetime });
-  return ratingModel;
+  if (includeMoviesData) {
+    const movie = new MovieBrief({
+      ...m.properties,
+      ratings_count:
+        ratings_count?.low !== undefined ? ratings_count?.low : ratings_count,
+      ratings_average,
+    });
+    const user = new User({
+      username: u.properties.username,
+      id: u.properties.id.low,
+    });
+    const ratingModel = new Rating({ user, movie, rating, datetime });
+    return ratingModel 
+  }
+  return {
+    movie_id: m.properties.id,
+    rating,
+  }
 };

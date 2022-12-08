@@ -58,6 +58,13 @@ export const RatingsRouter = ({ driver }: RatingsRouterProps) => {
     res.send(response);
   });
 
+  router.get("/users/:username/brief", async (req, res) => {
+    const data = await ratingsService.getAllRatingsOfUserBrief(
+      req.params.username
+    );
+    res.send(data);
+  });
+
   router.put("/", async (req, res) => {
     const user = getRequestUserByRequest(req);
     const { userId, movieId, rating } = req.body;
@@ -105,6 +112,33 @@ export const RatingsRouter = ({ driver }: RatingsRouterProps) => {
       res.send(resp);
     } catch (err) {
       res.status(400).send(err);
+    }
+  });
+
+  router.get("/users/:id/predict", async (req, res) => {
+    const user = getRequestUserByRequest(req);
+    if ((user as any)?.id != req.params.id) return res.status(401).send();
+    try {
+      const predictions = await ratingsService.getUserPredictions(
+        parseInt(req.params.id)
+      );
+      return res.send(predictions);
+    } catch (err) {
+      res.status(400).send("Something went wrong");
+    }
+  });
+
+  router.get("/users/:id/recommend/:limit", async (req, res) => {
+    const user = getRequestUserByRequest(req);
+    if ((user as any)?.id != req.params.id) return res.status(401).send();
+    try {
+      const predictions = await ratingsService.getUserRecommendations(
+        parseInt(req.params.id),
+        parseInt(req.params.limit)
+      );
+      return res.send(predictions);
+    } catch (err) {
+      res.status(400).send("Something went wrong");
     }
   });
 

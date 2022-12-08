@@ -46,11 +46,11 @@ def make_predictions(dataset, data, model, user_id):
         }
         for movie_index in mask[0].tolist()
     ]
-    return {'movies': predictions}
+    return {'predictedRatings': predictions}
 
 
 def recommend(dataset, data, model, user_id, limit):
-    predictions = make_predictions(dataset, data, model, user_id)["movies"]
+    predictions = make_predictions(dataset, data, model, user_id)["predictedRatings"]
     sorted_predictions = sorted(
         predictions, key=lambda pred: pred["rating"], reverse=True)[:limit]
-    return {'movies': sorted_predictions}
+    return {'recommendations': sorted_predictions}
