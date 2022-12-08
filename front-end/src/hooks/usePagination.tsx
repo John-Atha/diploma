@@ -11,6 +11,7 @@ interface UsePaginationProps {
   sort_by_options: string[];
   queryFnFirstKey: string;
   requestUrl: string;
+  datumTransform?: (t: any) => any;
 }
 
 interface QueryConfig {
@@ -26,6 +27,7 @@ export const usePagination = ({
   sort_by_options,
   queryFnFirstKey,
   requestUrl,
+  datumTransform = (t: any) => t,
 }: UsePaginationProps) => {
   const [all, setAll] = useState<any>([]);
   const [noMore, setNoMore] = useState(false);
@@ -115,7 +117,7 @@ export const usePagination = ({
   useEffect(() => {
     if (data?.data) {
       const newData = data.data.map((datum: any) => ({
-        ...datum,
+        ...(datumTransform(datum)),
         href: `/${name}/${datum[keyField]}`,
       }));
       if (queryConfig.page === 1) setAll(newData);

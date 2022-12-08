@@ -14,6 +14,7 @@ import {
 import { useState } from "react";
 import { stringSlice } from "../../helpers/stringSlice";
 import { NavLink } from "react-router-dom";
+import { MovieRatings } from "../ratings/MovieRatings";
 
 export interface BriefMovieProps {
   id: string;
@@ -26,6 +27,10 @@ export interface BriefMovieProps {
   ratings_average: number;
   width?: number | string;
   overview: string;
+  existing_rating?: number;
+  predicted_rating?: number;
+  rating?: number;
+  rating_datetime?: string;
 }
 
 export const MovieCard = ({
@@ -38,35 +43,48 @@ export const MovieCard = ({
   ratings_count,
   ratings_average,
   overview,
+  existing_rating,
+  predicted_rating,
   width = 250,
+  rating,
+  rating_datetime,
 }: BriefMovieProps) => {
   const theme = useTheme();
   const logo = poster_path ? `${tmdb_base_url}${poster_path}` : movieImage;
   const [isFocused, setIsFocused] = useState(false);
 
+  console.log({ id, rating, rating_datetime });
+
   const renderCardContent = () => {
     return (
       <>
-        <Typography variant="body1">
-          {stringSlice(title || original_title, 25)}
-        </Typography>
-        <Typography variant="caption">{release_date}</Typography>
-        <Grid container alignItems="center">
-          <Rating
-            precision={0.5}
-            name="read-only"
-            value={ratings_average}
-            size="small"
-          />
-          <Typography variant="body2">({ratings_count})</Typography>
-        </Grid>
+        <div>
+          <Typography variant="body1">
+            {stringSlice(title || original_title, 25)}
+          </Typography>
+          <Typography variant="caption">{release_date}</Typography>
+        </div>
+        {!isFocused && (
+          <Grid container alignItems="center">
+            <Rating
+              precision={0.1}
+              name="read-only"
+              readOnly
+              value={existing_rating || predicted_rating}
+              size="small"
+            />
+            <Typography variant="body2">({existing_rating || predicted_rating} / 5.0)</Typography>
+          </Grid>
+        )}
+
         {isFocused && (
-          <>
-            <Typography variant="body2">Predticted: <b>3.5</b></Typography>
-            <Typography variant="caption">
-              {stringSlice(overview, 100)}
-            </Typography>
-          </>
+          <MovieRatings
+            predicted_rating={predicted_rating as number}
+            existing_rating={existing_rating as number}
+            ratings_average={ratings_average}
+            ratings_count={ratings_count}
+            isSmall
+          />
         )}
       </>
     );
@@ -88,7 +106,7 @@ export const MovieCard = ({
     >
       <CardMedia
         component="img"
-        height={isFocused ? 100 : 200}
+        height={isFocused ? 150 : 210}
         image={logo}
         alt={title || original_title}
         sx={{
@@ -99,7 +117,7 @@ export const MovieCard = ({
         sx={{
           width: 1,
           borderRadius: 5,
-          height: isFocused ? 200 : 100,
+          height: isFocused ? 150 : 90,
           padding: "8px !important",
           //   color: theme.palette.primary.light,
           bgcolor: alpha(theme.palette.primary.main, 0.1),
@@ -107,6 +125,7 @@ export const MovieCard = ({
           borderTopRightRadius: 0,
         }}
         component={Stack}
+        spacing={1}
         justifyContent="flex-start"
       >
         {renderCardContent()}

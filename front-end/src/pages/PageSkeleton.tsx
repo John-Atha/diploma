@@ -5,6 +5,7 @@ import { SnackMessage } from "../components/general/SnackMessage";
 import { useAuth } from "../hooks/useAuth";
 import { useAppSelector } from "../redux/hooks";
 import { selectTheme } from "../redux/slices/themeSlice";
+import { useRatings } from "../hooks/useRatings";
 
 interface SkeletonProps {
   children: ReactElement | ReactElement[];
@@ -12,6 +13,7 @@ interface SkeletonProps {
 
 export const PageSkeleton = ({ children }: SkeletonProps) => {
   const { loginWithToken } = useAuth();
+  useRatings();
   const { primary__main, mode } = useAppSelector(selectTheme);
 
   const [theme_, setTheme_] = useState<any>(null);

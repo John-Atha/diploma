@@ -1,5 +1,8 @@
 import { Alert, Grid } from "@mui/material";
-import React, { cloneElement, ReactElement, useEffect, useState } from "react";
+import React, {
+  cloneElement,
+  ReactElement,
+} from "react";
 import Spinner from "./Spinner";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useTheme } from "@mui/material/styles";
@@ -14,6 +17,9 @@ export interface ResultsProps {
   oneComponent: any;
   keyword?: string;
   itemWidth?: number;
+  isMovies?: boolean;
+  existingRatings?: any[];
+  predictedRatings?: any[];
 }
 
 export const Results = ({
@@ -24,6 +30,9 @@ export const Results = ({
   oneComponent,
   keyword = "data",
   itemWidth,
+  isMovies,
+  existingRatings,
+  predictedRatings,
 }: ResultsProps) => {
   if (isLoading && !data?.length) {
     return <Spinner />;
@@ -53,7 +62,13 @@ export const Results = ({
               xs={12}
               minWidth={itemWidth}
             >
-              {cloneElement(oneComponent as ReactElement, { ...datum })}
+              {cloneElement(oneComponent as ReactElement, {
+                ...datum,
+                ...(isMovies && {
+                  predicted_rating: predictedRatings?.[datum.id],
+                  existing_rating: existingRatings?.[datum.id],
+                }),
+              })}
             </Grid>
           );
         })}

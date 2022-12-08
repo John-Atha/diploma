@@ -19,6 +19,7 @@ import { NotFound } from './pages/NotFound';
 import { MoviePage } from './pages/MoviePage';
 import { MoviesPage } from './pages/MoviesPage';
 import { ProfilePage } from './pages/ProfilePage';
+import { RatingsHistoryPage } from './pages/RatingsHistoryPage';
 
 const queryClient = new QueryClient(({
   defaultOptions: {
@@ -63,6 +64,7 @@ root.render(
               <Route path="/people/:id"                       element={<GeneralItemPage key="people"              entityName="people"               keyField="id"         headerName="Crew" />} />
               <Route path="/productioncountries/:iso_3166_1"  element={<GeneralItemPage key="productioncountries" entityName="productioncountries"  keyField="iso_3166_1" headerName="Production Countries" />} />
               <Route path="/profile"                          element={<ProfilePage />} />
+              <Route path="/ratings"                          element={<RatingsHistoryPage />} />
               
               <Route path="/users"                            element={<Users /> }       />
               <Route path="/contacts"                         element={<ContactsPage />} />

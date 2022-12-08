@@ -153,7 +153,7 @@ export const GeneralItemPage = ({
               <GeneralEntityMovies
                 entityName={entityName}
                 keyValue={keyValue as string}
-                itemWidth={250}
+                itemWidth={300}
               />
             )}
           </Stack>

@@ -3,13 +3,10 @@ import {
   Grid,
   Paper,
   Typography,
-  Stack,
   useTheme,
-  alpha,
   Button,
 } from "@mui/material";
-import React from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { SecondaryEntityProps } from "../general/OneSecondaryEntity";
 
 export interface MovieRelativesProps {
@@ -30,29 +27,35 @@ export const MovieRelatives = ({
   if (!data.length) return null;
 
   return (
-    <Paper
-      component={Stack}
-      sx={{
-        width: 1,
-        padding: 1,
-        height: 1,
-        bgcolor: alpha(theme.palette.background.paper, 0.1),
-      }}
-      spacing={1}
-    >
-      <Typography variant="body1">{title}</Typography>
-      <Grid container spacing={1}>
-        {data.map(({ name, [keyField]: keyValue }) => (
-          <Grid item key={keyValue}>
-            <Chip
-              label={name}
-              component={Button}
-              sx={{ textTransform: "none" }}
-              onClick={() => navigate(`/${entityName}/${keyValue}`)}
-            />
-          </Grid>
-        ))}
+    <Grid container component={Paper} flexDirection="column" direction="column" height={1} minHeight={150} padding={1}>
+      <Grid item marginBottom={2}>
+        <Typography variant="h6" align="center">
+          {title}
+        </Typography>
       </Grid>
-    </Paper>
+      <Grid item xs />
+      <Grid item>
+        <Grid
+          container
+          justifyContent="center"
+          alignItems="space-between"
+          maxHeight={200}
+          sx={{ overflowY: "auto" }}
+          spacing={2}
+        >
+          {data.map(({ name, [keyField]: keyValue }) => (
+            <Grid item key={keyValue}>
+              <Chip
+                label={name}
+                component={Button}
+                sx={{ textTransform: "none" }}
+                onClick={() => navigate(`/${entityName}/${keyValue}`)}
+              />
+            </Grid>
+          ))}
+        </Grid>
+      </Grid>
+      <Grid item xs />
+    </Grid>
   );
 };

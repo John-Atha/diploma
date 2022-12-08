@@ -8,6 +8,7 @@ import {
   PublicOutlined,
   Explore,
   MovieOutlined,
+  StarOutline,
 } from "@mui/icons-material";
 
 export const navs = [
@@ -66,6 +67,12 @@ export const navs = [
     text: "Account",
     icon: <PersonOutlined />,
     navs: [
+      {
+        slug: "ratings",
+        text: "Ratings",
+        icon: <StarOutline />,
+        needsAuth: true,
+      },
       {
         slug: "profile",
         text: "Profile",

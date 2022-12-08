@@ -82,7 +82,7 @@ export const App = () => {
           </Stack>
         </Grid>
         <Grid item xs={12}>
-          <MoviesList itemWidth={250} />
+          <MoviesList itemWidth={300} />
         </Grid>
 
         {/* <Grid item md={6} xs={12}>

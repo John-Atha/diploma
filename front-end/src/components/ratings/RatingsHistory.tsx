@@ -1,34 +1,38 @@
-import { queriesKeys } from "../../api/queriesKeys";
-import { Results } from "../general/Results";
 import { Grid, Stack, Typography } from "@mui/material";
+import React from "react";
+import { authApiUrl } from "../../api/config";
+import { queriesKeys } from "../../api/queriesKeys";
 import { usePagination } from "../../hooks/usePagination";
+import { useAppSelector } from "../../redux/hooks";
+import { selectAuthUser } from "../../redux/slices/authSlice";
+import { selectRatings } from "../../redux/slices/ratingsSlice";
+import { Results } from "../general/Results";
 import { MovieCard } from "../movies/MovieCard";
 import { placeholderMovie } from "../movies/OneMovie";
-import { useAppSelector } from "../../redux/hooks";
-import { selectRatings } from "../../redux/slices/ratingsSlice";
 
-interface MoviesListProps {
-  itemWidth?: number;
-  entityName: string;
-  keyValue: string;
-}
-
-export const GeneralEntityMovies = ({
-  itemWidth,
-  entityName,
-  keyValue,
-}: MoviesListProps) => {
+export const RatingsHistory = () => {
+  const { username } = useAppSelector(selectAuthUser);
   const { existingRatings, predictedRatings } = useAppSelector(selectRatings);
-  const sort_by_options = ["release_date", "title"];
 
-  const { noMore, all, isLoading, onNextPage, PaginationFilters } =
-    usePagination({
-      sort_by_options,
-      name: "movies",
-      keyField: "id",
-      queryFnFirstKey: queriesKeys.getEntities("movies"),
-      requestUrl: `${entityName}/${keyValue}/movies`,
-    });
+  const {
+    noMore,
+    all,
+    isLoading,
+    onNextPage,
+    onPreviousPage,
+    PaginationFilters,
+  } = usePagination({
+    sort_by_options: ["datetime", "rating"],
+    name: "ratings",
+    keyField: "movie_id",
+    queryFnFirstKey: queriesKeys.getEntities("ratings"),
+    requestUrl: `${authApiUrl}/ratings/users/${username}`,
+    datumTransform: ({ movie, rating, rating_datetime }: any) => ({
+      ...movie,
+      rating,
+      rating_datetime,
+    }),
+  });
 
   return (
     <Stack spacing={3}>
@@ -36,7 +40,7 @@ export const GeneralEntityMovies = ({
       <Grid container alignItems="center" justifyContent="space-between">
         <Grid item>
           <Typography variant="h6" sx={{ paddingLeft: 2 }}>
-            Related Movies
+            My Ratings
           </Typography>
         </Grid>
         <Grid item width={300}>
@@ -50,7 +54,7 @@ export const GeneralEntityMovies = ({
         onNextPage={onNextPage}
         keyword="data"
         oneComponent={<MovieCard {...placeholderMovie} />}
-        itemWidth={itemWidth}
+        itemWidth={200}
         isMovies
         existingRatings={existingRatings}
         predictedRatings={predictedRatings}

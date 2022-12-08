@@ -4,12 +4,15 @@ import { Grid, Stack, Typography } from "@mui/material";
 import { usePagination } from "../../hooks/usePagination";
 import { MovieCard } from "./MovieCard";
 import { placeholderMovie } from "./OneMovie";
+import { selectRatings } from "../../redux/slices/ratingsSlice";
+import { useAppSelector } from "../../redux/hooks";
 
 interface MoviesListProps {
   itemWidth?: number;
 }
 
 export const MoviesList = ({ itemWidth }: MoviesListProps) => {
+  const { existingRatings, predictedRatings } = useAppSelector(selectRatings);
   const sort_by_options = ["release_date", "title"];
 
   const {
@@ -36,7 +39,9 @@ export const MoviesList = ({ itemWidth }: MoviesListProps) => {
             Movies
           </Typography>
         </Grid>
-        <Grid item width={300}>{PaginationFilters}</Grid>
+        <Grid item width={300}>
+          {PaginationFilters}
+        </Grid>
       </Grid>
       <Results
         data={all}
@@ -46,6 +51,9 @@ export const MoviesList = ({ itemWidth }: MoviesListProps) => {
         keyword="data"
         oneComponent={<MovieCard {...placeholderMovie} />}
         itemWidth={itemWidth}
+        isMovies
+        existingRatings={existingRatings}
+        predictedRatings={predictedRatings}
       />
     </Stack>
   );

@@ -34,16 +34,14 @@ export const MoviesPage = () => {
         <>
           <div ref={ref} />
           <Stack spacing={2} width={bounds.width}>
-            <Grid item xs={12}>
-              <MyHeader
-                searchProps={{
-                  initValue: "",
-                  placeholder: `Search for a Movie...`,
-                  entityName: "Movies",
-                }}
-              />
-            </Grid>
-            <MoviesList itemWidth={250} />
+            <MyHeader
+              searchProps={{
+                initValue: "",
+                placeholder: `Search for a Movie...`,
+                entityName: "Movies",
+              }}
+            />
+            <MoviesList itemWidth={300} />
           </Stack>
         </>
       }
