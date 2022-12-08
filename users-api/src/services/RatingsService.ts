@@ -25,7 +25,7 @@ export class RatingsService {
       Neo4jRecordToRatingObject(record, false)
     );
     await session.close();
-    return ratings;
+    return { existingRatings: ratings };
   }
 
   async getAllRatingsOfUser(

@@ -5,19 +5,19 @@ export interface RatingProps {
   user: User;
   movie: MovieBrief;
   rating: number;
-  datetime: Date;
+  rating_datetime: Date;
 }
 
 export class Rating {
   user: User;
   movie: MovieBrief;
   rating: number;
-  datetime: Date;
+  rating_datetime: Date;
 
-  constructor({ user, movie, rating, datetime }: RatingProps) {
+  constructor({ user, movie, rating, rating_datetime }: RatingProps) {
     this.user = user;
     this.movie = movie;
     this.rating = rating;
-    this.datetime = datetime;
+    this.rating_datetime = rating_datetime;
   }
 }
