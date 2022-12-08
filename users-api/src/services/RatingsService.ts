@@ -106,7 +106,6 @@ export class RatingsService {
     const results = await session.executeWrite((tx) => tx.run(query, params));
     await session.close();
     const rating_ = Neo4jRecordToRatingObject(results.records[0], true);
-    console.log(rating_);
     return rating_;
   }
 
@@ -143,7 +142,6 @@ export class RatingsService {
 
   async getUserPredictions(userId: number) {
     const modelApiBaseUrl = process.env.MODEL_API_URL || "";
-    console.log(modelApiBaseUrl);
     return axios
       .get(`${modelApiBaseUrl}/users/${userId}/predict`)
       .then((response) => {
@@ -156,7 +154,6 @@ export class RatingsService {
 
   async getUserRecommendations(userId: number, limit: number) {
     const modelApiBaseUrl = process.env.MODEL_API_URL || "";
-    console.log(`${modelApiBaseUrl}/users/${userId}/recommend/${limit}`);
     try {
       const response = await axios.get(
         `${modelApiBaseUrl}/users/${userId}/recommend/${limit}`

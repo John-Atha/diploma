@@ -78,7 +78,6 @@ export const RatingsRouter = ({ driver }: RatingsRouterProps) => {
       );
       res.send(resp);
     } catch (err) {
-      console.log(err);
       res.status(400).send(err);
     }
   });
@@ -96,7 +95,6 @@ export const RatingsRouter = ({ driver }: RatingsRouterProps) => {
       );
       return res.send(resp);
     } catch (err) {
-      console.log(err);
       return res.status(400).send(err);
     }
   });

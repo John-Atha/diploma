@@ -121,7 +121,6 @@ export class UsersService {
 
   async login(username: string, password: string) {
     const user = await this.getByUsername(username, true);
-    console.log(user);
     if (!user) throw "Invalid credentials";
     const isPasswordCorrect = Bcrypt.compareSync(
       password || "",

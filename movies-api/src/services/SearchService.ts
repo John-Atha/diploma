@@ -49,7 +49,6 @@ export class SearchService {
     this.driver = driver;
     this.indexName = (configs as any)[entity].indexName;
     this.itemClass = (configs as any)[entity].itemClass;
-    console.log(this.itemClass);
     this.key = key;
   }
 

@@ -42,7 +42,6 @@ export class MovieDetailsService {
     let query = `MATCH (m:Movie { id: $id })-[r]-(v) where not v:User return r, v;`;
     const params = { id: this.id };
     const results = await session.executeRead((tx) => tx.run(query, params));
-    // console.log(results);
     const neighbours = results.records.map((result) => {
       const datum = result.toObject();
       const relProperties = datum.r.properties;
