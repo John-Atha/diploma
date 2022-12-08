@@ -6,14 +6,13 @@ import pathlib
 import sys
 parent_path = pathlib.Path(os.getcwd()).parent.absolute()
 sys.path.append(str(parent_path))
+import torch_geometric.transforms as T
 
 
 def load_data_dataset():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    path = osp.join(osp.dirname(osp.abspath('')),
-                    '../../data/MovieLensNeo4jMetaData')
     dataset = Neo4jMovieLensMetaData(
-        path,
+        root='data/MovieLensNeo4jMetaData',
         model_name='all-MiniLM-L6-v2',
         database_url=os.environ.get("DATABASE_URL"),
         database_username=os.environ.get("DATABASE_USERNAME"),
@@ -26,11 +25,6 @@ def load_data_dataset():
         numeric_features=["vote_average", "vote_count"]
     )
     data = dataset[0].to(device)
-    data['user'].x = torch.eye(data['user'].num_nodes, device=device)
-    del data['user'].num_nodes
-    data = T.ToUndirected()(data)
-    # Remove "reverse" label.
-    del data['movie', 'rev_rates', 'user'].edge_label
     data['user'].x = torch.eye(data['user'].num_nodes, device=device)
     del data['user'].num_nodes
     data = T.ToUndirected()(data)

@@ -2,7 +2,7 @@ import torch
 import torch.nn.functional as F
 import matplotlib.pyplot as plt
 
-def train_test(model, epochs, train_data, test_data, val_data, logging_step, lr=0.01, save=False):
+def train_test(model, epochs, train_data, test_data, val_data, logging_step, lr=0.01):
 
     # Due to lazy initialization, we need to run one model step so the number
     # of parameters can be inferred:
@@ -74,8 +74,5 @@ def train_test(model, epochs, train_data, test_data, val_data, logging_step, lr=
     
     last_losses = losses[-1]
     losses = losses + [last_losses] * (epochs - len(losses))
-
-    if save:
-        torch.save(model, "pickled_model")
     
-    return losses
+    return model, losses

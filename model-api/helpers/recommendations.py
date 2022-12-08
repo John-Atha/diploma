@@ -1,16 +1,16 @@
-import pathlib, os
+from .Neo4jMovieLensMetadata import Neo4jMovieLensMetaData
+import torch_geometric.transforms as T
+import torch
+import pathlib
+import os
 import os.path as osp
 import sys
 import argparse
 parent_path = pathlib.Path(os.getcwd()).parent.absolute()
 sys.path.append(str(parent_path))
 
-import torch
-import torch_geometric.transforms as T
-from .Neo4jMovieLensMetadata import Neo4jMovieLensMetaData
 
-
-def make_recommendations(dataset, data, model, user_id):
+def make_predictions(dataset, data, model, user_id):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     mappings = dataset.my_mappings
     movies_mapping = mappings["movies_mapping"]
@@ -19,10 +19,10 @@ def make_recommendations(dataset, data, model, user_id):
     num_movies = len(movies_mapping)
     num_users = len(users_mapping)
 
-    reverse_movie_mapping = dict(zip(movies_mapping.values(),movies_mapping.keys()))
-    reverse_user_mapping = dict(zip(users_mapping.values(),users_mapping.keys()))
-
-    results = []
+    reverse_movie_mapping = dict(
+        zip(movies_mapping.values(), movies_mapping.keys()))
+    reverse_user_mapping = dict(
+        zip(users_mapping.values(), users_mapping.keys()))
 
     """
     * to predict the ratings for each user to all the movies
@@ -34,14 +34,23 @@ def make_recommendations(dataset, data, model, user_id):
     edge_label_index = torch.stack([row, col], dim=0)
 
     pred = model(data.x_dict, data.edge_index_dict,
-                edge_label_index)
+                 edge_label_index)
     pred = pred.clamp(min=0, max=5)
 
-    user_neo4j_id = reverse_user_mapping[user_id]
+    mask = pred.nonzero(as_tuple=True)
+    predictions_list = pred.tolist()
+    predictions = [
+        {
+            "movie_id": reverse_movie_mapping[movie_index],
+            "rating": predictions_list[movie_index]
+        }
+        for movie_index in mask[0].tolist()
+    ]
+    return {'movies': predictions}
 
-    mask = (pred == 5).nonzero(as_tuple=True)
 
-    predictions = [reverse_movie_mapping[el] for el in  mask[0].tolist()]
-    results.append({'user': user_neo4j_id, 'movies': predictions})
-    
-    return results
+def recommend(dataset, data, model, user_id, limit):
+    predictions = make_predictions(dataset, data, model, user_id)["movies"]
+    sorted_predictions = sorted(
+        predictions, key=lambda pred: pred["rating"], reverse=True)[:limit]
+    return {'movies': sorted_predictions}

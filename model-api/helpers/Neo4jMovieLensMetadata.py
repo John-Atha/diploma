@@ -129,7 +129,7 @@ class Neo4jMovieLensMetaData(InMemoryDataset):
 
     def pre_process_movies_df(self):
 
-        model_path = os.path.join("..", "transformer", "models", "sentence-transformer-64dim")
+        model_path = os.path.join("transformer", "models", "sentence-transformer-64dim")
         model = SentenceTransformer(model_path)
 
         def encode_numeric_features(feature_names):
