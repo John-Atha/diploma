@@ -1,6 +1,9 @@
 import type { Driver, Session } from "neo4j-driver";
 import { Movie } from "../models/Movie";
-import { queryResultToClassObject } from "../utils/transforms";
+import {
+  flattenNumericFields,
+  queryResultToClassObject,
+} from "../utils/transforms";
 
 export class MovieDetailsService {
   driver: Driver;
@@ -21,13 +24,16 @@ export class MovieDetailsService {
   }
 
   async GetMovieDetails(session: Session) {
-    let query = `MATCH (m:Movie { id: $id }) return m;`;
+    let query = `MATCH (m:Movie { id: $id })-[r:RATES]-(:User) return m, count(r) as ratings_count, avg(r.rating) as ratings_average;`;
     const params = { id: this.id };
     const results = await session.executeRead((tx) => tx.run(query, params));
     let item = null;
     if (results.records.length) {
       const record = results.records[0];
-      item = queryResultToClassObject(record, Movie);
+      const { m, ...rest_fields } = record.toObject();
+      const movie = { ...m.properties, ...rest_fields };
+      const item = new Movie({ ...movie });
+      return flattenNumericFields(item);
     }
     return item;
   }
@@ -48,7 +54,11 @@ export class MovieDetailsService {
         else (nodeProperties as any)[key] = val;
       });
       let newDatum = {
-        nodeType: !!relProperties.cast_id ? "Cast" : !!relProperties.credit_id ? "Crew" : datum.v.labels[0],
+        nodeType: !!relProperties.cast_id
+          ? "Cast"
+          : !!relProperties.credit_id
+          ? "Crew"
+          : datum.v.labels[0],
         ...relProperties,
         ...nodeProperties,
       };
