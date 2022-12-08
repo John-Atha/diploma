@@ -9,6 +9,11 @@ graph_mappings_file = open(os.path.join("..", "utils", "mappings.json"))
 graph_mappings = json.load(graph_mappings_file)
 graph_mappings_file.close()
 
+def chunks(lst, n):
+    """Yield successive n-sized chunks from lst."""
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
+
 def keep_movie(movie, imdbIds):
     try:
         imdbId = int(movie["imdb_id"].replace("tt", ""))
@@ -196,24 +201,33 @@ def insert_movies_credits(graph: Graph, credits_json, movies_tmdbIds_to_keep):
     print(f"Person id in crews:", len(cr_person))
     print(f"Person id in casts:", len(ca_person))
 
-    merge_relationships(
-        tx=graph.auto(),
-        data=crew_relationships_data,
-        merge_key="HAS_CREW",
-        start_node_key=("Movie", "id"),
-        end_node_key=("Person", "id"),
-    )
-    merge_relationships(
-        tx=graph.auto(),
-        data=cast_relationships_data,
-        merge_key="HAS_CAST",
-        start_node_key=("Movie", "id"),
-        end_node_key=("Person", "id"),
-    )
+    crew_chunks = chunks(crew_relationships_data, 10000)
+    crew_chunk_index = 0
+    for chunk in crew_chunks:
+        print(f"Storing HAS_CREW chunk: {crew_chunk_index}")
+        merge_relationships(
+            tx=graph.auto(),
+            data=chunk,
+            merge_key="HAS_CREW",
+            start_node_key=("Movie", "id"),
+            end_node_key=("Person", "id"),
+        )
+        crew_chunk_index += 1
 
+    cast_chunks = chunks(cast_relationships_data, 10000)
+    cast_chunk_index = 0
+    for chunk in list(cast_chunks):
+        print(f"Storing HAS_CAST chunk: {cast_chunk_index}")
+        merge_relationships(
+            tx=graph.auto(),
+            data=chunk,
+            merge_key="HAS_CAST",
+            start_node_key=("Movie", "id"),
+            end_node_key=("Person", "id"),
+        )
+        cast_chunk_index += 1
 
-def add_fastRP_embeddings(graph: Graph):
-
+def add_embeddings(graph: Graph):
     relationships_to_be_embedded = [
         "genres",
         "keywords",
@@ -230,7 +244,7 @@ def add_fastRP_embeddings(graph: Graph):
         relationship_name = rel_node_names["rel_name"]
         node_name = rel_node_names["node_name"]
         embedding = {
-            "name": f"fastRP_{feature_name}",
+            "name": f"subgraph_{feature_name}",
             "query": f"""
                 ['Movie', '{node_name}'],
                 {{
@@ -245,7 +259,8 @@ def add_fastRP_embeddings(graph: Graph):
     for embedding in tqdm(embeddings):
         name = embedding["name"]
         query = embedding["query"]
-        add_fastRP_embedding(graph, name, query)
+        add_embedding(graph, name, query, kind="fastRP")
+        add_embedding(graph, name, query, kind="SAGE")
 
 # main methods for users and ratings
 
@@ -270,20 +285,27 @@ def insert_movies_links(graph:Graph, links):
 
 def insert_users_ratings(graph: Graph, ratings):
 
-    users = [
-        {
-            "id": rating["userId"],
-            "username": generate_username(1)[0],
-        }
-        for rating in ratings
-    ]
-    print("Creating users nodes...")
-    merge_nodes(
-        tx=graph.auto(),
-        data=users,
-        merge_key=("User", "id"),
-        labels={"User"}
-    )
+    # user_ids = set(rating["userId"] for rating in ratings)
+    # users = [
+    #     {
+    #         "id": user_id,
+    #         "username": generate_username(1)[0],
+    #     }
+    #     for user_id in user_ids
+    # ]
+
+    # print(f"Creating users nodes ({len(user_ids)})...")
+    # users_chunks = chunks(users, 10000)
+    # users_chunk_index = 0
+    # for chunk in users_chunks:
+    #     print(f"Storing USERS chunk: {users_chunk_index}")
+    #     merge_nodes(
+    #         tx=graph.auto(),
+    #         data=chunk,
+    #         merge_key=("User", "id"),
+    #         labels={"User"}
+    #     )
+    #     users_chunk_index += 1
 
     relationships_data = []
     for rating in tqdm(ratings, desc="Creating ratings edges..."):
@@ -296,14 +318,19 @@ def insert_users_ratings(graph: Graph, ratings):
             rel_data,
             rating["userId"],
         ))
-    
-    merge_relationships(
-        tx=graph.auto(),
-        data=relationships_data,
-        merge_key="RATES",
-        start_node_key=("Movie", "linkMovieId"),
-        end_node_key=("User", "id")
-    )
+
+    ratings_chunks = chunks(relationships_data, 10000)
+    ratings_chunk_index = 221
+    for chunk in list(ratings_chunks)[:221]:
+        print(f"Storing RATINGS chunk: {ratings_chunk_index}")
+        merge_relationships(
+            tx=graph.auto(),
+            data=chunk,
+            merge_key="RATES",
+            start_node_key=("Movie", "linkMovieId"),
+            end_node_key=("User", "id")
+        )
+        ratings_chunk_index += 1
 
 # some DB cleaner method
 def delete_unrated_movies(graph: Graph):
@@ -315,6 +342,52 @@ def delete_unrated_movies(graph: Graph):
     """)
     print("OK")
 
+def create_search_indexes(graph: Graph):
+    configs = [
+        {
+            "indexName": "MoviesSearch",
+            "entityName": "Movie",
+            "fields": ["m.title", "m.original_title", "m.release_date"], 
+        },
+        {
+            "indexName": "GenresSearch",
+            "entityName": "Genre",
+            "fields": ["m.name"], 
+        },
+        {
+            "indexName": "KeywordsSearch",
+            "entityName": "Keyword",
+            "fields": ["m.name"],
+        },
+        {
+            "indexName": "ProductionCompaniesSearch",
+            "entityName": "ProductionCompany",
+            "fields": ["m.name"],
+        },
+        {
+            "indexName": "ProductionCountriesSearch",
+            "entityName": "ProductionCountry",
+            "fields": ["m.name", "m.iso_3166_1"],
+        },
+        {
+            "indexName": "LanguagesSearch",
+            "entityName": "Language",
+            "fields": ["m.name", "m.iso_639_1"],
+        },
+        {
+            "indexName": "PeopleSearch",
+            "entityName": "Person",
+            "fields": ["m.name"],
+        },
+    ]
+
+    for config in configs:
+        index_name = config["indexName"]
+        entity_name = config["entityName"]
+        fields = config["fields"]
+        graph.run(f"""
+            CREATE FULLTEXT INDEX {index_name} FOR (m:{entity_name}) ON EACH [{', '.join(fields)}]
+        """)
 
 # -------------------------------------------------
 # ---------------- helpers ------------------------
@@ -377,14 +450,28 @@ def attach_helper_nodes(
         end_node_key=(node_label, feature_key)
     )
 
-def add_fastRP_embedding(graph: Graph, name, query):
-    run_fastRP_projection(graph, name, query)
-    write_fastRP_projection_embedding(graph, name)
-    drop_fastRP_projection(graph, name)
+def add_embedding(graph: Graph, name, query, kind):
+    run_projection(graph, name, query)
+    
+    if kind == "fastRP":
+        write_fastRP_projection_embedding(graph, name)
+    elif kind == "SAGE":
+        train_SAGE_on_projection_graph(graph, name)
+    
+    drop_projection(graph, name)
 
-def run_fastRP_projection(graph, name, query):
+def run_projection(graph, name, query):
     print(f"Running projection... {name}", end="  ")
     graph.run(f"CALL gds.graph.project('{name}', {query})")
+    graph.run(f"""
+        CALL gds.degree.mutate(
+            '{name}',
+            {{
+                mutateProperty: 'degree'
+            }}
+        )
+    """)
+
     print("OK")
 
 def write_fastRP_projection_embedding(graph, name):
@@ -400,7 +487,29 @@ def write_fastRP_projection_embedding(graph, name):
     """)
     print("OK")
 
-def drop_fastRP_projection(graph, name):
+def train_SAGE_on_projection_graph(graph, name):
+    print("Training SAGE for generating embeddings...")
+    graph.run(f"""
+        CALL gds.beta.graphSage.train(
+            '{name}',
+            {{
+                modelName: '{name}',
+                projectedFeatureDimension: 32,
+                featureProperties: ['degree']
+            }}
+    """)
+    print("Writting the SAGE embeddings...")
+    graph.run(f"""
+        CALL gds.beta.graphSage.write(
+            '{name}',
+            {{
+                writeProperty: 'SAGE_{name}',
+                modelName: '{name}'
+            }}
+        )
+    """)
+
+def drop_projection(graph, name):
     print("Dropping projection...", end="  ")
     graph.run(f"""
         CALL gds.graph.drop("{name}")

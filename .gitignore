@@ -10,6 +10,14 @@
 *.gz
 *.pt
 
-# BACK-END
+# Movies-Users APIs
 **/back-env
 **/node_modules
+
+# Model API
+model-api/data/MovieLensNeo4jMetaData/processed/
+model-api/data/MovieLensNeo4jMetaData/raw/
+
+# macOS
+
+**/.DS_Store
