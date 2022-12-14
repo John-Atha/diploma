@@ -69,13 +69,13 @@ export const navs = [
     navs: [
       {
         slug: "ratings",
-        text: "Ratings",
+        text: "My Ratings",
         icon: <StarOutline />,
         needsAuth: true,
       },
       {
         slug: "profile",
-        text: "Profile",
+        text: "My Profile",
         icon: <PersonOutlined />,
         needsAuth: true,
       },

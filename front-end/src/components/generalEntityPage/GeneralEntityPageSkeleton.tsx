@@ -51,7 +51,7 @@ export const GeneralEntityPageSkeleton = ({
       children={
         <>
           <div ref={ref} />
-          <Stack spacing={2} width={bounds.width}>
+          <Stack spacing={2} width={bounds.width-48}>
             <Grid item xs={12}>
               <MyHeader
                 searchProps={{

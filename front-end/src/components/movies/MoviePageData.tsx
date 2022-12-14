@@ -80,6 +80,7 @@ export const MoviePageData = ({ data }: MovieData) => {
                   Ratings
                 </Typography>
                 <MovieRatings
+                  movieId={id}
                   ratings_average={ratings_average}
                   ratings_count={ratings_count}
                   predicted_rating={predictedRatings?.[id] || 0}

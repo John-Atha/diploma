@@ -30,7 +30,7 @@ export const SmallList = ({
     return null;
   } else {
     content = (
-      <Stack spacing={1} justifyContent="center">
+      <Stack spacing={1} height={250} justifyContent="center">
         {data.map((repo: any) => cloneElement(oneElement, { ...repo }))}
       </Stack>
     );

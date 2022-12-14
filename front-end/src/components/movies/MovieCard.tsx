@@ -53,14 +53,12 @@ export const MovieCard = ({
   const logo = poster_path ? `${tmdb_base_url}${poster_path}` : movieImage;
   const [isFocused, setIsFocused] = useState(false);
 
-  console.log({ id, rating, rating_datetime });
-
   const renderCardContent = () => {
     return (
       <>
         <div>
           <Typography variant="body1">
-            {stringSlice(title || original_title, 25)}
+            {stringSlice(title || original_title, 23)}
           </Typography>
           <Typography variant="caption">{release_date}</Typography>
         </div>
@@ -73,12 +71,15 @@ export const MovieCard = ({
               value={existing_rating || predicted_rating}
               size="small"
             />
-            <Typography variant="body2">({existing_rating || predicted_rating} / 5.0)</Typography>
+            <Typography variant="body2">
+              ({existing_rating || predicted_rating} / 5.0)
+            </Typography>
           </Grid>
         )}
 
         {isFocused && (
           <MovieRatings
+            movieId={id}
             predicted_rating={predicted_rating as number}
             existing_rating={existing_rating as number}
             ratings_average={ratings_average}

@@ -22,7 +22,7 @@ export const RatingsHistoryPage = () => {
             href: "/",
           },
           {
-            text: "Ratings History",
+            text: "My Ratings",
             href: "#",
           },
         ],

@@ -36,16 +36,18 @@ export const PageSkeleton = ({ children }: SkeletonProps) => {
 
   if (theme_) {
     return (
-      <ThemeProvider theme={theme_}>
-        <MySidebar children={children} />
-        <SnackMessage />
-      </ThemeProvider>
+      <div>
+        <ThemeProvider theme={theme_}>
+          <MySidebar children={children} />
+          <SnackMessage />
+        </ThemeProvider>
+      </div>
     );
   }
   return (
-    <>
+    <div>
       <MySidebar children={children} />
       <SnackMessage />
-    </>
+    </div>
   );
 };

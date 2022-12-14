@@ -80,7 +80,7 @@ export const GeneralItemPage = ({
       children={
         <>
           <div ref={ref} />
-          <Stack spacing={2} width={bounds.width}>
+          <Stack spacing={2} width={bounds.width-48}>
             {data?.profile_path && (
               <Grid container>
                 <Grid item width="minContent" ref={ref2}>

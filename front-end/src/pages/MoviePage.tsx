@@ -66,7 +66,7 @@ export const MoviePage = () => {
   return (
     <PageSkeleton>
       <div ref={ref}></div>
-      <Stack spacing={3} justifyContent="center" width={bounds.width}>
+      <Stack spacing={3} justifyContent="center" width={bounds.width-48}>
         <MyHeader
           searchProps={{
             initValue: "",

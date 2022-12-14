@@ -20,7 +20,7 @@ export const ProfilePage = () => {
             href: "/",
           },
           {
-            text: "Profile",
+            text: "My Profile",
             href: "#",
           },
         ],

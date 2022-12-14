@@ -18,11 +18,13 @@ def load_data_dataset():
         database_username=os.environ.get("DATABASE_USERNAME"),
         database_password=os.environ.get("DATABASE_PASSWORD"),
         force_pre_process=True,
-        text_features=["title", "tagline"],
+        text_features=["title"],
         list_features=[],
-        fastRP_features=["fastRP_genres", "fastRP_keywords",
-                         "fastRP_cast", "fastRP_crew"],
-        numeric_features=["vote_average", "vote_count"]
+        fastRP_features=["fastRP_genres"],
+        # fastRP_features=["fastRP_genres", "fastRP_keywords",
+        #                  "fastRP_cast", "fastRP_crew"],
+        # numeric_features=["vote_average", "vote_count"]
+        numeric_features=[]
     )
     data = dataset[0].to(device)
     data['user'].x = torch.eye(data['user'].num_nodes, device=device)

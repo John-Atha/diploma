@@ -47,7 +47,7 @@ export const OneMovie = ({
       fallbackSrc={movieImage}
       title={title || original_title}
       subtitle={
-        <Grid container>
+        <Grid container alignItems="center">
           <Rating
             precision={0.5}
             name="read-only"
@@ -55,7 +55,9 @@ export const OneMovie = ({
             size="small"
             readOnly
           />
-          <Typography variant="body2">({ratings_count})</Typography>
+          <Typography variant="body2">
+            {ratings_average.toFixed(2)} ({ratings_count})
+          </Typography>
         </Grid>
       }
       href={`/movies/${id}`}

@@ -33,7 +33,7 @@ export const MoviesPage = () => {
       children={
         <>
           <div ref={ref} />
-          <Stack spacing={2} width={bounds.width}>
+          <Stack spacing={2} width={bounds.width-48}>
             <MyHeader
               searchProps={{
                 initValue: "",

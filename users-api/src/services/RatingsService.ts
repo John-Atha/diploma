@@ -11,16 +11,12 @@ export class RatingsService {
     this.driver = driver;
   }
 
-  async getAllRatingsOfUserBrief(
-    username: string
-  ) {
+  async getAllRatingsOfUserBrief(username: string) {
     const query = `MATCH (u:User { username: $username })-[r:RATES]-(m:Movie) return r, m`;
     const session = this.driver.session();
     const params = { username };
     console.log("QUERY:", query, params);
-    const results = await session.executeRead((tx) =>
-      tx.run(query, params)
-    );
+    const results = await session.executeRead((tx) => tx.run(query, params));
     const ratings = results.records.map((record) =>
       Neo4jRecordToRatingObject(record, false)
     );
@@ -86,10 +82,16 @@ export class RatingsService {
     const params = { userId, movieId: `${movieId}`, rating, datetime };
     const session = this.driver.session();
     console.log("QUERY:", query, params);
-    const results = await session.executeWrite((tx) => tx.run(query, params));
-    await session.close();
-    const rating_ = Neo4jRecordToRatingObject(results.records[0], true);
-    return rating_;
+    try {
+      const results = await session.executeWrite((tx) => tx.run(query, params));
+      await session.close();
+      const rating_ = Neo4jRecordToRatingObject(results.records[0], true);
+      return rating_;
+    } catch (err) {
+      await session.close();
+      console.log(err);
+      throw err;
+    }
   }
 
   async createRating(userId: number, movieId: number, rating: number) {
@@ -164,7 +166,7 @@ export class RatingsService {
       // const result = [];
       // moviesIds.forEach((movie_id: string) => {
       //   result.push({
-      //     predicted_rating: 
+      //     predicted_rating:
       //   })
       // })
       return response.data;
