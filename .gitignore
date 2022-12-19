@@ -1,6 +1,7 @@
 # MODEL
 *.json.*
 *.csv
+!*subgraph*
 /.history
 /environ
 **/.env
