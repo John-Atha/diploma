@@ -4,10 +4,17 @@ from py2neo.bulk import merge_nodes, merge_relationships
 import ast, os, json
 from random_username.generate import generate_username
 from tqdm import tqdm
+from datetime import datetime
 
 graph_mappings_file = open(os.path.join("..", "utils", "mappings.json"))
 graph_mappings = json.load(graph_mappings_file)
 graph_mappings_file.close()
+
+def chunks(l, n):
+    sublists = []
+    for i in range(0, len(l), n):
+        sublists.append(l[i:i + n])
+    return sublists
 
 def keep_movie(movie, imdbIds):
     try:
@@ -136,7 +143,7 @@ def insert_movies_keywords(graph: Graph, keywords_json, movies_imdbIds_to_keep, 
 def insert_movies_credits(graph: Graph, credits_json, movies_tmdbIds_to_keep):
     
     # # create Person nodes
-    credits = [movie_credits for movie_credits in credits_json if movie_credits["id"] in set(movies_tmdbIds_to_keep)]
+    credits = [movie_credits for movie_credits in credits_json if movie_credits["id"] in movies_tmdbIds_to_keep]
     crews = [ast.literal_eval(movie_credits["crew"]) for movie_credits in credits]
     casts = [ast.literal_eval(movie_credits["cast"]) for movie_credits in credits]
     get_member_from_cast_crew_item = lambda item: {
@@ -196,30 +203,39 @@ def insert_movies_credits(graph: Graph, credits_json, movies_tmdbIds_to_keep):
     print(f"Person id in crews:", len(cr_person))
     print(f"Person id in casts:", len(ca_person))
 
-    merge_relationships(
-        tx=graph.auto(),
-        data=crew_relationships_data,
-        merge_key="HAS_CREW",
-        start_node_key=("Movie", "id"),
-        end_node_key=("Person", "id"),
-    )
-    merge_relationships(
-        tx=graph.auto(),
-        data=cast_relationships_data,
-        merge_key="HAS_CAST",
-        start_node_key=("Movie", "id"),
-        end_node_key=("Person", "id"),
-    )
+    crew_chunks = chunks(crew_relationships_data, 10000)
+    crew_chunk_index = 0
+    for chunk in crew_chunks:
+        print(f"Storing HAS_CREW chunk: {crew_chunk_index}")
+        merge_relationships(
+            tx=graph.auto(),
+            data=chunk,
+            merge_key="HAS_CREW",
+            start_node_key=("Movie", "id"),
+            end_node_key=("Person", "id"),
+        )
+        crew_chunk_index += 1
 
+    cast_chunks = chunks(cast_relationships_data, 10000)
+    cast_chunk_index = 0
+    for chunk in list(cast_chunks):
+        print(f"Storing HAS_CAST chunk: {cast_chunk_index}")
+        merge_relationships(
+            tx=graph.auto(),
+            data=chunk,
+            merge_key="HAS_CAST",
+            start_node_key=("Movie", "id"),
+            end_node_key=("Person", "id"),
+        )
+        cast_chunk_index += 1
 
-def add_fastRP_embeddings(graph: Graph):
-
+def add_embeddings(graph: Graph, kind="fastRP"):
     relationships_to_be_embedded = [
         "genres",
         "keywords",
         "production_companies",
         "production_countries",
-        "spoken_laguages",
+        "spoken_languages",
         "cast",
         "crew",
     ]
@@ -230,7 +246,7 @@ def add_fastRP_embeddings(graph: Graph):
         relationship_name = rel_node_names["rel_name"]
         node_name = rel_node_names["node_name"]
         embedding = {
-            "name": f"fastRP_{feature_name}",
+            "name": f"{kind}_{feature_name}",
             "query": f"""
                 ['Movie', '{node_name}'],
                 {{
@@ -238,14 +254,49 @@ def add_fastRP_embeddings(graph: Graph):
                         orientation: 'UNDIRECTED'
                     }}
                 }}
-            """
+            """,
+            "dimension": 32,
         }
         embeddings.append(embedding)
+    
+    # total_embedding = {
+    #     "name": f"{kind}_COMBINED",
+    #     "query": f"""
+    #         ['Movie', 'Genre', 'Keyword', 'ProductionCompany', 'ProductionCountry', 'Language', 'Person'],
+    #         {{
+    #             BELONGS_TO: {{
+    #                 orientation: 'UNDIRECTED'
+    #             }},
+    #             HAS_KEYWORD: {{
+    #                 orientation: 'UNDIRECTED'
+    #             }},
+    #             PRODUCED_IN: {{
+    #                 orientation: 'UNDIRECTED'
+    #             }},
+    #             PRODUCED_BY: {{
+    #                 orientation: 'UNDIRECTED'
+    #             }},
+    #             SPEAKING: {{
+    #                 orientation: 'UNDIRECTED'
+    #             }},
+    #             HAS_CAST: {{
+    #                 orientation: 'UNDIRECTED'
+    #             }},
+    #             HAS_CREW: {{
+    #                 orientation: 'UNDIRECTED'
+    #             }}
+    #         }}
+    #     """,
+    #     "dimension": 128,
+    # }
+    # embeddings.append(total_embedding)
         
     for embedding in tqdm(embeddings):
         name = embedding["name"]
         query = embedding["query"]
-        add_fastRP_embedding(graph, name, query)
+        dimension = embedding["dimension"]
+        add_embedding(graph, name, query, kind=kind, dimension=dimension)
+        # add_embedding(graph, name, query, kind="SAGE")
 
 # main methods for users and ratings
 
@@ -268,22 +319,30 @@ def insert_movies_links(graph:Graph, links):
     print("Found movies:    ", found_movies_counter)
     print("Not Found movies:", not_found_movies_counter)
 
-def insert_users_ratings(graph: Graph, ratings):
+def insert_users_ratings(graph: Graph, ratings, users_to_keep):
 
+    user_ids = set(rating["userId"] for rating in ratings)
+    
     users = [
         {
-            "id": rating["userId"],
+            "id": int(user_id),
             "username": generate_username(1)[0],
         }
-        for rating in ratings
+        for user_id in (users_to_keep or user_ids) 
     ]
-    print("Creating users nodes...")
-    merge_nodes(
-        tx=graph.auto(),
-        data=users,
-        merge_key=("User", "id"),
-        labels={"User"}
-    )
+
+    print(f"Creating users nodes ({len(users_to_keep)})...")
+    users_chunks = chunks(users, 10000)
+    users_chunk_index = 0
+    for chunk in users_chunks:
+        print(f"Storing USERS chunk: {users_chunk_index}")
+        merge_nodes(
+            tx=graph.auto(),
+            data=chunk,
+            merge_key=("User", "id"),
+            labels={"User"}
+        )
+        users_chunk_index += 1
 
     relationships_data = []
     for rating in tqdm(ratings, desc="Creating ratings edges..."):
@@ -296,14 +355,19 @@ def insert_users_ratings(graph: Graph, ratings):
             rel_data,
             rating["userId"],
         ))
-    
-    merge_relationships(
-        tx=graph.auto(),
-        data=relationships_data,
-        merge_key="RATES",
-        start_node_key=("Movie", "linkMovieId"),
-        end_node_key=("User", "id")
-    )
+    ratings_chunks = chunks(relationships_data, 10000)
+    ratings_chunk_index = 1
+    # chunk = ratings_chunks[-1]
+    for chunk in ratings_chunks:
+        print(f"{datetime.now()}: storing RATINGS chunk: {ratings_chunk_index}")
+        merge_relationships(
+            tx=graph.auto(),
+            data=chunk,
+            merge_key="RATES",
+            start_node_key=("Movie", "linkMovieId"),
+            end_node_key=("User", "id")
+        )
+        ratings_chunk_index += 1
 
 # some DB cleaner method
 def delete_unrated_movies(graph: Graph):
@@ -315,6 +379,52 @@ def delete_unrated_movies(graph: Graph):
     """)
     print("OK")
 
+def create_search_indexes(graph: Graph):
+    configs = [
+        {
+            "indexName": "MoviesSearch",
+            "entityName": "Movie",
+            "fields": ["m.title", "m.original_title", "m.release_date"], 
+        },
+        {
+            "indexName": "GenresSearch",
+            "entityName": "Genre",
+            "fields": ["m.name"], 
+        },
+        {
+            "indexName": "KeywordsSearch",
+            "entityName": "Keyword",
+            "fields": ["m.name"],
+        },
+        {
+            "indexName": "ProductionCompaniesSearch",
+            "entityName": "ProductionCompany",
+            "fields": ["m.name"],
+        },
+        {
+            "indexName": "ProductionCountriesSearch",
+            "entityName": "ProductionCountry",
+            "fields": ["m.name", "m.iso_3166_1"],
+        },
+        {
+            "indexName": "LanguagesSearch",
+            "entityName": "Language",
+            "fields": ["m.name", "m.iso_639_1"],
+        },
+        {
+            "indexName": "PeopleSearch",
+            "entityName": "Person",
+            "fields": ["m.name"],
+        },
+    ]
+
+    for config in configs:
+        index_name = config["indexName"]
+        entity_name = config["entityName"]
+        fields = config["fields"]
+        graph.run(f"""
+            CREATE FULLTEXT INDEX {index_name} FOR (m:{entity_name}) ON EACH [{', '.join(fields)}]
+        """)
 
 # -------------------------------------------------
 # ---------------- helpers ------------------------
@@ -346,7 +456,7 @@ def get_nodes_set(movies_imdbIds_to_keep, movies_json, feature_name, feature_key
     # take into account only the movies that exist in our database
     nodes_flattened = []
     for movie in tqdm(movies_json, desc=f"Collecting {feature_name} data..."):
-        keep = keep_movie_by_tmdb_id(movie, movies_tmdbIds_to_keep) if movies_tmdbIds_to_keep else keep_movie(movie, movies_imdbIds_to_keep)
+        keep = keep_movie_by_tmdb_id(movie, movies_tmdbIds_to_keep) if movies_tmdbIds_to_keep.any() else keep_movie(movie, movies_imdbIds_to_keep)
         if keep:
             nodes_list = transform_json_feature(movie, feature_name)
             if isinstance(nodes_list, list):
@@ -377,30 +487,66 @@ def attach_helper_nodes(
         end_node_key=(node_label, feature_key)
     )
 
-def add_fastRP_embedding(graph: Graph, name, query):
-    run_fastRP_projection(graph, name, query)
-    write_fastRP_projection_embedding(graph, name)
-    drop_fastRP_projection(graph, name)
+def add_embedding(graph: Graph, name, query, kind, dimension):
+    run_projection(graph, name, query)
+    
+    if kind == "fastRP":
+        write_fastRP_projection_embedding(graph, name, dimension)
+    elif kind == "SAGE":
+        train_SAGE_on_projection_graph(graph, name)
+    
+    drop_projection(graph, name)
 
-def run_fastRP_projection(graph, name, query):
+def run_projection(graph, name, query):
     print(f"Running projection... {name}", end="  ")
     graph.run(f"CALL gds.graph.project('{name}', {query})")
+    graph.run(f"""
+        CALL gds.degree.mutate(
+            '{name}',
+            {{
+                mutateProperty: 'degree'
+            }}
+        )
+    """)
+
     print("OK")
 
-def write_fastRP_projection_embedding(graph, name):
+def write_fastRP_projection_embedding(graph, name, dimension):
     print("Writting generated embeddings...", end="  ")
     graph.run(f"""
         CALL gds.fastRP.write(
             '{name}',
             {{
-                embeddingDimension: 32,
+                embeddingDimension: {dimension},
                 writeProperty: '{name}'
             }}
         )    
     """)
     print("OK")
 
-def drop_fastRP_projection(graph, name):
+def train_SAGE_on_projection_graph(graph, name):
+    print("Training SAGE for generating embeddings...")
+    graph.run(f"""
+        CALL gds.beta.graphSage.train(
+            '{name}',
+            {{
+                modelName: '{name}',
+                projectedFeatureDimension: 32,
+                featureProperties: ['degree']
+            }}
+    """)
+    print("Writting the SAGE embeddings...")
+    graph.run(f"""
+        CALL gds.beta.graphSage.write(
+            '{name}',
+            {{
+                writeProperty: 'SAGE_{name}',
+                modelName: '{name}'
+            }}
+        )
+    """)
+
+def drop_projection(graph, name):
     print("Dropping projection...", end="  ")
     graph.run(f"""
         CALL gds.graph.drop("{name}")

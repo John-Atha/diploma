@@ -247,7 +247,12 @@ class Neo4jMovieLensMetaData(InMemoryDataset):
             self.movies_df.set_index("id", inplace=True)
         
         movie_mapping = {idx: i for i, idx in enumerate(self.movies_df.index)}      
-        data['movie'].x = self.pre_process_movies_df()
+        if not self.text_features and not self.fastRP_features and not self.numeric_features and not self.list_features:
+            print("Movies do not have features...")
+            data['movie'].num_nodes = len(movie_mapping)
+        else:
+            print("Movies have features...")
+            data['movie'].x = self.pre_process_movies_df()
 
         # load the users and the ratings from the DB
         if not self.ratings_df:
