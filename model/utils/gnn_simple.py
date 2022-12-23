@@ -160,7 +160,6 @@ class Model(torch.nn.Module):
             skip_connections=encoder_skip_connections,
             encoder_aggr=encoder_aggr,
         )
-        # self.encoder = HeteroGNN(hidden_channels, out_channels, encoder_num_layers)
         self.in_channels = in_channels
         self.hidden_channels = hidden_channels
         self.out_channels = out_channels
@@ -173,29 +172,3 @@ class Model(torch.nn.Module):
     def forward(self, x_dict, edge_index_dict, edge_label_index):
         z_dict = self.encoder(x_dict, edge_index_dict)
         return self.decoder(z_dict, edge_label_index)
-
-
-class HeteroGNN(torch.nn.Module):
-    def __init__(self, hidden_channels, out_channels, num_layers):
-        super().__init__()
-
-        self.convs = torch.nn.ModuleList()
-        for _ in range(num_layers-1):
-            conv = HeteroConv({
-                ('user', 'rates', 'movie'): SAGEConv((-1, -1), hidden_channels),
-                ('movie', 'rev_rates', 'user'): GATv2Conv((-1, -1), hidden_channels, add_self_loops=False),
-            }, aggr='sum')
-            self.convs.append(conv)
-
-        conv = HeteroConv({
-            ('user', 'rates', 'movie'): SAGEConv((-1, -1), out_channels),
-            ('movie', 'rev_rates', 'user'): GATv2Conv((-1, -1), out_channels, add_self_loops=False),
-        }, aggr='sum')
-        self.convs.append(conv)
-
-    def forward(self, x_dict, edge_index_dict):
-        for conv in self.convs:
-            x_dict = conv(x_dict, edge_index_dict)
-            x_dict = {key: x.relu() for key, x in x_dict.items()}
-        return x_dict
-    

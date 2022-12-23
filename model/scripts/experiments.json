@@ -528,5 +528,59 @@
                 "numeric_features": ["vote_average", "vote_count"]
             }
         ]
+    },
+    {
+        "filename": "SAGE_embeddings_usage",
+        "layer_names": ["SAGE"],
+        "encoder_nums_layers": [6, 6, 1],
+        "encoder_aggregations": [["mean"]],
+        "skip_connections": [1],
+        "decoder_nums_layers": [8, 8, 1],
+        "hidden_channels": [8, 16, 32],
+        "lrs": [0.012],
+        "features_config": [
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": [],
+                "numeric_features": []
+            },
+            {
+                "text_features": ["title", "original_title", "tagline"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_genres", "fastRP_keywords", "fastRP_cast", "fastRP_crew", "fastRP_production_companies", "fastRP_production_countries", "fastRP_spoken_languages"],
+                "numeric_features": []
+            }
+        ]
+    },
+    {
+        "filename": "SAGE_embeddings_usage_v2",
+        "layer_names": ["SAGE"],
+        "encoder_nums_layers": [6, 6, 1],
+        "encoder_aggregations": [["mean"]],
+        "skip_connections": [1],
+        "decoder_nums_layers": [8, 8, 1],
+        "hidden_channels": [16],
+        "lrs": [0.012],
+        "features_config": [
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": [],
+                "numeric_features": []
+            },
+            {
+                "text_features": ["title", "original_title", "tagline"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_genres", "fastRP_keywords", "fastRP_cast", "fastRP_crew", "fastRP_production_companies", "fastRP_production_countries", "fastRP_spoken_languages"],
+                "numeric_features": []
+            },
+            {
+                "text_features": ["title", "original_title", "tagline"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_COMBINED"],
+                "numeric_features": []
+            }
+        ]
     }
 ]

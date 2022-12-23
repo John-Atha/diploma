@@ -21,7 +21,7 @@ experiments_file = open(os.path.join("..", "scripts", "experiments.json"))
 experiments = json.load(experiments_file)
 experiments_file.close()
 
-experiment_name = "GIN_optimize_2_"
+experiment_name = "SAGE_embeddings_usage_v2"
 config = None
 
 if experiment_name:
