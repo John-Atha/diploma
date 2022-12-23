@@ -19,7 +19,7 @@
         "merge_key": "iso_3166_1",
         "rel_name": "PRODUCED_IN"
     },
-    "spoken_laguages": {
+    "spoken_languages": {
         "node_name": "Language",
         "merge_key": "iso_639_1",
         "rel_name": "SPEAKING"
