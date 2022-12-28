@@ -236,8 +236,8 @@ def add_embeddings(graph: Graph, kind="fastRP"):
         "production_companies",
         "production_countries",
         "spoken_languages",
-        "cast",
-        "crew",
+        # "cast",
+        # "crew",
     ]
 
     embeddings = []
@@ -255,9 +255,60 @@ def add_embeddings(graph: Graph, kind="fastRP"):
                     }}
                 }}
             """,
-            "dimension": 32,
+            "dimension": 256,
         }
         embeddings.append(embedding)
+    groupped_embeddings = [
+        {
+            "name": f"{kind}_genres_keywords",
+            "query": f"""
+                ['Movie', 'Genre', 'Keyword'],
+                {{
+                    BELONGS_TO: {{
+                        orientation: 'UNDIRECTED'
+                    }},
+                    HAS_KEYWORD: {{
+                        orientation: 'UNDIRECTED'
+                    }}
+                }}
+            """,
+            "dimension": 512,
+        },
+        {
+            "name": f"{kind}_companies_countries_languages",
+            "query": f"""
+                ['Movie', 'ProductionCompany', 'ProductionCountry', 'Language'],
+                {{
+                    PRODUCED_IN: {{
+                        orientation: 'UNDIRECTED'
+                    }},
+                    PRODUCED_BY: {{
+                        orientation: 'UNDIRECTED'
+                    }},
+                    SPEAKING: {{
+                        orientation: 'UNDIRECTED'
+                    }}
+                }}
+            """,
+            "dimension": 512,
+        },
+        # {
+        #     "name": f"{kind}_cast_crew",
+        #     "query": f"""
+        #         ['Movie', 'Person'],
+        #         {{
+        #             HAS_CAST: {{
+        #                 orientation: 'UNDIRECTED'
+        #             }},
+        #             HAS_CREW: {{
+        #                 orientation: 'UNDIRECTED'
+        #             }}
+        #         }}
+        #     """,
+        #     "dimension": 512,
+        # }
+    ]
+    embeddings += groupped_embeddings
     
     # total_embedding = {
     #     "name": f"{kind}_COMBINED",
@@ -500,14 +551,14 @@ def add_embedding(graph: Graph, name, query, kind, dimension):
 def run_projection(graph, name, query):
     print(f"Running projection... {name}", end="  ")
     graph.run(f"CALL gds.graph.project('{name}', {query})")
-    graph.run(f"""
-        CALL gds.degree.mutate(
-            '{name}',
-            {{
-                mutateProperty: 'degree'
-            }}
-        )
-    """)
+    # graph.run(f"""
+    #     CALL gds.degree.mutate(
+    #         '{name}',
+    #         {{
+    #             mutateProperty: 'degree'
+    #         }}
+    #     )
+    # """)
 
     print("OK")
 

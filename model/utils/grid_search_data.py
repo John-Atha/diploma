@@ -3,13 +3,15 @@ from collections import defaultdict
 import torch
 import torch_geometric.transforms as T
 from utils.gnn_simple import Model
-from utils.train_test import train_test
+from utils.train_test import train_test, train_test_mini_batch
 from utils.Neo4jMovieLensMetaData import Neo4jMovieLensMetaData
+from utils.minibatches_split import split_to_minibatches
 
 def grid_search_data(
     layer_names,
     encoder_nums_layers,
     decoder_nums_layers,
+    use_mini_batch,
     epochs,
     features_config,
     encoder_aggregations=[[]],
@@ -89,13 +91,35 @@ def grid_search_data(
                                         hidden_channels=hidden_channels_num,
                                         out_channels=hidden_channels_num,
                                     ).to(device)
-                                    losses[experiment_config] = train_test(
-                                        model=model,
-                                        epochs=epochs,
-                                        train_data=train_data,
-                                        val_data=val_data,
-                                        test_data=test_data,
-                                        logging_step=logging_step,
-                                        lr=lr,
-                                    )
+                                    
+                                    if use_mini_batch:
+                                        train_batch, train_loader = split_to_minibatches(
+                                            data=train_data,
+                                            batch_size=128,
+                                            num_neighbours=[15, 5],
+                                        )
+                                        test_batch, test_loader = split_to_minibatches(
+                                            data=test_data,
+                                            batch_size=128,
+                                            num_neighbours=[15],
+                                        )
+                                        losses[experiment_config] = train_test_mini_batch(
+                                            model=model,
+                                            epochs=epochs,
+                                            train_batch=train_batch,
+                                            train_loader=train_loader,
+                                            test_batch=test_batch,
+                                            test_loader=test_loader,
+                                            lr=lr,
+                                        )
+                                    else:
+                                        losses[experiment_config] = train_test(
+                                            model=model,
+                                            epochs=epochs,
+                                            train_data=train_data,
+                                            val_data=val_data,
+                                            test_data=test_data,
+                                            logging_step=logging_step,
+                                            lr=lr,
+                                        )
     return losses

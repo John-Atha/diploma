@@ -17,11 +17,11 @@ if len(sys.argv)>2:
 
 print("Epochs:", sys.argv[1])
 
-experiments_file = open(os.path.join("..", "scripts", "experiments.json"))
+experiments_file = open(os.path.join("..", "scripts", "experiments_custom_dataset.json"))
 experiments = json.load(experiments_file)
 experiments_file.close()
 
-experiment_name = "SAGE_embeddings_usage_v2"
+experiment_name = "SAGE_16_embeddings_"
 config = None
 
 if experiment_name:
@@ -68,7 +68,7 @@ else:
     }
 
 epochs = int(sys.argv[1])
-logging_step = 10
+logging_step = 1
 
 conf = dict(config)
 del conf["filename"]
@@ -80,7 +80,7 @@ losses = grid_search_data(
 )
 
 time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-output_path = os.path.join("..", "results", config["filename"]+time+".json")
+output_path = os.path.join("..", "results_custom_dataset", config["filename"]+time+".json")
 f = open(output_path, "w")
 f.write(json.dumps({str(key): val for key, val in losses.items()}, indent=2))
 f.close()

@@ -73,6 +73,7 @@ class Neo4jMovieLensMetaData(InMemoryDataset):
         self.graph = Graph(
             database_url,
             auth=(database_username, database_password),
+            name="neo4j-2",
         )
         self.movies_query = """
             MATCH (m: Movie)
@@ -90,11 +91,11 @@ class Neo4jMovieLensMetaData(InMemoryDataset):
                 m.fastRP_keywords as fastRP_keywords,
                 m.fastRP_production_countries as fastRP_production_countries,
                 m.fastRP_production_companies as fastRP_production_companies,
-                m.fastRP_spoken_languages as fastPR_spoken_languages,
+                m.fastRP_spoken_languages as fastRP_spoken_languages,
                 m.fastRP_crew as fastRP_crew,
                 m.fastRP_cast as fastRP_cast,
-                m.fastRP_embedding_companies_countries_languages as fastRP_embedding_companies_countries_languages,
-                m.fastRP_embedding_genres_keywords as fastRP_embedding_genres_keywords
+                m.fastRP_companies_countries_languages as fastRP_companies_countries_languages,
+                m.fastRP_genres_keywords as fastRP_genres_keywords
         """
         self.ratings_query = """
             MATCH (u:User)-[r:RATES]-(m:Movie)
@@ -148,8 +149,8 @@ class Neo4jMovieLensMetaData(InMemoryDataset):
 
     def pre_process_movies_df(self):
 
-        model_path = os.path.join("..", "transformer", "models", "sentence-transformer-64dim")
-        model = SentenceTransformer(model_path)
+        # model_path = os.path.join("..", "transformer", "models", "sentence-transformer-64dim")
+        model = SentenceTransformer('all-MiniLM-L6-v2')
 
         def encode_numeric_features(feature_names):
             print(f"Encoding {feature_names}...")

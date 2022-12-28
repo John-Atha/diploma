@@ -29,6 +29,7 @@ def populate_db(
         graph = Graph(
             "bolt://localhost:7687",
             auth=("neo4j", "admin"),
+            name="neo4j-2",
         )
 
     if not skip_data_insert:
@@ -127,5 +128,6 @@ if __name__ == "__main__":
     graph = Graph(
         "bolt://localhost:7687",
         auth=("neo4j", "admin"),
+        name="neo4j-2",
     )
     populate_db(graph=graph, use_small_dataset=False)
