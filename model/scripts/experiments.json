@@ -10,10 +10,10 @@
         "lrs": [0.012],
         "features_config": [
             {
-                "text_features": ["title", "tagline", "overview"],
+                "text_features": ["title"],
                 "list_features": [],
-                "fastRP_features": ["fastRP_genres", "fastRP_keywords", "fastRP_cast", "fastRP_crew"],
-                "numeric_features": ["vote_average", "vote_count"]
+                "fastRP_features": [],
+                "numeric_features": []
             }
         ]
     },

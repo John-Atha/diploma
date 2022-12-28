@@ -1,0 +1,120 @@
+[
+    {
+        "filename": "GNN_types_16_",
+        "layer_names": ["SAGE", "GAT", "GraphConv", "GIN"],
+        "encoder_nums_layers": [6, 6, 1],
+        "encoder_aggregations": [["mean"]],
+        "skip_connections": [1],
+        "decoder_nums_layers": [8, 8, 1],
+        "hidden_channels": [16],
+        "lrs": [0.012],
+        "features_config": [
+            {
+                "text_features": ["title"],
+                "list_features": [],
+                "fastRP_features": [],
+                "numeric_features": []
+            }
+        ]
+    },
+    {
+        "filename": "GNN_types_8_",
+        "layer_names": ["SAGE", "GAT", "GraphConv", "GIN"],
+        "encoder_nums_layers": [6, 6, 1],
+        "encoder_aggregations": [["mean"]],
+        "skip_connections": [1],
+        "decoder_nums_layers": [8, 8, 1],
+        "hidden_channels": [8],
+        "lrs": [0.012],
+        "features_config": [
+            {
+                "text_features": ["title"],
+                "list_features": [],
+                "fastRP_features": [],
+                "numeric_features": []
+            }
+        ],
+        "use_mini_batch": false
+    },
+    {
+        "filename": "GNN_types_32_",
+        "layer_names": ["SAGE", "GAT", "GraphConv", "GIN"],
+        "encoder_nums_layers": [6, 6, 1],
+        "encoder_aggregations": [["mean"]],
+        "skip_connections": [1],
+        "decoder_nums_layers": [8, 8, 1],
+        "hidden_channels": [32],
+        "lrs": [0.012],
+        "features_config": [
+            {
+                "text_features": ["title"],
+                "list_features": [],
+                "fastRP_features": [],
+                "numeric_features": []
+            }
+        ],
+        "use_mini_batch": false
+    },
+    {
+        "filename": "SAGE_16_embeddings_",
+        "layer_names": ["SAGE"],
+        "encoder_nums_layers": [6, 6, 1],
+        "encoder_aggregations": [["mean"]],
+        "skip_connections": [1],
+        "decoder_nums_layers": [8, 8, 1],
+        "hidden_channels": [16],
+        "lrs": [0.012],
+        "features_config": [
+            {
+                "text_features": ["title"],
+                "list_features": [],
+                "fastRP_features": [],
+                "numeric_features": []
+            },
+            {
+                "text_features": ["title"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_genres", "fastRP_keywords", "fastRP_cast", "fastRP_crew", "fastRP_production_countries", "fastRP_production_companies", "fastRP_spoken_languages"],
+                "numeric_features": []
+            },
+            {
+                "text_features": ["title"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_genres_keywords", "fastRP_companies_countries_languages"],
+                "numeric_features": []
+            }
+        ],
+        "use_mini_batch": false
+    },
+    {
+        "filename": "SAGE_32_embeddings_",
+        "layer_names": ["SAGE"],
+        "encoder_nums_layers": [6, 6, 1],
+        "encoder_aggregations": [["mean"]],
+        "skip_connections": [1],
+        "decoder_nums_layers": [8, 8, 1],
+        "hidden_channels": [32],
+        "lrs": [0.012],
+        "features_config": [
+            {
+                "text_features": ["title"],
+                "list_features": [],
+                "fastRP_features": [],
+                "numeric_features": []
+            },
+            {
+                "text_features": ["title"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_genres", "fastRP_keywords", "fastRP_cast", "fastRP_crew", "fastRP_production_countries", "fastRP_production_companies", "fastRP_spoken_languages"],
+                "numeric_features": []
+            },
+            {
+                "text_features": ["title"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_genres_keywords", "fastRP_companies_countries_languages"],
+                "numeric_features": []
+            }
+        ],
+        "use_mini_batch": false
+    }
+]
