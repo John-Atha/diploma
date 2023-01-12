@@ -10,12 +10,13 @@
         "lrs": [0.012],
         "features_config": [
             {
-                "text_features": ["title"],
+                "text_features": ["title", "original_title"],
                 "list_features": [],
                 "fastRP_features": [],
                 "numeric_features": []
             }
-        ]
+        ],
+        "use_mini_batch": false
     },
     {
         "filename": "GNN_types_8_",
@@ -28,7 +29,7 @@
         "lrs": [0.012],
         "features_config": [
             {
-                "text_features": ["title"],
+                "text_features": ["title", "original_title"],
                 "list_features": [],
                 "fastRP_features": [],
                 "numeric_features": []
@@ -47,7 +48,26 @@
         "lrs": [0.012],
         "features_config": [
             {
-                "text_features": ["title"],
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": [],
+                "numeric_features": []
+            }
+        ],
+        "use_mini_batch": false
+    },
+    {
+        "filename": "GNN_types_64_",
+        "layer_names": ["SAGE", "GAT", "GraphConv", "GIN"],
+        "encoder_nums_layers": [6, 6, 1],
+        "encoder_aggregations": [["mean"]],
+        "skip_connections": [1],
+        "decoder_nums_layers": [8, 8, 1],
+        "hidden_channels": [64],
+        "lrs": [0.012],
+        "features_config": [
+            {
+                "text_features": ["title", "original_title"],
                 "list_features": [],
                 "fastRP_features": [],
                 "numeric_features": []
@@ -66,21 +86,27 @@
         "lrs": [0.012],
         "features_config": [
             {
-                "text_features": ["title"],
+                "text_features": ["title", "original_title"],
                 "list_features": [],
                 "fastRP_features": [],
                 "numeric_features": []
             },
             {
-                "text_features": ["title"],
+                "text_features": ["title", "original_title"],
                 "list_features": [],
                 "fastRP_features": ["fastRP_genres", "fastRP_keywords", "fastRP_cast", "fastRP_crew", "fastRP_production_countries", "fastRP_production_companies", "fastRP_spoken_languages"],
                 "numeric_features": []
             },
             {
-                "text_features": ["title"],
+                "text_features": ["title", "original_title"],
                 "list_features": [],
-                "fastRP_features": ["fastRP_genres_keywords", "fastRP_companies_countries_languages"],
+                "fastRP_features": ["fastRP_genres_keywords", "fastRP_companies_countries_languages", "fastRP_cast_crew"],
+                "numeric_features": []
+            },
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_COMBINED"],
                 "numeric_features": []
             }
         ],
@@ -97,21 +123,473 @@
         "lrs": [0.012],
         "features_config": [
             {
-                "text_features": ["title"],
+                "text_features": ["title", "original_title"],
                 "list_features": [],
                 "fastRP_features": [],
                 "numeric_features": []
             },
             {
-                "text_features": ["title"],
+                "text_features": ["title", "original_title"],
                 "list_features": [],
                 "fastRP_features": ["fastRP_genres", "fastRP_keywords", "fastRP_cast", "fastRP_crew", "fastRP_production_countries", "fastRP_production_companies", "fastRP_spoken_languages"],
                 "numeric_features": []
             },
             {
-                "text_features": ["title"],
+                "text_features": ["title", "original_title"],
                 "list_features": [],
-                "fastRP_features": ["fastRP_genres_keywords", "fastRP_companies_countries_languages"],
+                "fastRP_features": ["fastRP_genres_keywords", "fastRP_companies_countries_languages", "fastRP_cast_crew"],
+                "numeric_features": []
+            },
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_COMBINED"],
+                "numeric_features": []
+            }
+        ],
+        "use_mini_batch": false
+    },
+    {
+        "filename": "SAGE_64_embeddings_",
+        "layer_names": ["SAGE"],
+        "encoder_nums_layers": [6, 6, 1],
+        "encoder_aggregations": [["mean"]],
+        "skip_connections": [1],
+        "decoder_nums_layers": [8, 8, 1],
+        "hidden_channels": [64],
+        "lrs": [0.012],
+        "features_config": [
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": [],
+                "numeric_features": []
+            },
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_genres", "fastRP_keywords", "fastRP_cast", "fastRP_crew", "fastRP_production_countries", "fastRP_production_companies", "fastRP_spoken_languages"],
+                "numeric_features": []
+            },
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_genres_keywords", "fastRP_companies_countries_languages", "fastRP_cast_crew"],
+                "numeric_features": []
+            },
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_COMBINED"],
+                "numeric_features": []
+            }
+        ],
+        "use_mini_batch": false
+    },
+    {
+        "filename": "GAT_16_embeddings_",
+        "layer_names": ["GAT"],
+        "encoder_nums_layers": [6, 6, 1],
+        "encoder_aggregations": [["mean"]],
+        "skip_connections": [1],
+        "decoder_nums_layers": [8, 8, 1],
+        "hidden_channels": [16],
+        "lrs": [0.012],
+        "features_config": [
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": [],
+                "numeric_features": []
+            },
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_genres", "fastRP_keywords", "fastRP_cast", "fastRP_crew", "fastRP_production_countries", "fastRP_production_companies", "fastRP_spoken_languages"],
+                "numeric_features": []
+            },
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_genres_keywords", "fastRP_companies_countries_languages", "fastRP_cast_crew"],
+                "numeric_features": []
+            },
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_COMBINED"],
+                "numeric_features": []
+            }
+        ],
+        "use_mini_batch": false
+    },
+    {
+        "filename": "GAT_32_embeddings_",
+        "layer_names": ["GAT"],
+        "encoder_nums_layers": [6, 6, 1],
+        "encoder_aggregations": [["mean"]],
+        "skip_connections": [1],
+        "decoder_nums_layers": [8, 8, 1],
+        "hidden_channels": [32],
+        "lrs": [0.012],
+        "features_config": [
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": [],
+                "numeric_features": []
+            },
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_genres", "fastRP_keywords", "fastRP_cast", "fastRP_crew", "fastRP_production_countries", "fastRP_production_companies", "fastRP_spoken_languages"],
+                "numeric_features": []
+            },
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_genres_keywords", "fastRP_companies_countries_languages", "fastRP_cast_crew"],
+                "numeric_features": []
+            },
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_COMBINED"],
+                "numeric_features": []
+            }
+        ],
+        "use_mini_batch": false
+    },
+    {
+        "filename": "GAT_64_embeddings_",
+        "layer_names": ["GAT"],
+        "encoder_nums_layers": [6, 6, 1],
+        "encoder_aggregations": [["mean"]],
+        "skip_connections": [1],
+        "decoder_nums_layers": [8, 8, 1],
+        "hidden_channels": [64],
+        "lrs": [0.012],
+        "features_config": [
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": [],
+                "numeric_features": []
+            },
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_genres", "fastRP_keywords", "fastRP_cast", "fastRP_crew", "fastRP_production_countries", "fastRP_production_companies", "fastRP_spoken_languages"],
+                "numeric_features": []
+            },
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_genres_keywords", "fastRP_companies_countries_languages", "fastRP_cast_crew"],
+                "numeric_features": []
+            },
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_COMBINED"],
+                "numeric_features": []
+            }
+        ],
+        "use_mini_batch": false
+    },
+    {
+        "filename": "GraphConv_16_embeddings_",
+        "layer_names": ["GraphConv"],
+        "encoder_nums_layers": [6, 6, 1],
+        "encoder_aggregations": [["mean"]],
+        "skip_connections": [1],
+        "decoder_nums_layers": [8, 8, 1],
+        "hidden_channels": [16],
+        "lrs": [0.012],
+        "features_config": [
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": [],
+                "numeric_features": []
+            },
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_genres", "fastRP_keywords", "fastRP_cast", "fastRP_crew", "fastRP_production_countries", "fastRP_production_companies", "fastRP_spoken_languages"],
+                "numeric_features": []
+            },
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_genres_keywords", "fastRP_companies_countries_languages", "fastRP_cast_crew"],
+                "numeric_features": []
+            },
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_COMBINED"],
+                "numeric_features": []
+            }
+        ],
+        "use_mini_batch": false
+    },
+    {
+        "filename": "GraphConv_32_embeddings_",
+        "layer_names": ["GraphConv"],
+        "encoder_nums_layers": [6, 6, 1],
+        "encoder_aggregations": [["mean"]],
+        "skip_connections": [1],
+        "decoder_nums_layers": [8, 8, 1],
+        "hidden_channels": [32],
+        "lrs": [0.012],
+        "features_config": [
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": [],
+                "numeric_features": []
+            },
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_genres", "fastRP_keywords", "fastRP_cast", "fastRP_crew", "fastRP_production_countries", "fastRP_production_companies", "fastRP_spoken_languages"],
+                "numeric_features": []
+            },
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_genres_keywords", "fastRP_companies_countries_languages", "fastRP_cast_crew"],
+                "numeric_features": []
+            },
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_COMBINED"],
+                "numeric_features": []
+            }
+        ],
+        "use_mini_batch": false
+    },
+    {
+        "filename": "GraphConv_64_embeddings_",
+        "layer_names": ["GraphConv"],
+        "encoder_nums_layers": [6, 6, 1],
+        "encoder_aggregations": [["mean"]],
+        "skip_connections": [1],
+        "decoder_nums_layers": [8, 8, 1],
+        "hidden_channels": [64],
+        "lrs": [0.012],
+        "features_config": [
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": [],
+                "numeric_features": []
+            },
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_genres", "fastRP_keywords", "fastRP_cast", "fastRP_crew", "fastRP_production_countries", "fastRP_production_companies", "fastRP_spoken_languages"],
+                "numeric_features": []
+            },
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_genres_keywords", "fastRP_companies_countries_languages", "fastRP_cast_crew"],
+                "numeric_features": []
+            },
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_COMBINED"],
+                "numeric_features": []
+            }
+        ],
+        "use_mini_batch": false
+    },
+    {
+        "filename": "GIN_16_embeddings_",
+        "layer_names": ["GIN"],
+        "encoder_nums_layers": [6, 6, 1],
+        "encoder_aggregations": [["mean"]],
+        "skip_connections": [1],
+        "decoder_nums_layers": [8, 8, 1],
+        "hidden_channels": [16],
+        "lrs": [0.012],
+        "features_config": [
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": [],
+                "numeric_features": []
+            },
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_genres", "fastRP_keywords", "fastRP_cast", "fastRP_crew", "fastRP_production_countries", "fastRP_production_companies", "fastRP_spoken_languages"],
+                "numeric_features": []
+            },
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_genres_keywords", "fastRP_companies_countries_languages", "fastRP_cast_crew"],
+                "numeric_features": []
+            },
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_COMBINED"],
+                "numeric_features": []
+            }
+        ],
+        "use_mini_batch": false
+    },
+    {
+        "filename": "GIN_32_embeddings_",
+        "layer_names": ["GIN"],
+        "encoder_nums_layers": [6, 6, 1],
+        "encoder_aggregations": [["mean"]],
+        "skip_connections": [1],
+        "decoder_nums_layers": [8, 8, 1],
+        "hidden_channels": [32],
+        "lrs": [0.012],
+        "features_config": [
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": [],
+                "numeric_features": []
+            },
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_genres", "fastRP_keywords", "fastRP_cast", "fastRP_crew", "fastRP_production_countries", "fastRP_production_companies", "fastRP_spoken_languages"],
+                "numeric_features": []
+            },
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_genres_keywords", "fastRP_companies_countries_languages", "fastRP_cast_crew"],
+                "numeric_features": []
+            },
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_COMBINED"],
+                "numeric_features": []
+            }
+        ],
+        "use_mini_batch": false
+    },
+    {
+        "filename": "GIN_64_embeddings_",
+        "layer_names": ["GIN"],
+        "encoder_nums_layers": [6, 6, 1],
+        "encoder_aggregations": [["mean"]],
+        "skip_connections": [1],
+        "decoder_nums_layers": [8, 8, 1],
+        "hidden_channels": [64],
+        "lrs": [0.012],
+        "features_config": [
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": [],
+                "numeric_features": []
+            },
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_genres", "fastRP_keywords", "fastRP_cast", "fastRP_crew", "fastRP_production_countries", "fastRP_production_companies", "fastRP_spoken_languages"],
+                "numeric_features": []
+            },
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_genres_keywords", "fastRP_companies_countries_languages", "fastRP_cast_crew"],
+                "numeric_features": []
+            },
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_COMBINED"],
+                "numeric_features": []
+            }
+        ],
+        "use_mini_batch": false
+    },
+    {
+        "filename": "SAGE_32_plain_NUM_LAYERS_",
+        "layer_names": ["SAGE"],
+        "encoder_nums_layers": [6, 14, 4],
+        "encoder_aggregations": [["mean"]],
+        "skip_connections": [1],
+        "decoder_nums_layers": [8, 12, 4],
+        "hidden_channels": [32],
+        "lrs": [0.012],
+        "features_config": [
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": [],
+                "numeric_features": []
+            }
+        ],
+        "use_mini_batch": false
+    },
+    {
+        "filename": "GAT_32_separate_NUM_LAYERS_",
+        "layer_names": ["GAT"],
+        "encoder_nums_layers": [4, 12, 4],
+        "encoder_aggregations": [["mean"]],
+        "skip_connections": [1],
+        "decoder_nums_layers": [4, 12, 4],
+        "hidden_channels": [32],
+        "lrs": [0.012],
+        "features_config": [
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_genres", "fastRP_keywords", "fastRP_cast", "fastRP_crew", "fastRP_production_countries", "fastRP_production_companies", "fastRP_spoken_languages"],
+                "numeric_features": []
+            }
+        ],
+        "use_mini_batch": false
+    },
+    {
+        "filename": "GIN_16_combined_NUM_LAYERS_",
+        "layer_names": ["GIN"],
+        "encoder_nums_layers": [4, 12, 4],
+        "encoder_aggregations": [["mean"]],
+        "skip_connections": [1],
+        "decoder_nums_layers": [4, 12, 4],
+        "hidden_channels": [16],
+        "lrs": [0.012],
+        "features_config": [
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_COMBINED"],
+                "numeric_features": []
+            }
+        ],
+        "use_mini_batch": false
+    },
+    {
+        "filename": "GIN_32_combined_NUM_LAYERS_",
+        "layer_names": ["GIN"],
+        "encoder_nums_layers": [4, 12, 4],
+        "encoder_aggregations": [["mean"]],
+        "skip_connections": [1],
+        "decoder_nums_layers": [4, 12, 4],
+        "hidden_channels": [16],
+        "lrs": [0.012],
+        "features_config": [
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_COMBINED"],
                 "numeric_features": []
             }
         ],
