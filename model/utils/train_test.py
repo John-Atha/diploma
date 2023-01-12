@@ -16,26 +16,21 @@ def train_test(model, epochs, train_data, test_data, val_data, logging_step, lr=
     weight = torch.bincount(train_data['user', 'movie'].edge_label)
     weight = weight.max() / weight
 
-    def weighted_mse_loss(pred, target, weight=None):
-        weight = 1. if weight is None else weight[target].to(pred.dtype)
-        return (weight * (pred - target.to(pred.dtype)).pow(2)).mean()
+    def weighted_rmse_loss(pred, target, weight=None):
+        # weight = 1. if weight is None else weight[target].to(pred.dtype)
+        weight = 1.
+        # return (weight * (pred - target.to(pred.dtype)).pow(2)).mean()
+        return (weight * (pred - target.to(pred.dtype)).pow(2)).mean().sqrt()
     
     def train(log=False):
         model.train()
         optimizer.zero_grad()
         pred = model(train_data.x_dict, train_data.edge_index_dict,
                         train_data['user', 'movie'].edge_label_index)
+        # print(pred[:10])
         target = train_data['user', 'movie'].edge_label
-        
-        # if log:
-        #  print(f"FOR TRAIN LOSS:\npredicted: {len(pred)}, target: {len(target)}")
-        #  plt.figure(epoch, figsize=(30, 10))
-        #  plt.plot(target.detach()[:200])
-        #  plt.plot(pred.detach()[:200])
-        #  plt.legend(["target", "predictions"])
-        #  plt.show()
 
-        loss = weighted_mse_loss(pred, target, weight)
+        loss = weighted_rmse_loss(pred, target, weight)
         loss.backward()
         optimizer.step()
         return float(loss)
@@ -45,18 +40,9 @@ def train_test(model, epochs, train_data, test_data, val_data, logging_step, lr=
         model.eval()
         pred = model(data.x_dict, data.edge_index_dict,
                     data['user', 'movie'].edge_label_index)
-        pred = pred.clamp(min=0, max=5)
+        # print(pred[:10])
+        # pred = pred.clamp(min=0, max=5)
         target = data['user', 'movie'].edge_label.float()
-
-        # if log:
-        #     print(f"FOR TEST EVAL:\npredicted: {len(pred)}, target: {len(target)}")
-        #     print(type(pred), type(target))
-        #     plt.figure(epoch, figsize=(30, 10))
-        #     plt.plot(target[:200])
-        #     plt.plot(pred[:200])
-        #     plt.legend(["target", "predictions"])
-        #     plt.show()
-
         rmse = F.mse_loss(pred, target).sqrt()
         return float(rmse)
     
