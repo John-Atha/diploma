@@ -73,7 +73,7 @@ class Neo4jMovieLensMetaData(InMemoryDataset):
         self.graph = Graph(
             database_url,
             auth=(database_username, database_password),
-            name="neo4j-2",
+            # name="neo4j-2",
         )
         self.movies_query = """
             MATCH (m: Movie)
@@ -95,7 +95,9 @@ class Neo4jMovieLensMetaData(InMemoryDataset):
                 m.fastRP_crew as fastRP_crew,
                 m.fastRP_cast as fastRP_cast,
                 m.fastRP_companies_countries_languages as fastRP_companies_countries_languages,
-                m.fastRP_genres_keywords as fastRP_genres_keywords
+                m.fastRP_genres_keywords as fastRP_genres_keywords,
+                m.fastRP_cast_crew as fastRP_cast_crew,
+                m.fastRP_COMBINED as fastRP_COMBINED
         """
         self.ratings_query = """
             MATCH (u:User)-[r:RATES]-(m:Movie)

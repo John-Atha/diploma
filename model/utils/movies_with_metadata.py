@@ -236,8 +236,8 @@ def add_embeddings(graph: Graph, kind="fastRP"):
         "production_companies",
         "production_countries",
         "spoken_languages",
-        # "cast",
-        # "crew",
+        "cast",
+        "crew",
     ]
 
     embeddings = []
@@ -258,89 +258,38 @@ def add_embeddings(graph: Graph, kind="fastRP"):
             "dimension": 256,
         }
         embeddings.append(embedding)
-    groupped_embeddings = [
-        {
-            "name": f"{kind}_genres_keywords",
-            "query": f"""
-                ['Movie', 'Genre', 'Keyword'],
-                {{
-                    BELONGS_TO: {{
-                        orientation: 'UNDIRECTED'
-                    }},
-                    HAS_KEYWORD: {{
-                        orientation: 'UNDIRECTED'
-                    }}
-                }}
-            """,
-            "dimension": 512,
-        },
-        {
-            "name": f"{kind}_companies_countries_languages",
-            "query": f"""
-                ['Movie', 'ProductionCompany', 'ProductionCountry', 'Language'],
-                {{
-                    PRODUCED_IN: {{
-                        orientation: 'UNDIRECTED'
-                    }},
-                    PRODUCED_BY: {{
-                        orientation: 'UNDIRECTED'
-                    }},
-                    SPEAKING: {{
-                        orientation: 'UNDIRECTED'
-                    }}
-                }}
-            """,
-            "dimension": 512,
-        },
-        # {
-        #     "name": f"{kind}_cast_crew",
-        #     "query": f"""
-        #         ['Movie', 'Person'],
-        #         {{
-        #             HAS_CAST: {{
-        #                 orientation: 'UNDIRECTED'
-        #             }},
-        #             HAS_CREW: {{
-        #                 orientation: 'UNDIRECTED'
-        #             }}
-        #         }}
-        #     """,
-        #     "dimension": 512,
-        # }
-    ]
-    embeddings += groupped_embeddings
     
-    # total_embedding = {
-    #     "name": f"{kind}_COMBINED",
-    #     "query": f"""
-    #         ['Movie', 'Genre', 'Keyword', 'ProductionCompany', 'ProductionCountry', 'Language', 'Person'],
-    #         {{
-    #             BELONGS_TO: {{
-    #                 orientation: 'UNDIRECTED'
-    #             }},
-    #             HAS_KEYWORD: {{
-    #                 orientation: 'UNDIRECTED'
-    #             }},
-    #             PRODUCED_IN: {{
-    #                 orientation: 'UNDIRECTED'
-    #             }},
-    #             PRODUCED_BY: {{
-    #                 orientation: 'UNDIRECTED'
-    #             }},
-    #             SPEAKING: {{
-    #                 orientation: 'UNDIRECTED'
-    #             }},
-    #             HAS_CAST: {{
-    #                 orientation: 'UNDIRECTED'
-    #             }},
-    #             HAS_CREW: {{
-    #                 orientation: 'UNDIRECTED'
-    #             }}
-    #         }}
-    #     """,
-    #     "dimension": 128,
-    # }
-    # embeddings.append(total_embedding)
+    total_embedding = {
+        "name": f"{kind}_COMBINED",
+        "query": f"""
+            ['Movie', 'Genre', 'Keyword', 'ProductionCompany', 'ProductionCountry', 'Language', 'Person'],
+            {{
+                BELONGS_TO: {{
+                    orientation: 'UNDIRECTED'
+                }},
+                HAS_KEYWORD: {{
+                    orientation: 'UNDIRECTED'
+                }},
+                PRODUCED_IN: {{
+                    orientation: 'UNDIRECTED'
+                }},
+                PRODUCED_BY: {{
+                    orientation: 'UNDIRECTED'
+                }},
+                SPEAKING: {{
+                    orientation: 'UNDIRECTED'
+                }},
+                HAS_CAST: {{
+                    orientation: 'UNDIRECTED'
+                }},
+                HAS_CREW: {{
+                    orientation: 'UNDIRECTED'
+                }}
+            }}
+        """,
+        "dimension": 256,
+    }
+    embeddings.append(total_embedding)
         
     for embedding in tqdm(embeddings):
         name = embedding["name"]
@@ -543,8 +492,8 @@ def add_embedding(graph: Graph, name, query, kind, dimension):
     
     if kind == "fastRP":
         write_fastRP_projection_embedding(graph, name, dimension)
-    elif kind == "SAGE":
-        train_SAGE_on_projection_graph(graph, name)
+    # elif kind == "SAGE":
+    #     train_SAGE_on_projection_graph(graph, name)
     
     drop_projection(graph, name)
 
