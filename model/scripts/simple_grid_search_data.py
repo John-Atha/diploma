@@ -17,73 +17,78 @@ if len(sys.argv)>2:
 
 print("Epochs:", sys.argv[1])
 
-experiments_file = open(os.path.join("..", "scripts", "experiments_custom_dataset.json"))
+experiments_file = open(os.path.join("..", "scripts", "experiments_165K.json"))
 experiments = json.load(experiments_file)
 experiments_file.close()
 
-experiment_name = "SAGE_16_embeddings_"
-config = None
+experiment_names = [
+    "GIN_32_ADVANCED_embeddings_",
+]
 
-if experiment_name:
-    def first(iterable, default=None):
-        for item in iterable:
-            return item
-        return default
-    config = first(
-        experiment
-        for experiment in experiments
-        if experiment["filename"]==experiment_name
+# experiment_name = "GraphConv_16_embeddings_"
+for experiment_name in experiment_names:
+    config = None
+
+    if experiment_name:
+        def first(iterable, default=None):
+            for item in iterable:
+                return item
+            return default
+        config = first(
+            experiment
+            for experiment in experiments
+            if experiment["filename"]==experiment_name
+        )
+        if config is None:
+            raise Exception(f"Experiment {experiment_name} not found")
+    else:
+        config = {
+            "filename":  "SAGE_GAT_embeddings_hidden_channels_8_16",
+            "layer_names": ["SAGE", "GAT"],
+            "encoder_nums_layers": [6, 6, 1],
+            "skip_connections": [1],
+            "decoder_nums_layers": [8, 8, 1],
+            "hidden_channels": [8, 16],
+            "lrs": [0.012],
+            "features_config": [
+                {
+                    "text_features": ["title", "tagline"],
+                    "list_features": [],
+                    "fastRP_features": ["fastRP_genres"],
+                    "numeric_features": ["vote_average", "vote_count"]
+                },
+                {
+                    "text_features": ["title", "tagline", "overview"],
+                    "list_features": [],
+                    "fastRP_features": ["fastRP_genres", "fastRP_keywords"],
+                    "numeric_features": ["vote_average", "vote_count"]
+                },
+                {
+                    "text_features": ["title", "tagline", "overview"],
+                    "list_features": [],
+                    "fastRP_features": ["fastRP_genres", "fastRP_keywords", "fastRP_cast", "fastRP_crew"],
+                    "numeric_features": ["vote_average", "vote_count"]
+                },
+            ]
+        }
+
+    epochs = int(sys.argv[1])
+    logging_step = 1
+
+    conf = dict(config)
+    del conf["filename"]
+    # perform the grid search
+    losses = grid_search_data(
+        **conf,
+        epochs=epochs,
+        logging_step=logging_step,
     )
-    if config is None:
-        raise Exception(f"Experiment {experiment_name} not found")
-else:
-    config = {
-        "filename":  "SAGE_GAT_embeddings_hidden_channels_8_16",
-        "layer_names": ["SAGE", "GAT"],
-        "encoder_nums_layers": [6, 6, 1],
-        "skip_connections": [1],
-        "decoder_nums_layers": [8, 8, 1],
-        "hidden_channels": [8, 16],
-        "lrs": [0.012],
-        "features_config": [
-            {
-                "text_features": ["title", "tagline"],
-                "list_features": [],
-                "fastRP_features": ["fastRP_genres"],
-                "numeric_features": ["vote_average", "vote_count"]
-            },
-            {
-                "text_features": ["title", "tagline", "overview"],
-                "list_features": [],
-                "fastRP_features": ["fastRP_genres", "fastRP_keywords"],
-                "numeric_features": ["vote_average", "vote_count"]
-            },
-            {
-                "text_features": ["title", "tagline", "overview"],
-                "list_features": [],
-                "fastRP_features": ["fastRP_genres", "fastRP_keywords", "fastRP_cast", "fastRP_crew"],
-                "numeric_features": ["vote_average", "vote_count"]
-            },
-        ]
-    }
 
-epochs = int(sys.argv[1])
-logging_step = 1
+    time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    output_path = os.path.join("..", "results_BALANCED_165K", config["filename"]+time+".json")
+    f = open(output_path, "w")
+    f.write(json.dumps({str(key): val for key, val in losses.items()}, indent=2))
+    f.close()
 
-conf = dict(config)
-del conf["filename"]
-# perform the grid search
-losses = grid_search_data(
-    **conf,
-    epochs=epochs,
-    logging_step=logging_step,
-)
-
-time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-output_path = os.path.join("..", "results_custom_dataset", config["filename"]+time+".json")
-f = open(output_path, "w")
-f.write(json.dumps({str(key): val for key, val in losses.items()}, indent=2))
-f.close()
-
-# Pick the best hyper_params
-pick_hyperparams(output_path)
+    # Pick the best hyper_params
+    # pick_hyperparams(output_path)

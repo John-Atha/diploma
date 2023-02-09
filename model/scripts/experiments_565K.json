@@ -1,0 +1,50 @@
+[
+    {
+        "filename": "SAGE_32_embeddings_",
+        "layer_names": ["SAGE"],
+        "encoder_nums_layers": [6, 6, 1],
+        "skip_connections": [1],
+        "decoder_nums_layers": [8, 8, 1],
+        "hidden_channels": [32],
+        "lrs": [0.012],
+        "features_config": [
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": [],
+                "numeric_features": []
+            },
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_COMBINED"],
+                "numeric_features": []
+            }
+        ],
+        "use_mini_batch": false
+    },
+    {
+        "filename": "GIN_32_embeddings_",
+        "layer_names": ["GIN"],
+        "encoder_nums_layers": [6, 6, 1],
+        "skip_connections": [1],
+        "decoder_nums_layers": [8, 8, 1],
+        "hidden_channels": [32],
+        "lrs": [0.012],
+        "features_config": [
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": [],
+                "numeric_features": []
+            },
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_COMBINED"],
+                "numeric_features": []
+            }
+        ],
+        "use_mini_batch": false
+    }
+]

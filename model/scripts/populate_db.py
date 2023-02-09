@@ -12,7 +12,8 @@ from utils.movies_with_metadata import \
     insert_movies_production_countries, insert_movies_production_companies, \
     insert_movies_spoken_languages, add_embeddings, \
     insert_movies_keywords, insert_users_ratings, insert_movies_links, delete_unrated_movies, \
-    insert_movies_credits, create_search_indexes
+    insert_movies_credits, create_search_indexes, \
+    dummy_initialize_users, transform_title_original_title_to_embeddings
 
 def populate_db(
     graph,
@@ -29,7 +30,7 @@ def populate_db(
         graph = Graph(
             "bolt://localhost:7687",
             auth=("neo4j", "admin"),
-            name="neo4j-2",
+            # name="neo4j-2",
         )
 
     if not skip_data_insert:
@@ -109,7 +110,9 @@ def populate_db(
         
         insert_movies_credits(graph, credits_json, movies_tmdbIds_to_keep.T[0])
         if not skip_embeddings_insert:
-            add_embeddings(graph)
+            add_embeddings(graph, kind="SAGE")
+            add_embeddings(graph, kind="node2vec")
+            add_embeddings(graph, kind="fastRP")
 
         # save the users and the ratings
         insert_movies_links(graph, links_json)
@@ -118,9 +121,11 @@ def populate_db(
         insert_users_ratings(graph, ratings_json_subgraph, users_to_keep)
 
         # delete movies and users without rating edges
-        # delete_unrated_movies(graph)
+        delete_unrated_movies(graph)
 
         create_search_indexes(graph)
+        dummy_initialize_users(graph)
+        transform_title_original_title_to_embeddings(graph)
     
     print("Completed!")
 
@@ -128,6 +133,6 @@ if __name__ == "__main__":
     graph = Graph(
         "bolt://localhost:7687",
         auth=("neo4j", "admin"),
-        name="neo4j-2",
+        # name="neo4j-2",
     )
     populate_db(graph=graph, use_small_dataset=False)

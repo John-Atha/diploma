@@ -1,0 +1,40 @@
+[
+    {
+        "filename": "GIN_16_4_8_combined",
+        "layer_names": ["GIN"],
+        "encoder_nums_layers": [4, 4, 1],
+        "encoder_aggregations": [["mean"]],
+        "skip_connections": [1],
+        "decoder_nums_layers": [8, 8, 1],
+        "hidden_channels": [16],
+        "lrs": [0.012],
+        "features_config": [
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_COMBINED"],
+                "numeric_features": []
+            }
+        ],
+        "use_mini_batch": false
+    },
+    {
+        "filename": "GIN_32_combined_NUM_LAYERS_",
+        "layer_names": ["GIN"],
+        "encoder_nums_layers": [4, 4, 1],
+        "encoder_aggregations": [["mean"]],
+        "skip_connections": [1],
+        "decoder_nums_layers": [8, 8, 1],
+        "hidden_channels": [16],
+        "lrs": [0.012],
+        "features_config": [
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_COMBINED"],
+                "numeric_features": []
+            }
+        ],
+        "use_mini_batch": false
+    }
+]
