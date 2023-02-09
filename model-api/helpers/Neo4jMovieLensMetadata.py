@@ -72,6 +72,8 @@ class Neo4jMovieLensMetaData(InMemoryDataset):
                 m.id as id,
                 m.original_title as original_title,
                 m.title as title,
+                m.original_title_embedding as original_title_embedding,
+                m.title_embedding as title_embedding,
                 m.genres as genres,
                 m.overview as overview,
                 m.tagline as tagline,
@@ -82,7 +84,7 @@ class Neo4jMovieLensMetaData(InMemoryDataset):
                 m.fastRP_keywords as fastRP_keywords,
                 m.fastRP_production_countries as fastRP_production_countries,
                 m.fastRP_production_companies as fastRP_production_companies,
-                m.fastRP_spoken_languages as fastPR_spoken_languages,
+                m.fastRP_spoken_languages as fastRP_spoken_languages,
                 m.fastRP_crew as fastRP_crew,
                 m.fastRP_cast as fastRP_cast,
                 m.fastRP_embedding_companies_countries_languages as fastRP_embedding_companies_countries_languages,
@@ -143,15 +145,20 @@ class Neo4jMovieLensMetaData(InMemoryDataset):
             with torch.no_grad():
                 for feature_name in feature_names:
                     print(f"Encoding {feature_name}...")
-                    vals = list(map(
-                        lambda val: val if isinstance(val, str) else "",
-                        self.movies_df[feature_name].values
-                    ))
-                    emb = model.encode(
-                        vals,
-                        show_progress_bar=True,
-                        convert_to_tensor=True
-                    ).cpu() 
+                    emb = None
+                    if f"{feature_name}_embedding" in self.movies_df.columns:
+                        emb = self.movies_df["title_embedding"].values
+                        emb = transform_float_embedding_to_tensor(emb)
+                    else:
+                        vals = list(map(
+                            lambda val: val if isinstance(val, str) else "",
+                            self.movies_df[feature_name].values
+                        ))
+                        emb = model.encode(
+                            vals,
+                            show_progress_bar=True,
+                            convert_to_tensor=True
+                        ).cpu() 
                     embeddings.append(emb)
             return embeddings
         

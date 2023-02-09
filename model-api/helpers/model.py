@@ -21,7 +21,7 @@ layers = {
 
 class GNNEncoder(torch.nn.Module):
     def __init__(self, layer_name="SAGE", num_layers=4, in_channels=-1, hidden_channels=32, out_channels=32, dropout=0.1, skip_connections=True, encoder_aggr=[]):
-        assert num_layers > 4
+        assert num_layers >= 2
         super().__init__()
         self.dropout = dropout
         self.num_layers = num_layers
@@ -113,7 +113,8 @@ class GNNEncoder(torch.nn.Module):
         prev_x = None
         for i in range(len(self.convs)-1):
             prev_x = x
-            x = self.convs[i](x, edge_index, conv_index=i)
+            # x = self.convs[i](x, edge_index, conv_index=i)
+            x = self.convs[i](x, edge_index)
             if i > 0 and self.skip_connections:
                 x = x + prev_x
             x = x.relu()
