@@ -1,10 +1,11 @@
 from shutil import ExecError
-from py2neo import Graph, Node, Relationship
+from py2neo import Graph, Node, Relationship, NodeMatcher
 from py2neo.bulk import merge_nodes, merge_relationships
 import ast, os, json
 from random_username.generate import generate_username
 from tqdm import tqdm
 from datetime import datetime
+from sentence_transformers import SentenceTransformer
 
 graph_mappings_file = open(os.path.join("..", "utils", "mappings.json"))
 graph_mappings = json.load(graph_mappings_file)
@@ -426,6 +427,30 @@ def create_search_indexes(graph: Graph):
             CREATE FULLTEXT INDEX {index_name} FOR (m:{entity_name}) ON EACH [{', '.join(fields)}]
         """)
 
+def dummy_initialize_users(graph: Graph):
+    graph.run("""
+    match (u:User)
+    set u.hashedPassword = "$2b$10$RGSWd8D/q5iUj4lHkVh8N.0KNeIJZZ67Jy6nWCVSTweaF1chAkkbW";
+    """)
+
+def transform_title_original_title_to_embeddings(graph: Graph):
+    model = SentenceTransformer('all-MiniLM-L6-v2')
+
+    def string_to_embedding(string):
+        nonlocal model
+        emb = model.encode(movie["title"])
+        emb = [float(i) for i in emb]
+        return list(emb)
+    
+    matcher = NodeMatcher(graph)
+    movies = matcher.match("Movie").all()
+    for movie in tqdm(movies):
+        if movie.get("title"):
+            movie['title_embedding'] = string_to_embedding(movie["title"])
+        if movie.get("original_title"):
+            movie['original_title_embedding'] = string_to_embedding(movie["original_title"])
+        graph.push(movie)
+
 # -------------------------------------------------
 # ---------------- helpers ------------------------
 # -------------------------------------------------
@@ -492,8 +517,11 @@ def add_embedding(graph: Graph, name, query, kind, dimension):
     
     if kind == "fastRP":
         write_fastRP_projection_embedding(graph, name, dimension)
-    # elif kind == "SAGE":
-    #     train_SAGE_on_projection_graph(graph, name)
+    elif kind == "node2vec":
+        write_node2vec_projection_embedding(graph, name, dimension)
+    elif kind == "SAGE":
+        train_SAGE_on_projection_graph(graph, name, dimension)
+        drop_SAGE(graph, name)
     
     drop_projection(graph, name)
 
@@ -518,32 +546,64 @@ def write_fastRP_projection_embedding(graph, name, dimension):
             '{name}',
             {{
                 embeddingDimension: {dimension},
+                writeProperty: '{name}',
+                iterationWeights: [0.0, 1.0, 0.7, 0.3]
+            }}
+        )    
+    """)
+    print("OK")
+
+def write_node2vec_projection_embedding(graph, name, dimension):
+    print("Writting generated embeddings...", end="  ")
+    graph.run(f"""
+        CALL gds.beta.node2vec.write(
+            '{name}',
+            {{
+                embeddingDimension: {dimension},
                 writeProperty: '{name}'
             }}
         )    
     """)
     print("OK")
 
-def train_SAGE_on_projection_graph(graph, name):
+def train_SAGE_on_projection_graph(graph, name, dimension):
     print("Training SAGE for generating embeddings...")
+    graph.run(f"""
+       CALL gds.degree.mutate(
+        '{name}',
+        {{
+            mutateProperty: 'degree'
+        }}
+        )
+    """)
     graph.run(f"""
         CALL gds.beta.graphSage.train(
             '{name}',
             {{
                 modelName: '{name}',
-                projectedFeatureDimension: 32,
-                featureProperties: ['degree']
+                projectedFeatureDimension: {dimension},
+                featureProperties: ['degree'],
+                aggregator: 'mean',
+                activationFunction: 'sigmoid',
+                randomSeed: 1337,
+                sampleSizes: [25, 10]
             }}
+        )
     """)
     print("Writting the SAGE embeddings...")
     graph.run(f"""
         CALL gds.beta.graphSage.write(
             '{name}',
             {{
-                writeProperty: 'SAGE_{name}',
+                writeProperty: '{name}',
                 modelName: '{name}'
             }}
         )
+    """)
+
+def drop_SAGE(graph, name):
+    graph.run(f"""
+        call gds.beta.model.drop("{name}")
     """)
 
 def drop_projection(graph, name):

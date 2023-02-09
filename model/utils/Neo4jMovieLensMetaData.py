@@ -48,6 +48,8 @@ class Neo4jMovieLensMetaData(InMemoryDataset):
         database_password: str,
         text_features: list,
         fastRP_features: list,
+        node2vec_features: list,
+        SAGE_features: list,
         list_features: list,
         numeric_features: list,
         transform: Optional[Callable] = None,
@@ -81,6 +83,8 @@ class Neo4jMovieLensMetaData(InMemoryDataset):
                 m.id as id,
                 m.original_title as original_title,
                 m.title as title,
+                m.original_title_embedding as original_title_embedding,
+                m.title_embedding as title_embedding,
                 m.genres as genres,
                 m.overview as overview,
                 m.tagline as tagline,
@@ -97,7 +101,23 @@ class Neo4jMovieLensMetaData(InMemoryDataset):
                 m.fastRP_companies_countries_languages as fastRP_companies_countries_languages,
                 m.fastRP_genres_keywords as fastRP_genres_keywords,
                 m.fastRP_cast_crew as fastRP_cast_crew,
-                m.fastRP_COMBINED as fastRP_COMBINED
+                m.fastRP_COMBINED as fastRP_COMBINED,
+                m.node2vec_genres as node2vec_genres,
+                m.node2vec_keywords as node2vec_keywords,
+                m.node2vec_production_countries as node2vec_production_countries,
+                m.node2vec_production_companies as node2vec_production_companies,
+                m.node2vec_spoken_languages as node2vec_spoken_languages,
+                m.node2vec_crew as node2vec_crew,
+                m.node2vec_cast as node2vec_cast,
+                m.node2vec_COMBINED as node2vec_COMBINED,
+                m.SAGE_genres as SAGE_genres,
+                m.SAGE_keywords as SAGE_keywords,
+                m.SAGE_production_countries as SAGE_production_countries,
+                m.SAGE_production_companies as SAGE_production_companies,
+                m.SAGE_spoken_languages as SAGE_spoken_languages,
+                m.SAGE_crew as SAGE_crew,
+                m.SAGE_cast as SAGE_cast,
+                m.SAGE_COMBINED as SAGE_COMBINED
         """
         self.ratings_query = """
             MATCH (u:User)-[r:RATES]-(m:Movie)
@@ -111,6 +131,8 @@ class Neo4jMovieLensMetaData(InMemoryDataset):
         self.ratings_df = None
         self.text_features = text_features
         self.fastRP_features = fastRP_features
+        self.node2vec_features = node2vec_features
+        self.SAGE_features = SAGE_features
         self.list_features = list_features
         self.numeric_features = numeric_features
 
@@ -165,15 +187,20 @@ class Neo4jMovieLensMetaData(InMemoryDataset):
             with torch.no_grad():
                 for feature_name in feature_names:
                     print(f"Encoding {feature_name}...")
-                    vals = list(map(
-                        lambda val: val if isinstance(val, str) else "",
-                        self.movies_df[feature_name].values
-                    ))
-                    emb = model.encode(
-                        vals,
-                        show_progress_bar=True,
-                        convert_to_tensor=True
-                    ).cpu() 
+                    emb = None
+                    if f"{feature_name}_embedding" in self.movies_df.columns:
+                        emb = self.movies_df["title_embedding"].values
+                        emb = transform_float_embedding_to_tensor(emb)
+                    else:
+                        vals = list(map(
+                            lambda val: val if isinstance(val, str) else "",
+                            self.movies_df[feature_name].values
+                        ))
+                        emb = model.encode(
+                            vals,
+                            show_progress_bar=True,
+                            convert_to_tensor=True
+                        ).cpu() 
                     embeddings.append(emb)
             return embeddings
         
@@ -229,6 +256,14 @@ class Neo4jMovieLensMetaData(InMemoryDataset):
         if self.fastRP_features:
             fastRP_embeddings = encode_fastRP_features(self.fastRP_features)
             embeddings_list += fastRP_embeddings
+        
+        if self.node2vec_features:
+            node2vec_embeddings = encode_fastRP_features(self.node2vec_features)
+            embeddings_list += node2vec_embeddings
+        
+        if self.SAGE_features:
+            SAGE_embeddings = encode_fastRP_features(self.SAGE_features)
+            embeddings_list += SAGE_embeddings
         
         if self.list_features:
             list_str_embeddings = encode_list_str_features(self.list_features)

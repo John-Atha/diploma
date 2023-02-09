@@ -26,6 +26,8 @@ def grid_search_data(
         text_features = feature_config.get("text_features") or []
         list_features = feature_config.get("list_features") or []
         fastRP_features = feature_config.get("fastRP_features") or []
+        node2vec_features = feature_config.get("node2vec_features") or []
+        SAGE_features = feature_config.get("SAGE_features") or []
         numeric_features = feature_config.get("numeric_features") or []
 
         path = osp.join(osp.dirname(osp.abspath('')), '../../data/MovieLensNeo4jMetaData')
@@ -40,6 +42,8 @@ def grid_search_data(
             text_features=text_features,
             list_features=list_features,
             fastRP_features=fastRP_features,
+            node2vec_features=node2vec_features,
+            SAGE_features=SAGE_features,
             numeric_features=numeric_features,
         )
         data = dataset[0].to(device)
@@ -77,12 +81,14 @@ def grid_search_data(
                                         tuple(text_features),
                                         tuple(list_features),
                                         tuple(fastRP_features),
+                                        tuple(node2vec_features),
+                                        tuple(SAGE_features),
                                         tuple(numeric_features),
                                     )
                                     print("-->>", experiment_config)
                                     model = Model(
                                         data,
-                                        layer_name="SAGE",
+                                        layer_name=layer_name,
                                         encoder_num_layers=encoder_num_layers,
                                         encoder_dropout=0.1,
                                         encoder_skip_connections=encoder_skip_connections,
@@ -95,12 +101,12 @@ def grid_search_data(
                                     if use_mini_batch:
                                         train_batch, train_loader = split_to_minibatches(
                                             data=train_data,
-                                            batch_size=128,
+                                            batch_size=32,
                                             num_neighbours=[15, 5],
                                         )
                                         test_batch, test_loader = split_to_minibatches(
                                             data=test_data,
-                                            batch_size=128,
+                                            batch_size=32,
                                             num_neighbours=[15],
                                         )
                                         losses[experiment_config] = train_test_mini_batch(
