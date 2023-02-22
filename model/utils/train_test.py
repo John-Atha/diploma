@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from utils.EarlyStopper import EarlyStopper
 from tqdm import tqdm
 
-def train_test(model, epochs, train_data, test_data, val_data, logging_step, lr=0.01):
+def train_test(model, epochs, train_data, test_data, val_data, logging_step, lr=0.01, use_weighted_loss=False):
 
     # Due to lazy initialization, we need to run one model step so the number
     # of parameters can be inferred:
@@ -13,12 +13,13 @@ def train_test(model, epochs, train_data, test_data, val_data, logging_step, lr=
 
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
 
-    weight = torch.bincount(train_data['user', 'movie'].edge_label)
-    weight = weight.max() / weight
+    weight = None
+    if use_weighted_loss:
+        weight = torch.bincount(train_data['user', 'movie'].edge_label)
+        weight = weight.max() / weight
 
     def weighted_rmse_loss(pred, target, weight=None):
-        # weight = 1. if weight is None else weight[target].to(pred.dtype)
-        weight = 1.
+        weight = 1. if weight is None else weight[target].to(pred.dtype)
         # return (weight * (pred - target.to(pred.dtype)).pow(2)).mean()
         return (weight * (pred - target.to(pred.dtype)).pow(2)).mean().sqrt()
     
@@ -41,7 +42,7 @@ def train_test(model, epochs, train_data, test_data, val_data, logging_step, lr=
         pred = model(data.x_dict, data.edge_index_dict,
                     data['user', 'movie'].edge_label_index)
         # print(pred[:10])
-        # pred = pred.clamp(min=0, max=5)
+        pred = pred.clamp(min=0, max=5)
         target = data['user', 'movie'].edge_label.float()
         rmse = F.mse_loss(pred, target).sqrt()
         return float(rmse)
@@ -77,8 +78,8 @@ def train_test_mini_batch(model, epochs, train_batch, train_loader, test_batch, 
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
 
     weight = None
-    # weight = torch.bincount(train_data['user', 'movie'].edge_label)
-    # weight = weight.max() / weight
+    weight = torch.bincount(train_batch['user', 'movie'].edge_label)
+    weight = weight.max() / weight
 
     def weighted_mse_loss(pred, target, weight=None):
         weight = 1. if weight is None else weight[target].to(pred.dtype)
@@ -87,9 +88,8 @@ def train_test_mini_batch(model, epochs, train_batch, train_loader, test_batch, 
     def train_on_batch(batch):
         pred = model(batch.x_dict, batch.edge_index_dict, batch['user', 'movie'].edge_label_index)
         pred = pred.clamp(min=0, max=5)
-        target = batch['user', 'movie'].edge_label.float()
+        target = batch['user', 'movie'].edge_label
         loss = weighted_mse_loss(pred, target, weight)
-        print(f'\t\t Train Batch: Loss: {loss:.4f}')
         loss.backward()
         optimizer.step()
         return float(loss)
@@ -109,6 +109,8 @@ def train_test_mini_batch(model, epochs, train_batch, train_loader, test_batch, 
             optimizer.zero_grad()
             batch = batch.to(device, 'edge_index')
             loss = train_on_batch(batch)
+            if not batch_index % 100:
+                print(f'\t\t Train Batch: Loss: {loss:.4f}')
             total_loss += loss
             batch_index += 1
         return total_loss / batch_index if batch_index else None
@@ -119,7 +121,8 @@ def train_test_mini_batch(model, epochs, train_batch, train_loader, test_batch, 
         for batch in tqdm(test_loader):
             batch = batch.to(device, 'edge_index')
             loss = test_on_batch(batch)
-            print(f'\t\t Test Batch: Loss: {loss:.4f}')
+            if not batch_index % 100:
+                print(f'\t\t Test Batch: Loss: {loss:.4f}')
             total_loss += loss
             batch_index += 1
         return total_loss / batch_index if batch_index else None

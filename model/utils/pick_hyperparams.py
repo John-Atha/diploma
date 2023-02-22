@@ -16,7 +16,7 @@ def pick_min_loss_key_2(losses_dict):
     min_loss = losses_dict[min_loss_key]
     return min_loss_key, min_loss
 
-def compare_losses(final_epoch):
+def compare_losses(final_epoch, legend=[]):
     titles = ["Loss", "Train Loss", "Val Loss", "Test Loss"]
     if len(final_epoch.values())>5:
         fig, axs = plt.subplots(nrows=4, ncols=1)
@@ -25,7 +25,7 @@ def compare_losses(final_epoch):
         index = 0
         for row in axs:
             final_losses = get_final_losses(final_epoch, index)
-            row.bar(final_losses.keys(), final_losses.values())
+            row.bar(legend or final_losses.keys(), final_losses.values())
             row.set_title(titles[index])
             index += 1    
     else:
@@ -36,14 +36,14 @@ def compare_losses(final_epoch):
         for row in axs:
             for col in row:
                 final_losses = get_final_losses(final_epoch, index)
-                col.bar(final_losses.keys(), final_losses.values())
+                col.bar(legend or final_losses.keys(), final_losses.values())
                 col.set_title(titles[index])
                 index += 1
     # plt.bar(final_losses.keys(), final_losses.values())
     # plt.title(title)
     plt.show()
 
-def plot_compare(min_train_losses, min_train_eval_losses, min_val_losses, min_test_losses):
+def plot_compare(min_train_losses, min_train_eval_losses, min_val_losses, min_test_losses, legend=[]):
     
     entries = {
         "Train Loss": min_train_losses,
@@ -61,7 +61,7 @@ def plot_compare(min_train_losses, min_train_eval_losses, min_val_losses, min_te
         index = 0
         for row in axs:
             final_losses = losses[index]
-            row.bar(final_losses.keys(), final_losses.values())
+            row.bar(legend or final_losses.keys(), final_losses.values())
             row.set_title(titles[index])
             index += 1    
     else:
@@ -72,7 +72,7 @@ def plot_compare(min_train_losses, min_train_eval_losses, min_val_losses, min_te
         for row in axs:
             for col in row:
                 final_losses = losses[index]
-                col.bar(final_losses.keys(), final_losses.values())
+                col.bar(legend or final_losses.keys(), final_losses.values())
                 col.set_title(titles[index])
                 index += 1
     # plt.bar(final_losses.keys(), final_losses.values())
@@ -84,11 +84,11 @@ def min_losses_of_each_model(losses, index):
     min_index_losses = { key: min(losses) for key, losses in index_losses.items() }
     return min_index_losses
 
-def pick_hyperparams(results_path):
+def pick_hyperparams(results_path, legend=[]):
     with open(results_path) as f:
         losses = json.load(f)
         final_epoch = { key: values[-1] for key, values in losses.items() }
-        compare_losses(final_epoch)
+        compare_losses(final_epoch, legend=legend)
 
         min_loss_key, min_loss = pick_min_loss_key(final_epoch, 0)
         min_train_loss_key, min_train_loss = pick_min_loss_key(final_epoch, 1)
@@ -106,7 +106,7 @@ def pick_hyperparams(results_path):
             )
         )
 
-def pick_hyperparams_2(results_path):
+def pick_hyperparams_2(results_path, legend=[]):
     with open(results_path) as f:
         losses = json.load(f)
 
@@ -114,7 +114,7 @@ def pick_hyperparams_2(results_path):
         min_train_eval_losses = min_losses_of_each_model(losses, index=1)
         min_val_losses = min_losses_of_each_model(losses, index=2)
         min_test_losses = min_losses_of_each_model(losses, index=3)
-        plot_compare(min_train_losses, min_train_eval_losses, min_val_losses, min_test_losses)
+        plot_compare(min_train_losses, min_train_eval_losses, min_val_losses, min_test_losses, legend=legend)
         min_loss_key, min_loss = pick_min_loss_key_2(min_train_losses)
         min_train_loss_key, min_train_loss = pick_min_loss_key_2(min_train_eval_losses)
         min_val_loss_key, min_val_loss =pick_min_loss_key_2(min_val_losses)
