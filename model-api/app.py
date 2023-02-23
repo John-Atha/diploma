@@ -42,6 +42,7 @@ def re_train_model(epochs):
         test_data=test_data,
         logging_step=1,
         lr=0.012,
+        use_weighted_loss=False,
     )
     model_name = get_model_name()
     torch.save(model, model_name)

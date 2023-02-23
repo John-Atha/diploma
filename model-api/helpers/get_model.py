@@ -16,10 +16,9 @@ def get_model(data):
             encoder_num_layers=2,
             encoder_dropout=0.1,
             encoder_skip_connections=True,
-            decoder_num_layers=4,
+            decoder_num_layers=10,
             hidden_channels=16,
             out_channels=16,
-            encoder_aggr=["mean"],
         ).to(device)
     return model
 
