@@ -136,6 +136,7 @@ export const RatingsRouter = ({ driver }: RatingsRouterProps) => {
       );
       return res.send(predictions);
     } catch (err) {
+      console.log(err);
       res.status(400).send("Something went wrong");
     }
   });

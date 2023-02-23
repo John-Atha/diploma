@@ -122,7 +122,7 @@ export class RatingsService {
   }
 
   async getMoviesByIds(movieIds: string[]) {
-    const query = `MATCH m:Movie)-[r:RATES]-(:User) where m.id in $movieIds return r, m, count(r) as ratings_count, avg(r.rating) as ratings_average;`;
+    const query = `MATCH (m:Movie)-[r:RATES]-(:User) where m.id in $movieIds return r, m, count(r) as ratings_count, avg(r.rating) as ratings_average;`;
     const params = { movieIds };
     console.log("QUERY:", query, params);
     const session = this.driver.session();
@@ -160,16 +160,19 @@ export class RatingsService {
       const response = await axios.get(
         `${modelApiBaseUrl}/users/${userId}/recommend/${limit}`
       );
-      // const { recommendations } = response.data;
-      // const moviesIds = recommendations.map(({ movie_id }: any) => movie_id);
-      // const moviesData = await this.getMoviesByIds(moviesIds);
-      // const result = [];
-      // moviesIds.forEach((movie_id: string) => {
-      //   result.push({
-      //     predicted_rating:
-      //   })
-      // })
-      return response.data;
+      const { recommendations } = response.data;
+      const normalizedRecommendations = recommendations.reduce(
+        (obj: any, item: any) => Object.assign(obj, { [item.movie_id]: item.rating }), {});
+      const moviesIds = recommendations.map(({ movie_id }: any) => movie_id);
+      const moviesData = await this.getMoviesByIds(moviesIds);
+      const result: any = [];
+      moviesIds.forEach((movie_id: string) => {
+        result.push({
+          // predicted_rating: normalizedRecommendations[movie_id],
+          ...moviesData[movie_id],
+        })
+      })
+      return result;
     } catch (err) {
       throw err;
     }
