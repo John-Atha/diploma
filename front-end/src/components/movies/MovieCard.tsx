@@ -50,7 +50,9 @@ export const MovieCard = ({
   rating_datetime,
 }: BriefMovieProps) => {
   const theme = useTheme();
-  const logo = poster_path ? `${tmdb_base_url}${poster_path}` : movieImage;
+  const [logo, setLogo] = useState(
+    poster_path ? `${tmdb_base_url}${poster_path}` : movieImage
+  );
   const [isFocused, setIsFocused] = useState(false);
 
   const renderCardContent = () => {
@@ -113,6 +115,7 @@ export const MovieCard = ({
         sx={{
           bgcolor: theme.palette.background.paper,
         }}
+        onError={() => setLogo(movieImage)}
       />
       <CardContent
         sx={{

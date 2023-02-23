@@ -25,7 +25,6 @@ export const TopPeople = () => {
       width={"100%"}
       // maxWidth="900px"
       oneResultComponent={<OnePerson {...placeholderPerson} />}
-      isSmallList
     />
   );
 };

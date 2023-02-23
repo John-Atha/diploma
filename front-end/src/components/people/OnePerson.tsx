@@ -46,7 +46,6 @@ export const OnePerson = ({
   return (
     <CardOverlay
       src={logo}
-      fallbackSrc={""}
       fallbackImg={<Person />}
       title={name}
       subtitle={subtitle}

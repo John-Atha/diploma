@@ -6,7 +6,7 @@ axios.defaults.baseURL = apiUrl;
 
 export const getTopMovies = async () => {
   const requestUrl = `/movies`;
-  const params = { sort_by: "vote_average", order: "asc" };
+  const params = { sort_by: "vote_average", order: "desc" };
   return getRequest({ requestUrl, params });
 };
 

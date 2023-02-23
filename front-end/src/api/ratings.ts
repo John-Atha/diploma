@@ -31,3 +31,10 @@ export const updateRatingCall = (rating: RatingProps) => {
   const headers = buildAuthHeader();
   return axios.put(requestUrl, rating, { headers });
 }
+
+export const getRecommendedMovies = (id: number, limit: number = 30) => {
+  console.log("getting recommended movies");
+  const requestUrl = `${authApiUrl}/ratings/users/${id}/recommend/${limit}`;
+  const headers = buildAuthHeader();
+  return getRequest({ requestUrl, headers });
+};

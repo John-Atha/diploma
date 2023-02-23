@@ -2,6 +2,8 @@ import React from "react";
 import { useQuery } from "react-query";
 import { getTopConnectedMovies } from "../../api/movies";
 import { queriesKeys } from "../../api/queriesKeys";
+import { useAppSelector } from "../../redux/hooks";
+import { selectRatings } from "../../redux/slices/ratingsSlice";
 import { CarouselResults } from "../general/CarouselResults";
 import { OneMovie, placeholderMovie } from "../movies/OneMovie";
 
@@ -20,6 +22,7 @@ export const GeneralEntityTopMovies = ({
   isSmallList = true,
   titleIsHref = true,
 }: GeneralEntityTopMoviesProps) => {
+  const { existingRatings, predictedRatings } = useAppSelector(selectRatings);
   const { data, isLoading, isError } = useQuery(
     [queriesKeys.getTopConnectedMovies(entityName), keyValue],
     () => getTopConnectedMovies(entityName, keyValue),
@@ -39,6 +42,9 @@ export const GeneralEntityTopMovies = ({
       width={"100%"}
       oneResultComponent={<OneMovie {...placeholderMovie} />}
       isSmallList={isSmallList}
+      datumType="movie"
+      existingRatings={existingRatings}
+      predictedRatings={predictedRatings}
     />
   );
 };

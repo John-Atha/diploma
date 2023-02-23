@@ -23,11 +23,12 @@ export const placeholderCardOverlay = {
 
 interface CardOverlayProps {
   src: string;
-  fallbackSrc?: string;
+  fallbackSrc?: string | ReactElement;
   fallbackImg?: ReactElement;
   title: string;
   subtitle?: string | ReactElement;
   height?: number | string;
+  imgHeight?: number | string;
   width?: number;
   alt?: string;
   href: string;
@@ -40,12 +41,19 @@ export const CardOverlay = ({
   title,
   subtitle,
   height = 150,
+  imgHeight = 150,
   width = 300,
   alt,
   href,
 }: CardOverlayProps) => {
   const theme = useTheme();
   const [logo, setLogo] = useState<any>(src);
+  const [focused, setFocused] = useState(false);
+
+  const handleImageError = () => {
+    console.log("did not load, searching for fallback: ", fallbackSrc);
+    setLogo(fallbackSrc || null);
+  };
 
   return (
     <Card
@@ -57,20 +65,21 @@ export const CardOverlay = ({
       }}
       component={NavLink}
       to={href}
+      onMouseEnter={() => setFocused(true)}
+      onMouseLeave={() => setFocused(false)}
     >
       <CardMedia
         component="img"
         height={height}
-        image={src}
+        image={logo}
         alt={alt}
         sx={{
           borderRadius: 5,
-          backgroundImage:
-            "linear-gradient(to top, rgba(0, 0, 0, 1), transparent)",
           width: 1,
         }}
+        onError={handleImageError}
       />
-      {!src &&
+      {(!src || !logo) &&
         !!fallbackImg &&
         cloneElement(fallbackImg, {
           style: {
@@ -90,17 +99,17 @@ export const CardOverlay = ({
           bottom: 0,
           width: 1,
           borderRadius: 5,
-          height: 100,
+          height: 150,
           padding: 1,
           paddingBottom: "8px !important",
           background:
-            "linear-gradient(to top, rgba(0, 0, 0, 1), transparent 100%)",
+            `linear-gradient(to top, rgba(0, 0, 0, 0.8) ${focused ? "70%" : "30%"}, transparent 100%)`,
           color: theme.palette.primary.light,
         }}
       >
         <div style={{ position: "absolute", bottom: 0 }}>
           <Typography variant="body1">{title}</Typography>
-          <Typography variant="caption">{subtitle}</Typography>
+          {focused && <Typography variant="caption">{subtitle}</Typography>}
         </div>
       </CardContent>
     </Card>

@@ -2,6 +2,7 @@ import { CardOverlay } from "../general/CardOverlay";
 import movieImage from "../../images/denise-jans-Lq6rcifGjOU-unsplash.jpg";
 import { tmdb_base_url } from "../../data/cloud_base_urls";
 import { Grid, Rating, Typography } from "@mui/material";
+import { MovieRatings } from "../ratings/MovieRatings";
 
 export interface BriefMovieProps {
   id: string;
@@ -14,6 +15,9 @@ export interface BriefMovieProps {
   ratings_average: number;
   width?: number;
   overview: string;
+  existing_rating?: number;
+  predicted_rating?: number;
+  fallbackSrc?: string;
 }
 
 export const placeholderMovie = {
@@ -38,27 +42,38 @@ export const OneMovie = ({
   ratings_count,
   ratings_average,
   width = 100,
+  existing_rating,
+  predicted_rating,
+  fallbackSrc = movieImage,
 }: BriefMovieProps) => {
   const logo = poster_path ? `${tmdb_base_url}${poster_path}` : movieImage;
 
   return (
     <CardOverlay
       src={logo}
-      fallbackSrc={movieImage}
+      fallbackSrc={fallbackSrc}
       title={title || original_title}
       subtitle={
-        <Grid container alignItems="center">
-          <Rating
-            precision={0.5}
-            name="read-only"
-            value={ratings_average}
-            size="small"
-            readOnly
-          />
-          <Typography variant="body2">
-            {ratings_average.toFixed(2)} ({ratings_count})
-          </Typography>
-        </Grid>
+        // <Grid container alignItems="center">
+        //   <Rating
+        //     precision={0.5}
+        //     name="read-only"
+        //     value={ratings_average}
+        //     size="small"
+        //     readOnly
+        //   />
+        //   <Typography variant="body2">
+        //     {ratings_average.toFixed(2)} ({ratings_count})
+        //   </Typography>
+        // </Grid>
+        <MovieRatings
+          movieId={id}
+          predicted_rating={predicted_rating as number}
+          existing_rating={existing_rating as number}
+          ratings_average={ratings_average}
+          ratings_count={ratings_count}
+          isSmall
+        />
       }
       href={`/movies/${id}`}
       width={width}

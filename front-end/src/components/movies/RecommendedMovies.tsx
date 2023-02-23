@@ -1,28 +1,35 @@
 import React from "react";
 import { useQuery } from "react-query";
-import { getTopMovies } from "../../api/movies";
+import { getLatestMovies, getTopMovies } from "../../api/movies";
 import { queriesKeys } from "../../api/queriesKeys";
+import { getRecommendedMovies } from "../../api/ratings";
 import { useAppSelector } from "../../redux/hooks";
+import { selectAuthUser } from "../../redux/slices/authSlice";
 import { selectRatings } from "../../redux/slices/ratingsSlice";
 import { CarouselResults } from "../general/CarouselResults";
 import { OneMovie, placeholderMovie } from "./OneMovie";
 
-export const TopMovies = () => {
+export const RecommendedMovies = () => {
   const { existingRatings, predictedRatings } = useAppSelector(selectRatings);
+  const { id: userId } = useAppSelector(selectAuthUser);
+
   const { data, isLoading } = useQuery(
-    queriesKeys["getTopMovies"],
-    () => getTopMovies(),
+    [queriesKeys["getRecommendedMovies"], userId],
+    () => getRecommendedMovies(userId, 30),
     {
+      enabled: !!userId,
       cacheTime: 0,
       refetchOnWindowFocus: false,
     }
   );
 
+  console.log(data)
+
   return (
     <CarouselResults
-      data={data?.data}
+      data={data}
       isLoading={isLoading}
-      title="Top Movies"
+      title="Just for you"
       width={"100%"}
       // maxWidth="900px"
       oneResultComponent={<OneMovie {...placeholderMovie} />}

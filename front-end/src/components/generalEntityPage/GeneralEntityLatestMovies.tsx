@@ -3,6 +3,8 @@ import { useQuery } from "react-query";
 import { getGenreTopMovies } from "../../api/genres";
 import { getLatestConnectedMovies } from "../../api/movies";
 import { queriesKeys } from "../../api/queriesKeys";
+import { useAppSelector } from "../../redux/hooks";
+import { selectRatings } from "../../redux/slices/ratingsSlice";
 import { CarouselResults } from "../general/CarouselResults";
 import { OneMovie, placeholderMovie } from "../movies/OneMovie";
 
@@ -31,6 +33,8 @@ export const GeneralEntityLatestMovies = ({
     }
   );
 
+  const { existingRatings, predictedRatings } = useAppSelector(selectRatings);
+
   return (
     <CarouselResults
       data={data?.data}
@@ -38,7 +42,14 @@ export const GeneralEntityLatestMovies = ({
       title={name}
       titleHref={titleIsHref ? `/${entityName}/${keyValue}` : ""}
       width={"100%"}
-      oneResultComponent={<OneMovie {...placeholderMovie} />}
+      oneResultComponent={
+        <OneMovie
+          {...placeholderMovie}
+        />
+      }
+      datumType="movie"
+      existingRatings={existingRatings}
+      predictedRatings={predictedRatings}
       isSmallList={isSmallList}
     />
   );

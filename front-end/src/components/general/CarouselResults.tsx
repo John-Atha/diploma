@@ -5,6 +5,7 @@ import MyCarousel from "./MyCarousel";
 import Spinner from "./Spinner";
 
 interface CarouselResultsProps {
+  datumType?: string;
   data: any[];
   isLoading: boolean;
   title?: string;
@@ -14,8 +15,11 @@ interface CarouselResultsProps {
   maxWidth?: number | string;
   oneResultComponent: ReactElement;
   isSmallList?: boolean;
+  existingRatings?: any[];
+  predictedRatings?: any[];
 }
 export const CarouselResults = ({
+  datumType,
   data,
   isLoading,
   title = "",
@@ -25,6 +29,8 @@ export const CarouselResults = ({
   maxWidth,
   oneResultComponent,
   isSmallList = false,
+  existingRatings,
+  predictedRatings,
 }: CarouselResultsProps) => {
   const theme = useTheme();
   let content = null;
@@ -37,7 +43,15 @@ export const CarouselResults = ({
     content = (
       <MyCarousel
         items={data?.map((datum: any) =>
-          cloneElement(oneResultComponent, { ...datum })
+          cloneElement(oneResultComponent, {
+            ...datum,
+            ...(datumType === "movie"
+              ? {
+                  existing_rating: existingRatings?.[datum.id],
+                  predicted_rating: predictedRatings?.[datum.id],
+                }
+              : {}),
+          })
         )}
         isSmallList={isSmallList}
       />
@@ -52,8 +66,9 @@ export const CarouselResults = ({
         bgcolor: "inherit",
       }}
       elevation={elevation}
+      
     >
-      <CardContent>
+      <CardContent sx={{ padding: 0 }}>
         <Typography
           variant="h6"
           sx={{ padding: 1 }}

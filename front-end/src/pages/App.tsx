@@ -12,6 +12,7 @@ import { MyHeader } from "../components/general/MyHeader";
 import { useAppDispatch } from "../redux/hooks";
 import { setRoutes } from "../redux/slices/breadCrumbSlice";
 import { MoviesList } from "../components/movies/MoviesList";
+import { RecommendedMovies } from "../components/movies/RecommendedMovies";
 
 export const App = () => {
   const dispatch = useAppDispatch();
@@ -59,14 +60,9 @@ export const App = () => {
         <Grid item xs={9}>
           <Stack>
             <LatestMovies />
-            <Grid container spacing={1} width={1}>
-              <Grid item xs={6}>
-                <TopMovies />
-              </Grid>
-              <Grid item xs={6}>
-                <TopPeople />
-              </Grid>
-            </Grid>
+            <RecommendedMovies />
+            <TopMovies />
+            <TopPeople />
           </Stack>
         </Grid>
         <Grid item xs={3}>
@@ -81,34 +77,6 @@ export const App = () => {
             <TopKeywords />
           </Stack>
         </Grid>
-        <Grid item xs={12}>
-          <MoviesList itemWidth={300} />
-        </Grid>
-
-        {/* <Grid item md={6} xs={12}>
-          <Grid container justifyContent={"center"}>
-            <Grid item xs={12}>
-              <AllUsers
-                icon={<PersonOutlined />}
-              />
-              <AllUsers
-                type="Org"
-                subtitle="Organizations"
-                severity='info'
-                icon={<WarehouseOutlined />}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <FamousUsers />
-            </Grid>
-          </Grid>
-        </Grid>
-        <Grid item md={6} xs={12}>
-          <TopLanguages />
-        </Grid>
-        <Grid item xs={12}>
-          <LanguagesTabs />
-        </Grid> */}
       </Grid>
     </PageSkeleton>
   );
