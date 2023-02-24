@@ -139,11 +139,12 @@ class GNNEncoder(torch.nn.Module):
 
 
 class EdgeDecoder(torch.nn.Module):
-    def __init__(self, hidden_channels, num_layers):
+    def __init__(self, hidden_channels, num_layers, decoder_dropout=0.1):
         assert num_layers >= 2
         super().__init__()
         self.num_layers = num_layers
         self.hidden_channels = hidden_channels
+        self.dropout = decoder_dropout
         self.layers = torch.nn.ModuleList()
 
         self.layers.append(LazyLinear(self.hidden_channels))
@@ -159,12 +160,13 @@ class EdgeDecoder(torch.nn.Module):
         z = torch.cat([user_embeddings, movie_embeddings], dim=-1)
         for i in range(self.num_layers-1):
             z = self.layers[i](z).relu()
+            z = F.dropout(z, p=self.dropout, training=self.training)
         z = self.layers[self.num_layers-1](z)
         return z.view(-1)
 
 
 class Model(torch.nn.Module):
-    def __init__(self, data, in_channels=-1, hidden_channels=32, out_channels=32, encoder_num_layers=5, decoder_num_layers=4, layer_name="SAGE", encoder_dropout=0.1, encoder_skip_connections=True, encoder_aggr=[]):
+    def __init__(self, data, in_channels=-1, hidden_channels=32, out_channels=32, encoder_num_layers=5, decoder_num_layers=4, layer_name="SAGE", encoder_dropout=0.0, decoder_dropout=0.0, encoder_skip_connections=True, encoder_aggr=[]):
         super().__init__()
         self.encoder = GNNEncoder(
             in_channels=in_channels,
@@ -182,7 +184,8 @@ class Model(torch.nn.Module):
         self.encoder = to_hetero(self.encoder, data.metadata(), aggr='sum')
         self.decoder = EdgeDecoder(
             hidden_channels,
-            num_layers=decoder_num_layers
+            num_layers=decoder_num_layers,
+            decoder_dropout=decoder_dropout,
         )
 
     def forward(self, x_dict, edge_index_dict, edge_label_index):

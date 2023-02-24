@@ -19,6 +19,7 @@ def grid_search_data(
     lrs=[0.01],
     logging_step=1,
     skip_connections=[True],
+    use_weighted_loss=False,
 ):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     losses = defaultdict(tuple)
@@ -90,7 +91,8 @@ def grid_search_data(
                                         data,
                                         layer_name=layer_name,
                                         encoder_num_layers=encoder_num_layers,
-                                        encoder_dropout=0.1,
+                                        encoder_dropout=0.0,
+                                        decoder_dropout=0.0,
                                         encoder_skip_connections=encoder_skip_connections,
                                         encoder_aggr=encoder_aggr,
                                         decoder_num_layers=decoder_num_layers,
@@ -127,5 +129,6 @@ def grid_search_data(
                                             test_data=test_data,
                                             logging_step=logging_step,
                                             lr=lr,
+                                            use_weighted_loss=use_weighted_loss,
                                         )
     return losses

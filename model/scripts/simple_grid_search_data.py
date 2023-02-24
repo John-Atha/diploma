@@ -17,12 +17,12 @@ if len(sys.argv)>2:
 
 print("Epochs:", sys.argv[1])
 
-experiments_file = open(os.path.join("..", "scripts", "experiments_165K.json"))
+experiments_file = open(os.path.join("..", "scripts", "experiments_100K_dataset.json"))
 experiments = json.load(experiments_file)
 experiments_file.close()
 
 experiment_names = [
-    "GIN_32_ADVANCED_embeddings_",
+    "GIN_2_6_32_LEARNING_RATE_",
 ]
 
 # experiment_name = "GraphConv_16_embeddings_"
@@ -85,7 +85,7 @@ for experiment_name in experiment_names:
     )
 
     time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    output_path = os.path.join("..", "results_BALANCED_165K", config["filename"]+time+".json")
+    output_path = os.path.join("..", "results_FINAL_FINAL", config["filename"]+time+".json")
     f = open(output_path, "w")
     f.write(json.dumps({str(key): val for key, val in losses.items()}, indent=2))
     f.close()
