@@ -6,7 +6,7 @@
 > * [The movies Dataset](https://www.kaggle.com/datasets/rounakbanik/the-movies-dataset)
 > * Two versions of the dataset will be used:
 >   * small version (100K ratings)
->   * a full version (1M ratings)
+>   * a full version (25M ratings)
 
 ## The Task
 > * The task is to recommend movies to users 
@@ -18,6 +18,10 @@
 >   * We train a Model (GNN+DNN) to perform the link weight prediction task, and therefore predict the rating a user would give to a movie
 >   * Using the predicted rating, we can the recommend new movies to a specific user
 ## Database initialization
+
+A sample subgraph
+![Alt Architecture](./sample_DB.png?raw=true "Title")
+
 > * Database used: [Neo4j](https://neo4j.com/) 
 > * Steps (assuming that [Neo4j Desktop](https://neo4j.com/download/) is installed):
 >     * create a new local DMBS with password: `admin`
@@ -45,6 +49,10 @@
 >               * (Movie)-[HAS_CREW]-(Person)
 
 ## Node Embeddings
+
+![Alt Architecture](./preprocessing_pipeline.png?raw=true "Title")
+
+
 > * When running the `populate_db` script, there are also produced some node embeddings for the movies
 > * These embeddings can (and will) be used as input to the `Model`
 >   * For example, instead of providing a list with the genres of each movie to the GNN, this information will be provided to the GNN via the corresponding embedding
@@ -56,6 +64,9 @@
 >   * [Node2Vec](https://neo4j.com/docs/graph-data-science/current/machine-learning/node-embeddings/node2vec/)
 
 ## Model Structure
+
+![Alt Architecture](./model_architecture.png?raw=true "Title")
+
 > * Main Library: [Pytorch Geometric](https://pytorch-geometric.readthedocs.io/en/latest/)
 > * Model input and output:
 >   * input: the subgraph consisting of the movies, the users and their ratings

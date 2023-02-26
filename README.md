@@ -2,9 +2,12 @@
 
 A movie recommender platform implemented as the link weight prediction task with Graph Neural Networks and Graph Databases
 
+![Alt Landing](./home_page.png?raw=true "Title")
+
+
 ## System Architecture
 
-![Alt Architecture](./deployment_diagram.jpg?raw=true "Title")
+![Alt Architecture](./deployment_diagram.png?raw=true "Title")
 
 The platform consists of the following main components:
 
