@@ -1,8 +1,10 @@
+import os
 from flask import Flask, jsonify
 from helpers.recommendations import make_predictions, recommend
 from helpers.train_test import train_test
 from helpers.dataset import load_data_dataset, split_dataset
 from helpers.get_model import get_model, get_model_name
+from helpers.sync_users import sync_users
 import torch
 
 app = Flask(__name__)
@@ -53,4 +55,15 @@ def refresh():
     global dataset, data, train_data, val_data, test_data
     dataset, data = load_data_dataset()
     train_data, val_data, test_data = split_dataset(dataset, data)
+    model = get_model(data)
+    # sync the weights
+    sync_users(
+        model,
+        database_url=os.environ.get("DATABASE_URL"),
+        database_username=os.environ.get("DATABASE_USERNAME"),
+        database_password=os.environ.get("DATABASE_PASSWORD")
+    )
+    # save it back to disk
+    model_name = get_model_name()
+    torch.save(model, model_name)
     return "OK"

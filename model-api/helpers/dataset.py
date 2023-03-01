@@ -9,14 +9,14 @@ sys.path.append(str(parent_path))
 import torch_geometric.transforms as T
 
 
-def load_data_dataset():
+def load_data_dataset(database_url="", database_username="", database_password=""):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     dataset = Neo4jMovieLensMetaData(
         root='data/MovieLensNeo4jMetaData',
         model_name='all-MiniLM-L6-v2',
-        database_url=os.environ.get("DATABASE_URL"),
-        database_username=os.environ.get("DATABASE_USERNAME"),
-        database_password=os.environ.get("DATABASE_PASSWORD"),
+        database_url=database_url or os.environ.get("DATABASE_URL"),
+        database_username= database_username or os.environ.get("DATABASE_USERNAME"),
+        database_password= database_password or os.environ.get("DATABASE_PASSWORD"),
         force_pre_process=True,
         text_features=["title", "original_title"],
         list_features=[],

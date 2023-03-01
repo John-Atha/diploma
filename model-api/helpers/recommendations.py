@@ -28,7 +28,8 @@ def make_predictions(dataset, data, model, user_id):
     # print(reverse_user_mapping.get(id))
 
     user_mapping_id = users_mapping.get(int(user_id))
-
+    if (user_mapping_id is None):
+        return {'predictedRatings': []}
     """
     * to predict the ratings for each user to all the movies
     * add one edge from the user to each one of the movies to the: `edge_label_index`

@@ -110,6 +110,12 @@ class Neo4jMovieLensMetaData(InMemoryDataset):
                 m.SAGE_cast as SAGE_cast,
                 m.SAGE_COMBINED as SAGE_COMBINED
         """
+        self.users_query = """
+            MATCH (u:User)
+            return
+                u.id as id,
+                u.username as username
+        """
         self.ratings_query = """
             MATCH (u:User)-[r:RATES]-(m:Movie)
             return
@@ -119,6 +125,7 @@ class Neo4jMovieLensMetaData(InMemoryDataset):
                 m.id as movieId
         """
         self.movies_df = None
+        self.users_df = None
         self.ratings_df = None
         self.text_features = text_features
         self.fastRP_features = fastRP_features
@@ -264,6 +271,10 @@ class Neo4jMovieLensMetaData(InMemoryDataset):
             self.movies_df = self.fetch_data(self.movies_query)
             self.movies_df.set_index("id", inplace=True)
         
+        if not self.users_df:
+            self.users_df = self.fetch_data(self.users_query)
+            self.users_df.set_index("id", inplace=True)
+        
         movie_mapping = {idx: i for i, idx in enumerate(self.movies_df.index)}      
         data['movie'].x = self.pre_process_movies_df()
 
@@ -271,7 +282,8 @@ class Neo4jMovieLensMetaData(InMemoryDataset):
         if not self.ratings_df:
             self.ratings_df = self.fetch_data(self.ratings_query)
 
-        user_mapping = {idx: i for i, idx in enumerate(self.ratings_df['userId'].unique())}
+        # user_mapping = {idx: i for i, idx in enumerate(self.ratings_df['userId'].unique())}
+        user_mapping = {idx: i for i, idx in enumerate(self.users_df.index)}
         data['user'].num_nodes = len(user_mapping)
         
         src = [user_mapping[idx] for idx in self.ratings_df['userId']]
@@ -293,7 +305,8 @@ class Neo4jMovieLensMetaData(InMemoryDataset):
         import pandas as pd
 
         movie_mapping = {idx: i for i, idx in enumerate(self.movies_df.index)}
-        user_mapping = {idx: i for i, idx in enumerate(self.ratings_df['userId'].unique())}
+        user_mapping = {idx: i for i, idx in enumerate(self.users_df.index)}
+        # user_mapping = {idx: i for i, idx in enumerate(self.ratings_df['userId'].unique())}
 
         return {
             "users_mapping": user_mapping,
