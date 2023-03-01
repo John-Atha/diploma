@@ -8,6 +8,7 @@ import {
 } from "../utils/preProcessQuery";
 import { notFound, PaginationResponse } from "../utils/responses";
 import jwt_decode from "jwt-decode";
+import axios from "axios";
 
 interface UsersRouterProps {
   driver: Driver;
@@ -75,6 +76,16 @@ export const UsersRouter = ({ driver }: UsersRouterProps) => {
     try {
       const user = await usersService.createUser(username, password);
       res.send(user);
+      // send an async get request to the model-api on http://127.0.0.1:5000/refresh
+      // to refresh the in-memory dataset to include the new user
+      // and to update the model's weight matrix with a new column for the new user
+      // TODO: add the url of the model-api to the .env file
+      try {
+        await axios.post("http://127.0.0.1:5000/refresh");
+      }
+      catch (err) {
+        console.log(err);
+      }
     } catch (err) {
       res.status(400).send(err);
     }
