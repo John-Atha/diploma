@@ -32,6 +32,7 @@ interface CardOverlayProps {
   width?: number;
   alt?: string;
   href: string;
+  centerTitle?: boolean;
 }
 
 export const CardOverlay = ({
@@ -45,6 +46,7 @@ export const CardOverlay = ({
   width = 300,
   alt,
   href,
+  centerTitle = false,
 }: CardOverlayProps) => {
   const theme = useTheme();
   const [logo, setLogo] = useState<any>(src);
@@ -107,8 +109,8 @@ export const CardOverlay = ({
           color: theme.palette.primary.light,
         }}
       >
-        <div style={{ position: "absolute", bottom: 0 }}>
-          <Typography variant="body1">{title}</Typography>
+        <div style={{ position: "absolute", bottom: 0, width: "90%" }}>
+          <Typography variant="body1" align={(centerTitle && focused) ? "center" : "left"} >{title}</Typography>
           {focused && <Typography variant="caption">{subtitle}</Typography>}
         </div>
       </CardContent>

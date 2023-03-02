@@ -112,7 +112,7 @@ export const MovieRatings = ({
 
   const hasActiveRating = activeRating !== user_rating && activeRating !== -1;
   return (
-    <Grid container spacing={isSmall ? 0 : 1} justifyContent={"space-between"}>
+    <Grid container spacing={isSmall ? 0 : 1} width={1} justifyContent={"space-between"}>
       <Grid item>
         <Stack alignItems="center">
           <Typography variant="body2">

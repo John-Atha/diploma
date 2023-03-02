@@ -78,6 +78,7 @@ export const OneMovie = ({
       href={`/movies/${id}`}
       width={width}
       height={200}
+      centerTitle
     />
   );
 };
