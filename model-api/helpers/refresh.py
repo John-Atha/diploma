@@ -2,6 +2,7 @@ import torch
 import torch_geometric
 from py2neo import Graph
 
+
 def sync_users(model, database_url, database_username, database_password):
     # get the number of users in the database
     graph = Graph(

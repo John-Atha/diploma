@@ -1,10 +1,11 @@
 import os
-from flask import Flask, jsonify
+import threading
+from flask import Flask, jsonify, request
 from helpers.recommendations import make_predictions, recommend
-from helpers.train_test import train_test
+from helpers.train_test import train_test_async
 from helpers.dataset import load_data_dataset, split_dataset
 from helpers.get_model import get_model, get_model_name
-from helpers.sync_users import sync_users
+from helpers.refresh import sync_users
 import torch
 
 app = Flask(__name__)
@@ -16,8 +17,10 @@ train_data, val_data, test_data = split_dataset(dataset, data)
 def predict_for_user(id: int):
     if not id.isnumeric():
         return "User id must be an integer", 400
+    # get value of query param with name 'round'
+    round = int(request.args.get('round')) if request.args.get('round') is not None else 0
     model = get_model(data)
-    results = make_predictions(dataset, data, model, int(id))
+    results = make_predictions(dataset, data, model, int(id), use_round=round)
     return jsonify(results)
 
 @app.route('/users/<id>/recommend/<limit>')
@@ -34,24 +37,21 @@ def recommend_for_user(id: int, limit: int):
 def re_train_model(epochs):
     if not epochs.isnumeric():
         return "Epochs must be an integer", 400
-    refresh()
-    model = get_model(data)
-    model, losses = train_test(
-        model=model,
-        epochs=int(epochs),
-        train_data=train_data,
-        val_data=val_data,
-        test_data=test_data,
-        logging_step=1,
-        lr=0.012,
-        use_weighted_loss=False,
-    )
-    model_name = get_model_name()
-    torch.save(model, model_name)
+    # start a thread to execute the train_async function
+    thread = threading.Thread(target=train_async, args=(epochs,))
+    thread.setDaemon(True)
+    thread.start()
     return "OK"
 
 @app.route('/refresh', methods=["POST"])
 def refresh():
+    # start a thread to execute the refresh_async function
+    thread = threading.Thread(target=refresh_async)
+    thread.setDaemon(True)
+    thread.start()
+    return "OK"
+
+def refresh_async():
     global dataset, data, train_data, val_data, test_data
     dataset, data = load_data_dataset()
     train_data, val_data, test_data = split_dataset(dataset, data)
@@ -66,4 +66,7 @@ def refresh():
     # save it back to disk
     model_name = get_model_name()
     torch.save(model, model_name)
-    return "OK"
+
+def train_async(epochs):
+    refresh_async()
+    train_test_async(data, epochs, train_data, test_data, val_data)

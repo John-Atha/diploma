@@ -1,6 +1,27 @@
+import pathlib
+import os
+import sys
 import torch
 import torch.nn.functional as F
-import matplotlib.pyplot as plt
+
+# import get_model from helpers.get_model
+from helpers.get_model import get_model, get_model_name
+
+def train_test_async(data, epochs, train_data, test_data, val_data):
+    model = get_model(data)
+    model, losses = train_test(
+        model=model,
+        epochs=int(epochs),
+        train_data=train_data,
+        val_data=val_data,
+        test_data=test_data,
+        logging_step=1,
+        lr=0.012,
+        use_weighted_loss=False,
+    )
+    model_name = get_model_name()
+    torch.save(model, model_name)
+
 
 def train_test(model, epochs, train_data, test_data, val_data, logging_step, lr=0.01, use_weighted_loss=False):
 
@@ -51,7 +72,7 @@ def train_test(model, epochs, train_data, test_data, val_data, logging_step, lr=
         losses.append((loss, train_rmse, val_rmse, test_rmse))
         if (logging_step and not epoch%logging_step) or (not logging_step):
             print(f'Epoch: {epoch:03d}, Loss: {loss:.4f}, Train: {train_rmse:.4f}, '
-                f'Val: {val_rmse:.4f}, Test: {test_rmse:.4f}')
+                f'Val: {val_rmse:.4f}, Test: {test_rmse:.4f}', flush=True)
     
     last_losses = losses[-1]
     losses = losses + [last_losses] * (epochs - len(losses))

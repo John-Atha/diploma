@@ -10,7 +10,7 @@ parent_path = pathlib.Path(os.getcwd()).parent.absolute()
 sys.path.append(str(parent_path))
 
 
-def make_predictions(dataset, data, model, user_id):
+def make_predictions(dataset, data, model, user_id, use_round=0):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     mappings = dataset.my_mappings
     movies_mapping = mappings["movies_mapping"]
@@ -42,7 +42,9 @@ def make_predictions(dataset, data, model, user_id):
     pred = model(data.x_dict, data.edge_index_dict,
                  edge_label_index)
     pred = pred.clamp(min=0, max=5)
-
+    if use_round:
+        # round the predictions on .5 steps
+        pred = torch.round(pred * 2) / 2
     mask = pred.nonzero(as_tuple=True)
     predictions_list = pred.tolist()
     predictions = [
