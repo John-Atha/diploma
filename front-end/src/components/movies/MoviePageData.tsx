@@ -85,6 +85,7 @@ export const MoviePageData = ({ data }: MovieData) => {
                   ratings_count={ratings_count}
                   predicted_rating={predictedRatings?.[id] || 0}
                   existing_rating={existingRatings?.[id]}
+                  predicted_setting_up={Object.keys(predictedRatings).length === 0}
                 />
               </Paper>
             </Grid>

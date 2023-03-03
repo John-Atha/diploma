@@ -29,6 +29,7 @@ export const TopMovies = () => {
       datumType="movie"
       existingRatings={existingRatings}
       predictedRatings={predictedRatings}
+      predicted_setting_up={Object.keys(predictedRatings || {}).length == 0}
     />
   );
 };

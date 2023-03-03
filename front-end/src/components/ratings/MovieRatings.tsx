@@ -24,6 +24,7 @@ interface MovieRatingsProps {
   ratings_average: number;
   ratings_count: number;
   isSmall?: boolean;
+  predicted_setting_up?: boolean;
 }
 export const MovieRatings = ({
   movieId,
@@ -32,6 +33,7 @@ export const MovieRatings = ({
   ratings_average,
   ratings_count,
   isSmall = false,
+  predicted_setting_up = false,
 }: MovieRatingsProps) => {
   const dispatch = useAppDispatch();
   const { id: userId } = useAppSelector(selectAuthUser);
@@ -112,7 +114,13 @@ export const MovieRatings = ({
 
   const hasActiveRating = activeRating !== user_rating && activeRating !== -1;
   return (
-    <Grid container spacing={isSmall ? 0 : 1} width={1} justifyContent={"space-between"}>
+    <Grid
+      container
+      spacing={isSmall ? 0 : 1}
+      width={1}
+      justifyContent={"space-between"}
+      flexWrap="nowrap"
+    >
       <Grid item>
         <Stack alignItems="center">
           <Typography variant="body2">
@@ -128,7 +136,7 @@ export const MovieRatings = ({
               {user_rating}
             </Typography>
           )}
-          {!hasActiveRating && (
+          {!hasActiveRating && !!user_rating && (
             <Rating
               precision={0.1}
               value={user_rating}
@@ -137,6 +145,11 @@ export const MovieRatings = ({
               onChangeActive={onChangeActive}
               onClick={(e) => e.stopPropagation()}
             />
+          )}
+          {!hasActiveRating && !user_rating && (
+            <Typography variant="caption" align="center">
+              Please wait, we are setting up your predictions
+            </Typography>
           )}
           {hasActiveRating && (
             <Tooltip title={labels[Math.round(activeRating as number)]} arrow>

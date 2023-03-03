@@ -58,6 +58,7 @@ export const RatingsHistory = () => {
         isMovies
         existingRatings={existingRatings}
         predictedRatings={predictedRatings}
+        predicted_setting_up={Object.keys(predictedRatings || {}).length == 0}
       />
     </Stack>
   );

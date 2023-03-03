@@ -29,6 +29,7 @@ export interface BriefMovieProps {
   overview: string;
   existing_rating?: number;
   predicted_rating?: number;
+  predicted_setting_up?: boolean;
   rating?: number;
   rating_datetime?: string;
 }
@@ -48,6 +49,7 @@ export const MovieCard = ({
   width = 250,
   rating,
   rating_datetime,
+  predicted_setting_up = false,
 }: BriefMovieProps) => {
   const theme = useTheme();
   const [logo, setLogo] = useState(
@@ -84,6 +86,7 @@ export const MovieCard = ({
             movieId={id}
             predicted_rating={predicted_rating as number}
             existing_rating={existing_rating as number}
+            predicted_setting_up={predicted_setting_up}
             ratings_average={ratings_average}
             ratings_count={ratings_count}
             isSmall

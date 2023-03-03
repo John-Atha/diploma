@@ -17,6 +17,7 @@ interface CarouselResultsProps {
   isSmallList?: boolean;
   existingRatings?: any[];
   predictedRatings?: any[];
+  predicted_setting_up?: boolean;
 }
 export const CarouselResults = ({
   datumType,
@@ -49,6 +50,7 @@ export const CarouselResults = ({
               ? {
                   existing_rating: existingRatings?.[datum.id],
                   predicted_rating: predictedRatings?.[datum.id],
+                  predicted_setting_up: Object.keys(predictedRatings || {}).length == 0,
                 }
               : {}),
           })

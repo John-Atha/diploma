@@ -20,6 +20,7 @@ export interface ResultsProps {
   isMovies?: boolean;
   existingRatings?: any[];
   predictedRatings?: any[];
+  predicted_setting_up?: boolean;
 }
 
 export const Results = ({
@@ -33,6 +34,7 @@ export const Results = ({
   isMovies,
   existingRatings,
   predictedRatings,
+  predicted_setting_up=false,
 }: ResultsProps) => {
   if (isLoading && !data?.length) {
     return <Spinner />;

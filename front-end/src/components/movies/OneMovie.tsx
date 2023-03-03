@@ -17,6 +17,7 @@ export interface BriefMovieProps {
   overview: string;
   existing_rating?: number;
   predicted_rating?: number;
+  predicted_setting_up?: boolean;
   fallbackSrc?: string;
 }
 
@@ -44,6 +45,7 @@ export const OneMovie = ({
   width = 100,
   existing_rating,
   predicted_rating,
+  predicted_setting_up=false,
   fallbackSrc = movieImage,
 }: BriefMovieProps) => {
   const logo = poster_path ? `${tmdb_base_url}${poster_path}` : movieImage;
@@ -70,6 +72,7 @@ export const OneMovie = ({
           movieId={id}
           predicted_rating={predicted_rating as number}
           existing_rating={existing_rating as number}
+          predicted_setting_up={predicted_setting_up}
           ratings_average={ratings_average}
           ratings_count={ratings_count}
           isSmall
