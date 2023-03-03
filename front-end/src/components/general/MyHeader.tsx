@@ -53,7 +53,7 @@ export const MyHeader = ({ searchProps }: MyHeaderProps) => {
             component={Card}
             width="80vw"
           >
-            <SearchBar {...searchProps} />
+            <SearchBar {...searchProps} onClose={handleClose} />
             <SearchResultsList />
           </Stack>
         </ClickAwayListener>

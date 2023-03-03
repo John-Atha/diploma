@@ -12,6 +12,7 @@ interface SearchBarProps {
   initValue: any;
   placeholder?: string;
   onFocus?: () => void;
+  onClose?: () => void;
   isBackdropTrigger?: boolean;
   entityName?: string;
 }
@@ -20,6 +21,7 @@ export const SearchBar = ({
   initValue,
   placeholder,
   onFocus,
+  onClose,
   isBackdropTrigger = false,
   entityName = "Movies",
 }: SearchBarProps) => {
@@ -37,7 +39,10 @@ export const SearchBar = ({
     setSearchParams(newSearchParams);
   };
 
-  const clear = () => setSearchParams({ key: "" });
+  const clear = () => {
+    setSearchParams({ key: "" });
+    !!onClose && onClose();
+  }
 
   useEffect(() => {
     setValue(searchParams.get("key"));
