@@ -30,9 +30,13 @@ def sync_users(model, database_url, database_username, database_password):
                 else:
                     new_cols_num = num_users - weight_matrix_users
                     if new_cols_num > 0:
-                        # add new columns with zeros to the weight matrix
+                        # add new columns with random values to the weight matrix
+                        # each element of the new columns is the mean of the corresponding row
                         new_cols = torch.zeros(
                             layer.weight.shape[0], new_cols_num)
+                        for i in range(layer.weight.shape[0]):
+                            new_cols[i] = torch.mean(layer.weight[i])
+                        
                         layer.weight = torch.nn.Parameter(
                             torch.cat((layer.weight, new_cols), dim=1))
                         print(f"should add {new_cols_num} users")
