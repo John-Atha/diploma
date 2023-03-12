@@ -161,8 +161,6 @@ export class RatingsService {
         `${modelApiBaseUrl}/users/${userId}/recommend/${limit}`
       );
       const { recommendations } = response.data;
-      const normalizedRecommendations = recommendations.reduce(
-        (obj: any, item: any) => Object.assign(obj, { [item.movie_id]: item.rating }), {});
       const moviesIds = recommendations.map(({ movie_id }: any) => movie_id);
       const moviesData = await this.getMoviesByIds(moviesIds);
       const result: any = [];

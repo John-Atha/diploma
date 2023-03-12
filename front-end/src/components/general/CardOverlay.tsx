@@ -53,7 +53,6 @@ export const CardOverlay = ({
   const [focused, setFocused] = useState(false);
 
   const handleImageError = () => {
-    console.log("did not load, searching for fallback: ", fallbackSrc);
     setLogo(fallbackSrc || null);
   };
 

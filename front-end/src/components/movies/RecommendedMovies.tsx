@@ -1,6 +1,5 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
-import { getLatestMovies, getTopMovies } from "../../api/movies";
 import { queriesKeys } from "../../api/queriesKeys";
 import { getRecommendedMovies } from "../../api/ratings";
 import { useAppSelector } from "../../redux/hooks";
@@ -23,11 +22,25 @@ export const RecommendedMovies = () => {
     }
   );
 
-  console.log(data)
+  const [sorted, setSorted] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (data) {
+      // sort data be the corresponding predicted rating without mutating the original data
+      const sortedData: any[] = [...data].sort((a, b) => {
+        const aRating = predictedRatings[a.id];
+        const bRating = predictedRatings[b.id];
+        if (aRating > bRating) return -1;
+        if (aRating < bRating) return 1;
+        return 0;
+      });
+      setSorted(sortedData);
+    }
+  }, [data, predictedRatings]);
 
   return (
     <CarouselResults
-      data={data}
+      data={sorted}
       isLoading={isLoading}
       title="Just for you"
       width={"100%"}
