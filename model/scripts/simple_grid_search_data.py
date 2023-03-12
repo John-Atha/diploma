@@ -22,7 +22,7 @@ experiments = json.load(experiments_file)
 experiments_file.close()
 
 experiment_names = [
-    "GIN_2_6_32_LEARNING_RATE_",
+    "SAGE_2_10_16_FAST_SEPARATE_ROUND_",
 ]
 
 # experiment_name = "GraphConv_16_embeddings_"

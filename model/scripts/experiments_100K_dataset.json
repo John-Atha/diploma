@@ -398,6 +398,12 @@
             {
                 "text_features": ["title", "original_title"],
                 "list_features": [],
+                "fastRP_features": [],
+                "numeric_features": []
+            },
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
                 "fastRP_features": ["fastRP_COMBINED"],
                 "numeric_features": []
             },
@@ -711,6 +717,27 @@
         ],
         "use_mini_batch": false,
         "use_weighted_loss": false
+    },
+
+    {
+        "filename": "SAGE_2_10_16_FAST_SEPARATE_ROUND_",
+        "layer_names": ["SAGE"],
+        "encoder_nums_layers": [2, 2, 1],
+        "skip_connections": [1],
+        "decoder_nums_layers": [10, 10, 1],
+        "hidden_channels": [16],
+        "lrs": [0.012],
+        "features_config": [
+            {
+                "text_features": ["title", "original_title"],
+                "list_features": [],
+                "fastRP_features": ["fastRP_genres", "fastRP_keywords", "fastRP_production_companies", "fastRP_production_countries", "fastRP_spoken_languages", "fastRP_cast", "fastRP_crew"],
+                "numeric_features": []
+            }
+        ],
+        "use_mini_batch": false,
+        "use_weighted_loss": false,
+        "use_round": [false, true]
     },
 
 

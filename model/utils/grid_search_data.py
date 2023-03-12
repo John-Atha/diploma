@@ -20,6 +20,7 @@ def grid_search_data(
     logging_step=1,
     skip_connections=[True],
     use_weighted_loss=False,
+    use_round=[False],
 ):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     losses = defaultdict(tuple)
@@ -71,64 +72,67 @@ def grid_search_data(
                         for decoder_num_layers in range(decoder_nums_layers[0], decoder_nums_layers[1]+1, decoder_nums_layers[2]):
                             for encoder_aggr in encoder_aggregations:
                                 for hidden_channels_num in hidden_channels:
-                                    experiment_config = (
-                                        layer_name,
-                                        encoder_num_layers,
-                                        tuple(encoder_aggr),
-                                        encoder_skip_connections,
-                                        decoder_num_layers,
-                                        hidden_channels_num,
-                                        lr,
-                                        tuple(text_features),
-                                        tuple(list_features),
-                                        tuple(fastRP_features),
-                                        tuple(node2vec_features),
-                                        tuple(SAGE_features),
-                                        tuple(numeric_features),
-                                    )
-                                    print("-->>", experiment_config)
-                                    model = Model(
-                                        data,
-                                        layer_name=layer_name,
-                                        encoder_num_layers=encoder_num_layers,
-                                        encoder_dropout=0.0,
-                                        decoder_dropout=0.0,
-                                        encoder_skip_connections=encoder_skip_connections,
-                                        encoder_aggr=encoder_aggr,
-                                        decoder_num_layers=decoder_num_layers,
-                                        hidden_channels=hidden_channels_num,
-                                        out_channels=hidden_channels_num,
-                                    ).to(device)
-                                    
-                                    if use_mini_batch:
-                                        train_batch, train_loader = split_to_minibatches(
-                                            data=train_data,
-                                            batch_size=32,
-                                            num_neighbours=[15, 5],
+                                    for use_round_val in use_round:
+                                        experiment_config = (
+                                            layer_name,
+                                            encoder_num_layers,
+                                            tuple(encoder_aggr),
+                                            encoder_skip_connections,
+                                            decoder_num_layers,
+                                            hidden_channels_num,
+                                            lr,
+                                            tuple(text_features),
+                                            tuple(list_features),
+                                            tuple(fastRP_features),
+                                            tuple(node2vec_features),
+                                            tuple(SAGE_features),
+                                            tuple(numeric_features),
+                                            use_round_val,
                                         )
-                                        test_batch, test_loader = split_to_minibatches(
-                                            data=test_data,
-                                            batch_size=32,
-                                            num_neighbours=[15],
-                                        )
-                                        losses[experiment_config] = train_test_mini_batch(
-                                            model=model,
-                                            epochs=epochs,
-                                            train_batch=train_batch,
-                                            train_loader=train_loader,
-                                            test_batch=test_batch,
-                                            test_loader=test_loader,
-                                            lr=lr,
-                                        )
-                                    else:
-                                        losses[experiment_config] = train_test(
-                                            model=model,
-                                            epochs=epochs,
-                                            train_data=train_data,
-                                            val_data=val_data,
-                                            test_data=test_data,
-                                            logging_step=logging_step,
-                                            lr=lr,
-                                            use_weighted_loss=use_weighted_loss,
-                                        )
+                                        print("-->>", experiment_config)
+                                        model = Model(
+                                            data,
+                                            layer_name=layer_name,
+                                            encoder_num_layers=encoder_num_layers,
+                                            encoder_dropout=0.0,
+                                            decoder_dropout=0.0,
+                                            encoder_skip_connections=encoder_skip_connections,
+                                            encoder_aggr=encoder_aggr,
+                                            decoder_num_layers=decoder_num_layers,
+                                            hidden_channels=hidden_channels_num,
+                                            out_channels=hidden_channels_num,
+                                        ).to(device)
+                                        
+                                        if use_mini_batch:
+                                            train_batch, train_loader = split_to_minibatches(
+                                                data=train_data,
+                                                batch_size=32,
+                                                num_neighbours=[15, 5],
+                                            )
+                                            test_batch, test_loader = split_to_minibatches(
+                                                data=test_data,
+                                                batch_size=32,
+                                                num_neighbours=[15],
+                                            )
+                                            losses[experiment_config] = train_test_mini_batch(
+                                                model=model,
+                                                epochs=epochs,
+                                                train_batch=train_batch,
+                                                train_loader=train_loader,
+                                                test_batch=test_batch,
+                                                test_loader=test_loader,
+                                                lr=lr,
+                                            )
+                                        else:
+                                            losses[experiment_config] = train_test(
+                                                model=model,
+                                                epochs=epochs,
+                                                train_data=train_data,
+                                                val_data=val_data,
+                                                test_data=test_data,
+                                                logging_step=logging_step,
+                                                lr=lr,
+                                                use_weighted_loss=use_weighted_loss,
+                                                use_round=use_round_val,
+                                            )
     return losses

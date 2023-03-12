@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from utils.EarlyStopper import EarlyStopper
 from tqdm import tqdm
 
-def train_test(model, epochs, train_data, test_data, val_data, logging_step, lr=0.01, use_weighted_loss=False):
+def train_test(model, epochs, train_data, test_data, val_data, logging_step, lr=0.01, use_weighted_loss=False, use_round=False):
 
     # Due to lazy initialization, we need to run one model step so the number
     # of parameters can be inferred:
@@ -43,6 +43,9 @@ def train_test(model, epochs, train_data, test_data, val_data, logging_step, lr=
                     data['user', 'movie'].edge_label_index)
         # print(pred[:10])
         pred = pred.clamp(min=0, max=5)
+        if use_round:
+            # round the predictions on .5 steps
+            pred = torch.round(pred * 2) / 2
         target = data['user', 'movie'].edge_label.float()
         rmse = F.mse_loss(pred, target).sqrt()
         return float(rmse)
